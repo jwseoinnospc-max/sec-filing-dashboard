@@ -93,7 +93,7 @@ export default function SegmentDashboard({ ticker = "N/A", points = [] }: Partia
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
             <XAxis dataKey="year" stroke="#94a3b8" />
             <YAxis stroke="#94a3b8" />
-            <Tooltip formatter={(value: number) => money(value)} />
+            <Tooltip formatter={(value) => money(Number(value ?? 0))} />
             <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" />
             <Bar dataKey="netIncome" name="Net Income" fill="#22C55E" />
           </BarChart>
