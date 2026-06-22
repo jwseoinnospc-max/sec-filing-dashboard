@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { BalanceChart, RevenueChart } from '@/components/FinancialChart';
+import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import { getCompanySnapshot, ratios } from '@/lib/sec';
+import { quarterPoints } from '@/lib/quarterData';
 
 function money(value: number) {
   return `$${Math.round(value).toLocaleString()}M`;
@@ -97,50 +98,21 @@ export default async function Home() {
       <section className="main">
         <div className="card">
           <div className="section-title">
-            <h2>최근 5개년 실적 추이</h2>
+            <h2>분기별 실적 추이 (2025 1Q → 2026 1Q)</h2>
             <a href={snapshot.filingUrl} target="_blank">SEC Filing 보기</a>
           </div>
-          <RevenueChart data={points} />
+          <QuarterChart data={quarterPoints} />
         </div>
 
         <div className="card">
           <div className="section-title"><h2>분석 코멘트</h2></div>
           <p className="notice">
-            Rocket Lab의 최근 연도 매출 성장률은 {growth(latest.revenue, previous.revenue)}이며,
-            순이익률은 {pct(r.netMargin)}입니다. 부채비율은 {pct(r.debtRatio)}로 재무 레버리지 변화를 추가 점검하는 것이 좋습니다.
+            2026년 1분기 매출은 전년 동기 대비 +38.0% 증가했으며,
+            매출총이익은 전년 동기 대비 +117.0% 증가했습니다.
           </p>
           <p>
-            사업부문별 매출 및 매출총이익은 업로드한 Rocket Lab 엑셀 실적 데이터를 기준으로 표시됩니다.
+            분기별 실적 추이는 2025 1Q부터 2026 1Q까지의 매출, 매출총이익, 순이익, 영업현금흐름을 기준으로 표시됩니다.
           </p>
-        </div>
-      </section>
-
-      <section className="main">
-        <div className="card">
-          <div className="section-title"><h2>자산 / 부채 / 자본</h2></div>
-          <BalanceChart data={points} />
-        </div>
-
-        <div className="card">
-          <div className="section-title"><h2>Annual Facts</h2></div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Revenue</th>
-                <th>NI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {points.map((p) => (
-                <tr key={p.year}>
-                  <td>{p.year}</td>
-                  <td>{money(p.revenue)}</td>
-                  <td>{money(p.netIncome)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </section>
 
