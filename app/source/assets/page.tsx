@@ -1,4 +1,4 @@
-import { rklbData } from "@/lib/rklbData";
+import { rklbQuarterData } from "@/lib/rklbData";
 
 export default function AssetsPage() {
   return (
