@@ -1,60 +1,48 @@
 "use client";
 
-import {
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip
-} from "recharts";
 import { rklbQuarterData, growth, formatNumber } from "@/lib/rklbData";
-
-type SegmentValue = {
-  name: string;
-  value: number;
-  color: string;
-};
 
 const BLUE = "#244A9B";
 const GRAY = "#CFCFCF";
 const LIGHT_BLUE = "#EAF4FF";
 
-function toSegmentData(data: { launch: number; spaceSystems: number }): SegmentValue[] {
-  return [
-    { name: "Launch", value: data.launch, color: BLUE },
-    { name: "Space Systems", value: data.spaceSystems, color: GRAY }
-  ];
+type Segment = {
+  launch: number;
+  spaceSystems: number;
+};
+
+function pct(value: number) {
+  return `${Math.round(value)}%`;
 }
 
-function Donut({ data, total }: { data: SegmentValue[]; total: number }) {
+function Donut({
+  total,
+  data,
+  sourceHref
+}: {
+  total: number;
+  data: Segment;
+  sourceHref: string;
+}) {
+  const launchPct = (data.launch / total) * 100;
+
   return (
-    <div className="donut-wrap">
-      <ResponsiveContainer width={190} height={150}>
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={48}
-            outerRadius={72}
-            startAngle={90}
-            endAngle={-270}
-            paddingAngle={1}
-          >
-            {data.map((entry) => (
-              <Cell key={entry.name} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(value) => formatNumber(Number(value ?? 0))} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="donut-center">{formatNumber(total)}</div>
+    <div
+      className="donut"
+      style={{
+        background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
+      }}
+    >
+      <div className="donut-hole">
+        <a href={sourceHref}>{formatNumber(total)}</a>
+      </div>
     </div>
   );
 }
 
 function CompareCard({
   title,
+  metric,
   previousLabel,
   currentLabel,
   previousTotal,
@@ -63,44 +51,248 @@ function CompareCard({
   current
 }: {
   title: string;
+  metric: string;
   previousLabel: string;
   currentLabel: string;
   previousTotal: number;
   currentTotal: number;
-  previous: { launch: number; spaceSystems: number };
-  current: { launch: number; spaceSystems: number };
+  previous: Segment;
+  current: Segment;
 }) {
   const totalGrowth = growth(currentTotal, previousTotal);
   const launchGrowth = growth(current.launch, previous.launch);
   const systemsGrowth = growth(current.spaceSystems, previous.spaceSystems);
 
-  return (
-    <section className="segment-card">
-      <div className="segment-title">{title}</div>
-      <div className="segment-unit">단위: 천 달러</div>
+  const sourceHref = metric === "revenue" ? "/source/revenue" : "/source/net-income";
 
-      <div className="segment-body">
+  return (
+    <section className="compare-card">
+      <div className="title-bar">{title}</div>
+      <div className="unit">단위: 천 달러</div>
+
+      <div className="body">
         <div className="period">
           <h3>{previousLabel}</h3>
-          <Donut data={toSegmentData(previous)} total={previousTotal} />
+
+          <div className="chart-row">
+            <div className="side-label left">
+              <span>Space Systems</span>
+              <a href={sourceHref}>{formatNumber(previous.spaceSystems)}</a>
+            </div>
+
+            <Donut total={previousTotal} data={previous} sourceHref={sourceHref} />
+
+            <div className="side-label right">
+              <span>Launch</span>
+              <a href={sourceHref}>{formatNumber(previous.launch)}</a>
+            </div>
+          </div>
         </div>
 
-        <div className="arrow-area">
+        <div className="center">
           <div className="arrow" />
-          <p>
-            전년동기 대비
-            <br />
-            <strong>{totalGrowth.toFixed(0)}%</strong> 증가
-          </p>
-          <div className="pill blue">Launch {launchGrowth.toFixed(0)}% 증가</div>
-          <div className="pill gray">Space Systems {systemsGrowth.toFixed(0)}% 증가</div>
+          <div className="growth-text">
+            <span>전년 동기 대비</span>
+            <strong>{pct(totalGrowth)}</strong>
+            <span> 증가</span>
+          </div>
+
+          <a className="pill blue" href={sourceHref}>
+            전년 동기 대비 {pct(launchGrowth)} 증가
+          </a>
+
+          <a className="pill gray" href={sourceHref}>
+            전년 동기 대비 {pct(systemsGrowth)} 증가
+          </a>
         </div>
 
         <div className="period">
           <h3>{currentLabel}</h3>
-          <Donut data={toSegmentData(current)} total={currentTotal} />
+
+          <div className="chart-row">
+            <div className="side-label left current-left">
+              <span>Space Systems</span>
+              <a href={sourceHref}>{formatNumber(current.spaceSystems)}</a>
+            </div>
+
+            <Donut total={currentTotal} data={current} sourceHref={sourceHref} />
+
+            <div className="side-label right">
+              <span>Launch</span>
+              <a href={sourceHref}>{formatNumber(current.launch)}</a>
+            </div>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .compare-card {
+          position: relative;
+          background: #ffffff;
+          border: 1px solid #d0d0d0;
+          border-radius: 0 0 12px 12px;
+          color: #222;
+          overflow: hidden;
+          min-height: 255px;
+        }
+
+        .title-bar {
+          background: #365fb8;
+          color: #ffffff;
+          text-align: center;
+          font-size: 16px;
+          font-weight: 800;
+          padding: 10px;
+        }
+
+        .unit {
+          position: absolute;
+          top: 45px;
+          right: 14px;
+          font-size: 13px;
+          font-weight: 800;
+          color: #000;
+        }
+
+        .body {
+          display: grid;
+          grid-template-columns: 1fr 145px 1fr;
+          align-items: center;
+          gap: 12px;
+          padding: 22px 14px 18px;
+        }
+
+        .period h3 {
+          text-align: center;
+          margin: 0 0 10px;
+          font-size: 20px;
+          font-weight: 800;
+        }
+
+        .chart-row {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 150px;
+        }
+
+        .donut {
+          width: 112px;
+          height: 112px;
+          border-radius: 50%;
+          position: relative;
+        }
+
+        .donut-hole {
+          position: absolute;
+          inset: 28px;
+          background: #ffffff;
+          border-radius: 50%;
+          box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .donut-hole a {
+          color: #2c62d6;
+          font-size: 16px;
+          font-weight: 800;
+          text-decoration: none;
+        }
+
+        .side-label {
+          position: absolute;
+          font-size: 12px;
+          line-height: 1.35;
+          color: #666;
+          min-width: 90px;
+        }
+
+        .side-label span {
+          display: block;
+        }
+
+        .side-label a {
+          color: #0b3f99;
+          font-weight: 800;
+          text-decoration: none;
+        }
+
+        .side-label a:hover,
+        .donut-hole a:hover,
+        .pill:hover {
+          text-decoration: underline;
+        }
+
+        .side-label.left {
+          left: 0;
+          top: 32px;
+          text-align: left;
+        }
+
+        .side-label.right {
+          right: 0;
+          top: 28px;
+          text-align: left;
+          color: #0b3f99;
+        }
+
+        .current-left {
+          left: -8px;
+          top: 0;
+        }
+
+        .center {
+          text-align: center;
+          position: relative;
+        }
+
+        .arrow {
+          width: 0;
+          height: 0;
+          border-top: 38px solid transparent;
+          border-bottom: 38px solid transparent;
+          border-left: 48px solid ${LIGHT_BLUE};
+          margin: 18px auto 0;
+        }
+
+        .growth-text {
+          margin-top: -58px;
+          font-size: 13px;
+          color: #1d4ed8;
+          font-weight: 700;
+        }
+
+        .growth-text strong {
+          color: #dc2626;
+          font-size: 20px;
+          margin: 0 3px;
+        }
+
+        .pill {
+          display: block;
+          width: 190px;
+          margin: 18px auto 0;
+          padding: 6px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 800;
+          text-decoration: none;
+        }
+
+        .pill.blue {
+          background: ${BLUE};
+          color: #ffffff;
+        }
+
+        .pill.gray {
+          background: ${GRAY};
+          color: #111111;
+          margin-top: 8px;
+        }
+      `}</style>
     </section>
   );
 }
@@ -112,6 +304,7 @@ export default function SegmentDashboard() {
     <section className="segment-dashboard">
       <CompareCard
         title="매출 (Revenue)"
+        metric="revenue"
         previousLabel={revenue.previousLabel}
         currentLabel={revenue.currentLabel}
         previousTotal={revenue.previousTotal}
@@ -122,6 +315,7 @@ export default function SegmentDashboard() {
 
       <CompareCard
         title="매출총이익 (Gross Profit)"
+        metric="grossProfit"
         previousLabel={grossProfit.previousLabel}
         currentLabel={grossProfit.currentLabel}
         previousTotal={grossProfit.previousTotal}
@@ -134,116 +328,8 @@ export default function SegmentDashboard() {
         .segment-dashboard {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 18px;
-          margin-top: 18px;
-        }
-
-        .segment-card {
-          position: relative;
-          background: #ffffff;
-          border: 1px solid #cfcfcf;
-          border-radius: 0 0 14px 14px;
-          overflow: hidden;
-          color: #1f2937;
-          min-height: 285px;
-        }
-
-        .segment-title {
-          background: #365fb8;
-          color: #ffffff;
-          font-weight: 800;
-          text-align: center;
-          padding: 12px 16px;
-          font-size: 18px;
-        }
-
-        .segment-unit {
-          position: absolute;
-          top: 58px;
-          right: 18px;
-          color: #111827;
-          font-size: 13px;
-          font-weight: 700;
-        }
-
-        .segment-body {
-          display: grid;
-          grid-template-columns: 1fr 170px 1fr;
-          align-items: center;
-          gap: 8px;
-          padding: 26px 18px 20px;
-        }
-
-        .period {
-          text-align: center;
-        }
-
-        .period h3 {
-          margin: 0 0 6px;
-          font-size: 20px;
-          color: #222;
-        }
-
-        .donut-wrap {
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .donut-center {
-          position: absolute;
-          top: 64px;
-          left: 50%;
-          transform: translateX(-50%);
-          font-size: 18px;
-          font-weight: 800;
-          color: #1d4ed8;
-        }
-
-        .arrow-area {
-          text-align: center;
-          align-self: center;
-        }
-
-        .arrow {
-          width: 0;
-          height: 0;
-          border-top: 44px solid transparent;
-          border-bottom: 44px solid transparent;
-          border-left: 52px solid ${LIGHT_BLUE};
-          margin: 18px auto 6px;
-        }
-
-        .arrow-area p {
-          margin: 0 0 16px;
-          color: #1d4ed8;
-          font-size: 14px;
-          font-weight: 700;
-        }
-
-        .arrow-area strong {
-          color: #dc2626;
-          font-size: 22px;
-        }
-
-        .pill {
-          width: 150px;
-          margin: 8px auto;
-          padding: 7px 8px;
-          border-radius: 999px;
-          font-size: 12px;
-          font-weight: 800;
-        }
-
-        .pill.blue {
-          background: ${BLUE};
-          color: #ffffff;
-        }
-
-        .pill.gray {
-          background: ${GRAY};
-          color: #111827;
+          gap: 24px;
+          margin: 20px 0;
         }
 
         @media (max-width: 1100px) {
