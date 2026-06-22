@@ -30,11 +30,32 @@ function Donut({
     <div
       className="donut"
       style={{
+        width: 112,
+        height: 112,
+        borderRadius: "50%",
+        position: "relative",
         background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
       }}
     >
-      <div className="donut-hole">
-        <a href={sourceHref}>{formatNumber(total)}</a>
+      <div
+        className="donut-hole"
+        style={{
+          position: "absolute",
+          inset: 28,
+          background: "#ffffff",
+          borderRadius: "50%",
+          boxShadow: "0 10px 18px rgba(0, 0, 0, 0.18)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <a
+          href={sourceHref}
+          style={{ color: "#2c62d6", fontSize: 16, fontWeight: 800, textDecoration: "none" }}
+        >
+          {formatNumber(total)}
+        </a>
       </div>
     </div>
   );
@@ -177,31 +198,6 @@ function CompareCard({
           min-height: 150px;
         }
 
-        .donut {
-          width: 112px;
-          height: 112px;
-          border-radius: 50%;
-          position: relative;
-        }
-
-        .donut-hole {
-          position: absolute;
-          inset: 28px;
-          background: #ffffff;
-          border-radius: 50%;
-          box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .donut-hole a {
-          color: #2c62d6;
-          font-size: 16px;
-          font-weight: 800;
-          text-decoration: none;
-        }
-
         .side-label {
           position: absolute;
           font-size: 12px;
@@ -221,7 +217,6 @@ function CompareCard({
         }
 
         .side-label a:hover,
-        .donut-hole a:hover,
         .pill:hover {
           text-decoration: underline;
         }
