@@ -61,25 +61,33 @@ export default async function Home() {
       <section className="grid">
         <div className="card">
           <h3>Revenue</h3>
-          <div className="metric">{money(latest.revenue)}</div>
+          <div className="metric">
+            <Link href="/source/revenue">{money(latest.revenue)}</Link>
+          </div>
           <div className="delta">YoY {growth(latest.revenue, previous.revenue)}</div>
         </div>
 
         <div className="card">
           <h3>Net Income</h3>
-          <div className="metric">{money(latest.netIncome)}</div>
+          <div className="metric">
+            <Link href="/source/net-income">{money(latest.netIncome)}</Link>
+          </div>
           <div className="delta">Net Margin {pct(r.netMargin)}</div>
         </div>
 
         <div className="card">
           <h3>Operating Cash Flow</h3>
-          <div className="metric">{money(latest.operatingCashFlow)}</div>
+          <div className="metric">
+            <Link href="/source/cashflow">{money(latest.operatingCashFlow)}</Link>
+          </div>
           <div className="delta">OCF Margin {pct(r.ocfMargin)}</div>
         </div>
 
         <div className="card">
           <h3>ROE / Debt Ratio</h3>
-          <div className="metric">{pct(r.roe)}</div>
+          <div className="metric">
+            <Link href="/source/assets">{pct(r.roe)}</Link>
+          </div>
           <div className="delta">Debt Ratio {pct(r.debtRatio)}</div>
         </div>
       </section>
