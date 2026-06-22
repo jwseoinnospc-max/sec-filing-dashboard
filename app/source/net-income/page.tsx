@@ -1,32 +1,47 @@
 import Link from "next/link";
-import { rklbData } from "@/lib/rklbData";
+import { rklbQuarterData } from "@/lib/rklbData";
 
 export default function NetIncomePage() {
   return (
-    <main className="page">
-      <h1>Net Income Raw Data</h1>
+    <main style={{ padding: 40 }}>
+      <h1>Gross Profit Raw Data</h1>
 
-      <table className="table">
+      <table>
         <thead>
           <tr>
-            <th>Year</th>
-            <th>Net Income ($M)</th>
+            <th>Period</th>
+            <th>Launch</th>
+            <th>Space Systems</th>
+            <th>Total</th>
           </tr>
         </thead>
 
         <tbody>
-          {rklbData.points.map((p) => (
-            <tr key={p.year}>
-              <td>{p.year}</td>
-              <td>{p.netIncome.toLocaleString()}</td>
-            </tr>
-          ))}
+          <tr>
+            <td>{rklbQuarterData.grossProfit.previousLabel}</td>
+            <td>{rklbQuarterData.grossProfit.previous.launch.toLocaleString()}</td>
+            <td>{rklbQuarterData.grossProfit.previous.spaceSystems.toLocaleString()}</td>
+            <td>{rklbQuarterData.grossProfit.previousTotal.toLocaleString()}</td>
+          </tr>
+
+          <tr>
+            <td>{rklbQuarterData.grossProfit.currentLabel}</td>
+            <td>{rklbQuarterData.grossProfit.current.launch.toLocaleString()}</td>
+            <td>{rklbQuarterData.grossProfit.current.spaceSystems.toLocaleString()}</td>
+            <td>{rklbQuarterData.grossProfit.currentTotal.toLocaleString()}</td>
+          </tr>
         </tbody>
       </table>
 
-      <Link href={rklbData.filingUrl}>
-        SEC Filing
-      </Link>
+      <br />
+
+      <a
+        href="https://investors.rocketlabusa.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Rocket Lab Investor Relations
+      </a>
     </main>
   );
 }
