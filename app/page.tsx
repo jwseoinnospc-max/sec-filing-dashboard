@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { BalanceChart, RevenueChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import { getCompanySnapshot, ratios } from '@/lib/sec';
