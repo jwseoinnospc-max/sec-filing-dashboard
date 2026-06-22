@@ -56,15 +56,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ t
       <section className="header">
         <div>
           <span className="badge">SEC EDGAR XBRL Dashboard</span>
-          <h1>{snapshot.name} 재무 분석</h1>
+          <h1>Rocket Lab USA, Inc. 실적 분석</h1>
           <p>
             10-K 기반 주요 재무제표 항목을 수집해 매출, 순이익, 현금흐름, 재무건전성 지표를 한 화면에서 확인합니다.
           </p>
         </div>
-        <form className="search">
-          <input name="ticker" placeholder="AAPL, MSFT, NVDA..." defaultValue={snapshot.ticker} />
-          <button type="submit">조회</button>
-        </form>
       </section>
 
       <section className="grid">
