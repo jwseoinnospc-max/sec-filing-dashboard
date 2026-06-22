@@ -1,179 +1,253 @@
 "use client";
 
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
   ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
+  Tooltip
 } from "recharts";
+import { rklbQuarterData, growth, formatNumber } from "@/lib/rklbData";
 
-type FinancialPoint = {
-  year: string;
-  revenue: number;
-  netIncome: number;
-  assets: number;
-  liabilities: number;
-  equity: number;
-  operatingCashFlow: number;
+type SegmentValue = {
+  name: string;
+  value: number;
+  color: string;
 };
 
-type Props = {
-  ticker: string;
-  points: FinancialPoint[];
-};
+const BLUE = "#244A9B";
+const GRAY = "#CFCFCF";
+const LIGHT_BLUE = "#EAF4FF";
 
-function money(value: number) {
-  return `$${Math.round(value).toLocaleString()}M`;
-}
-
-function growth(now: number, before: number) {
-  if (!before) return "N/A";
-  const g = ((now - before) / before) * 100;
-  return `${g >= 0 ? "+" : ""}${g.toFixed(1)}%`;
-}
-
-export default function SegmentDashboard({ ticker = "N/A", points = [] }: Partial<Props>) {
-  const latest = points[points.length - 1];
-  const previous = points[points.length - 2];
-
-  if (!latest || !previous) {
-    return (
-      <section className="segment-card">
-        <h2>매출 실적 비교</h2>
-        <p>비교할 수 있는 실제 SEC 매출 데이터가 부족합니다.</p>
-      </section>
-    );
-  }
-
-  const chartData = [
-    {
-      year: previous.year,
-      revenue: previous.revenue,
-      netIncome: previous.netIncome
-    },
-    {
-      year: latest.year,
-      revenue: latest.revenue,
-      netIncome: latest.netIncome
-    }
+function toSegmentData(data: { launch: number; spaceSystems: number }): SegmentValue[] {
+  return [
+    { name: "Launch", value: data.launch, color: BLUE },
+    { name: "Space Systems", value: data.spaceSystems, color: GRAY }
   ];
+}
+
+function Donut({ data, total }: { data: SegmentValue[]; total: number }) {
+  return (
+    <div className="donut-wrap">
+      <ResponsiveContainer width={190} height={150}>
+        <PieChart>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={48}
+            outerRadius={72}
+            startAngle={90}
+            endAngle={-270}
+            paddingAngle={1}
+          >
+            {data.map((entry) => (
+              <Cell key={entry.name} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => formatNumber(Number(value ?? 0))} />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="donut-center">{formatNumber(total)}</div>
+    </div>
+  );
+}
+
+function CompareCard({
+  title,
+  previousLabel,
+  currentLabel,
+  previousTotal,
+  currentTotal,
+  previous,
+  current
+}: {
+  title: string;
+  previousLabel: string;
+  currentLabel: string;
+  previousTotal: number;
+  currentTotal: number;
+  previous: { launch: number; spaceSystems: number };
+  current: { launch: number; spaceSystems: number };
+}) {
+  const totalGrowth = growth(currentTotal, previousTotal);
+  const launchGrowth = growth(current.launch, previous.launch);
+  const systemsGrowth = growth(current.spaceSystems, previous.spaceSystems);
 
   return (
     <section className="segment-card">
-      <div className="segment-header">
-        <h2>{ticker} 실제 매출 실적 비교</h2>
-        <span>SEC 10-K Annual Data</span>
-      </div>
+      <div className="segment-title">{title}</div>
+      <div className="segment-unit">단위: 천 달러</div>
 
-      <div className="compare-grid">
-        <div className="compare-box">
-          <h3>{previous.year}</h3>
-          <p>Revenue</p>
-          <strong>{money(previous.revenue)}</strong>
+      <div className="segment-body">
+        <div className="period">
+          <h3>{previousLabel}</h3>
+          <Donut data={toSegmentData(previous)} total={previousTotal} />
         </div>
 
-        <div className="growth-box">
-          <p>전년 대비 매출 성장률</p>
-          <strong>{growth(latest.revenue, previous.revenue)}</strong>
+        <div className="arrow-area">
+          <div className="arrow" />
+          <p>
+            전년동기 대비
+            <br />
+            <strong>{totalGrowth.toFixed(0)}%</strong> 증가
+          </p>
+          <div className="pill blue">Launch {launchGrowth.toFixed(0)}% 증가</div>
+          <div className="pill gray">Space Systems {systemsGrowth.toFixed(0)}% 증가</div>
         </div>
 
-        <div className="compare-box">
-          <h3>{latest.year}</h3>
-          <p>Revenue</p>
-          <strong>{money(latest.revenue)}</strong>
+        <div className="period">
+          <h3>{currentLabel}</h3>
+          <Donut data={toSegmentData(current)} total={currentTotal} />
         </div>
       </div>
+    </section>
+  );
+}
 
-      <div className="chart-box">
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis dataKey="year" stroke="#94a3b8" />
-            <YAxis stroke="#94a3b8" />
-            <Tooltip formatter={(value) => money(Number(value ?? 0))} />
-            <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" />
-            <Bar dataKey="netIncome" name="Net Income" fill="#22C55E" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+export default function SegmentDashboard() {
+  const { revenue, grossProfit } = rklbQuarterData;
+
+  return (
+    <section className="segment-dashboard">
+      <CompareCard
+        title="매출 (Revenue)"
+        previousLabel={revenue.previousLabel}
+        currentLabel={revenue.currentLabel}
+        previousTotal={revenue.previousTotal}
+        currentTotal={revenue.currentTotal}
+        previous={revenue.previous}
+        current={revenue.current}
+      />
+
+      <CompareCard
+        title="매출총이익 (Gross Profit)"
+        previousLabel={grossProfit.previousLabel}
+        currentLabel={grossProfit.currentLabel}
+        previousTotal={grossProfit.previousTotal}
+        currentTotal={grossProfit.currentTotal}
+        previous={grossProfit.previous}
+        current={grossProfit.current}
+      />
 
       <style jsx>{`
-        .segment-card {
-          margin-top: 18px;
-          padding: 22px;
-          background: #111827;
-          border: 1px solid #1f2937;
-          border-radius: 18px;
-          color: #ffffff;
-        }
-
-        .segment-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 18px;
-        }
-
-        .segment-header h2 {
-          margin: 0;
-          font-size: 22px;
-        }
-
-        .segment-header span {
-          color: #94a3b8;
-          font-size: 13px;
-        }
-
-        .compare-grid {
+        .segment-dashboard {
           display: grid;
-          grid-template-columns: 1fr 180px 1fr;
-          gap: 14px;
-          margin-bottom: 22px;
-          align-items: center;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 18px;
+          margin-top: 18px;
         }
 
-        .compare-box,
-        .growth-box {
-          background: #0f172a;
-          border: 1px solid #334155;
-          border-radius: 14px;
-          padding: 18px;
+        .segment-card {
+          position: relative;
+          background: #ffffff;
+          border: 1px solid #cfcfcf;
+          border-radius: 0 0 14px 14px;
+          overflow: hidden;
+          color: #1f2937;
+          min-height: 285px;
+        }
+
+        .segment-title {
+          background: #365fb8;
+          color: #ffffff;
+          font-weight: 800;
+          text-align: center;
+          padding: 12px 16px;
+          font-size: 18px;
+        }
+
+        .segment-unit {
+          position: absolute;
+          top: 58px;
+          right: 18px;
+          color: #111827;
+          font-size: 13px;
+          font-weight: 700;
+        }
+
+        .segment-body {
+          display: grid;
+          grid-template-columns: 1fr 170px 1fr;
+          align-items: center;
+          gap: 8px;
+          padding: 26px 18px 20px;
+        }
+
+        .period {
           text-align: center;
         }
 
-        .compare-box h3 {
-          margin: 0 0 8px;
-          font-size: 24px;
+        .period h3 {
+          margin: 0 0 6px;
+          font-size: 20px;
+          color: #222;
         }
 
-        .compare-box p,
-        .growth-box p {
-          margin: 0 0 8px;
-          color: #94a3b8;
+        .donut-wrap {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
-        .compare-box strong {
-          font-size: 28px;
-          color: #60a5fa;
+        .donut-center {
+          position: absolute;
+          top: 64px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 18px;
+          font-weight: 800;
+          color: #1d4ed8;
         }
 
-        .growth-box strong {
-          font-size: 30px;
-          color: #f87171;
+        .arrow-area {
+          text-align: center;
+          align-self: center;
         }
 
-        .chart-box {
-          background: #0f172a;
-          border: 1px solid #334155;
-          border-radius: 14px;
-          padding: 14px;
+        .arrow {
+          width: 0;
+          height: 0;
+          border-top: 44px solid transparent;
+          border-bottom: 44px solid transparent;
+          border-left: 52px solid ${LIGHT_BLUE};
+          margin: 18px auto 6px;
         }
 
-        @media (max-width: 900px) {
-          .compare-grid {
+        .arrow-area p {
+          margin: 0 0 16px;
+          color: #1d4ed8;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .arrow-area strong {
+          color: #dc2626;
+          font-size: 22px;
+        }
+
+        .pill {
+          width: 150px;
+          margin: 8px auto;
+          padding: 7px 8px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .pill.blue {
+          background: ${BLUE};
+          color: #ffffff;
+        }
+
+        .pill.gray {
+          background: ${GRAY};
+          color: #111827;
+        }
+
+        @media (max-width: 1100px) {
+          .segment-dashboard {
             grid-template-columns: 1fr;
           }
         }
