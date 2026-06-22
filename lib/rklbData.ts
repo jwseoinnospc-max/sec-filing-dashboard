@@ -1,42 +1,46 @@
-import Link from "next/link";
-import { rklbQuarterData } from "@/lib/rklbData";
+export const rklbQuarterData = {
+  companyName: "Rocket Lab USA, Inc.",
+  ticker: "RKLB",
+  source: "Q1 FY2026 Earnings",
 
-export default function RevenueSourcePage() {
-  const { revenue } = rklbQuarterData;
+  revenue: {
+    title: "Revenue",
+    previousLabel: "2025 1Q",
+    currentLabel: "2026 1Q",
+    previousTotal: 122569,
+    currentTotal: 200348,
+    previous: {
+      launch: 35592,
+      spaceSystems: 86677
+    },
+    current: {
+      launch: 63663,
+      spaceSystems: 136685
+    }
+  },
 
-  return (
-    <main style={{ padding: 40 }}>
-      <h1>Revenue Raw Data</h1>
+  grossProfit: {
+    title: "Gross Profit",
+    previousLabel: "2025 1Q",
+    currentLabel: "2026 1Q",
+    previousTotal: 35247,
+    currentTotal: 76493,
+    previous: {
+      launch: 7217,
+      spaceSystems: 28030
+    },
+    current: {
+      launch: 28223,
+      spaceSystems: 48270
+    }
+  }
+};
 
-      <table>
-        <thead>
-          <tr>
-            <th>Period</th>
-            <th>Total Revenue</th>
-            <th>Launch</th>
-            <th>Space Systems</th>
-          </tr>
-        </thead>
+export function growth(now: number, before: number) {
+  if (!before) return 0;
+  return ((now - before) / before) * 100;
+}
 
-        <tbody>
-          <tr>
-            <td>{revenue.previousLabel}</td>
-            <td>{revenue.previousTotal.toLocaleString()}</td>
-            <td>{revenue.previous.launch.toLocaleString()}</td>
-            <td>{revenue.previous.spaceSystems.toLocaleString()}</td>
-          </tr>
-          <tr>
-            <td>{revenue.currentLabel}</td>
-            <td>{revenue.currentTotal.toLocaleString()}</td>
-            <td>{revenue.current.launch.toLocaleString()}</td>
-            <td>{revenue.current.spaceSystems.toLocaleString()}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <br />
-
-      <Link href="/">← 대시보드로 돌아가기</Link>
-    </main>
-  );
+export function formatNumber(value: number) {
+  return value.toLocaleString();
 }
