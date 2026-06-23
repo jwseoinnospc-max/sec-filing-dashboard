@@ -65,7 +65,7 @@ export default async function Home() {
             <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
             <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
           </div>
-          <h1>Rocket Lab USA, Inc. 실적 분석</h1>
+          <h1>Rocket Lab 실적분석 Dashboard</h1>
           <p>
             Rocket Lab의 매출, 순이익, 현금흐름, 재무건전성 및 사업부문별 실적을 한 화면에서 확인합니다.
             <br />
@@ -151,9 +151,6 @@ export default async function Home() {
           <p className="notice">
             2026년 1분기 매출은 전년 동기 대비 +38.0% 증가했으며,
             매출총이익은 전년 동기 대비 +117.0% 증가했습니다.
-          </p>
-          <p>
-            분기별 실적 추이는 2025 1Q부터 2026 1Q까지의 매출, 매출총이익, 순이익, 영업현금흐름을 기준으로 표시됩니다.
           </p>
 
           <p className="notice">
