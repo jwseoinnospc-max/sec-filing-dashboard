@@ -1,6 +1,6 @@
 import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
-import { getCompanySnapshot, ratios } from '@/lib/sec';
+import { getCompanySnapshot } from '@/lib/sec';
 import { quarterPoints } from '@/lib/quarterData';
 
 function money(value: number) {
@@ -17,8 +17,6 @@ function growth(now: number, before: number) {
   return `${g >= 0 ? '+' : ''}${pct(g)}`;
 }
 
-const FY2025_10K_URL = 'https://investors.rocketlabcorp.com/node/12096/html';
-
 // Static figures sourced from Rocket Lab's FY2025 10-K and Q1/Q2/Q3 2025 + Q1 2026 10-Qs/earnings releases (see /financial-statement).
 // Revenue is in thousands; converted to millions below to reuse the money() formatter.
 const Q1_2025_REVENUE = 122569;
@@ -29,16 +27,8 @@ const Q1_2026_REVENUE = 200348;
 const Q4_2025_REVENUE = FY2025_REVENUE - Q1_2025_REVENUE - Q2_2025_REVENUE - Q3_2025_REVENUE;
 const TTM_REVENUE = Q2_2025_REVENUE + Q3_2025_REVENUE + Q4_2025_REVENUE + Q1_2026_REVENUE;
 
-const LAUNCHES_FY2025 = 21;
 const LAUNCHES_CUMULATIVE = 88; // all-time Electron launches to date, per rocketlabcorp.com/launch/electron/
 const ELECTRON_PAGE_URL = 'https://rocketlabcorp.com/launch/electron/';
-
-const LAUNCH_REVENUE_FY2025 = 199042;
-const LAUNCH_GROSS_PROFIT_FY2025 = 81270;
-const LAUNCH_COST_FY2025 = LAUNCH_REVENUE_FY2025 - LAUNCH_GROSS_PROFIT_FY2025;
-
-const LAUNCH_BACKLOG_FY2025 = 475600;
-const TOTAL_BACKLOG_FY2025 = 1847322;
 
 const Q1_2025_OPERATING_LOSS = -59188;
 const Q2_2025_OPERATING_LOSS = -59639;
@@ -52,20 +42,24 @@ const TTM_OPERATING_LOSS =
 
 const Q1_2026_FILING_URL = 'https://investors.rocketlabcorp.com/node/12471/html';
 
-// value is in millions (as returned by the SEC companyfacts API); filings report in thousands.
-// Reconstructs the thousands figure and jumps to/highlights the matching text on the 10-K page (Chrome/Edge text fragments).
-function filingLink(value: number) {
-  const thousands = Math.round(value * 1000);
-  const text = thousands < 0 ? `(${Math.abs(thousands).toLocaleString()})` : thousands.toLocaleString();
-  return `${FY2025_10K_URL}#:~:text=${encodeURIComponent(text)}`;
-}
+const Q1_2026_NET_INCOME = -45022;
+const Q1_2026_OPERATING_CASH_FLOW = -50332;
+const Q1_2026_TOTAL_ASSETS = 2819941;
+const Q1_2026_TOTAL_LIABILITIES = 555574;
+const Q1_2026_TOTAL_EQUITY = 2264367;
+
+const LAUNCH_REVENUE_Q1_2026 = 63663;
+const LAUNCH_GROSS_PROFIT_Q1_2026 = 28223;
+const LAUNCH_COST_Q1_2026 = LAUNCH_REVENUE_Q1_2026 - LAUNCH_GROSS_PROFIT_Q1_2026;
+
+const LAUNCH_BACKLOG_Q1_2026 = 921412;
+const TOTAL_BACKLOG_Q1_2026 = 2219756;
 
 export default async function Home() {
   const snapshot = await getCompanySnapshot('RKLB');
   const points = snapshot.points ?? [];
 
   const latest = points[points.length - 1];
-  const previous = points[points.length - 2] ?? latest;
 
   if (!latest) {
     return (
@@ -90,8 +84,6 @@ export default async function Home() {
       </main>
     );
   }
-
-  const r = ratios(latest);
 
   return (
     <main className="page">
@@ -133,13 +125,13 @@ export default async function Home() {
 
       <section className="grid">
         <div className="card">
-          <h3>매출 (FY{latest.year})</h3>
+          <h3>매출 (26Y 1Q)</h3>
           <div className="metric">
-            <a href={filingLink(latest.revenue)} target="_blank" rel="noopener noreferrer">
-              {money(latest.revenue)}
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {money(Q1_2026_REVENUE / 1000)}
             </a>
           </div>
-          <div className="delta">전년 동기 대비 {growth(latest.revenue, previous.revenue)}</div>
+          <div className="delta">전년 동기 대비 {growth(Q1_2026_REVENUE, Q1_2025_REVENUE)}</div>
           <div className="metric-sub">
             누적매출(최근 4개 분기) <strong>{money(TTM_REVENUE / 1000)}</strong>
           </div>
@@ -148,11 +140,11 @@ export default async function Home() {
         <div className="card">
           <h3>발사 횟수</h3>
           <div className="metric">
-            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
-              {LAUNCHES_FY2025}회
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              6회
             </a>
           </div>
-          <div className="delta">연간 발사 횟수 (FY2025)</div>
+          <div className="delta">분기 발사 횟수 (26Y 1Q)</div>
           <div className="metric-sub">
             누적 발사 횟수{" "}
             <strong>
@@ -164,30 +156,30 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>발사 서비스 수익성 (FY2025)</h3>
+          <h3>발사 서비스 수익성 (26Y 1Q)</h3>
           <div className="metric">
-            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
-              {money(LAUNCH_REVENUE_FY2025 / 1000)}
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {money(LAUNCH_REVENUE_Q1_2026 / 1000)}
             </a>
           </div>
           <div className="delta">발사 수익 (Launch Revenue)</div>
           <div className="metric-sub">
-            발사 비용(매출원가) <strong>{money(LAUNCH_COST_FY2025 / 1000)}</strong>
+            발사 비용(매출원가) <strong>{money(LAUNCH_COST_Q1_2026 / 1000)}</strong>
           </div>
         </div>
 
         <div className="card backlog-card">
           <div className="backlog-text">
-            <h3>수주잔고 (FY2025)</h3>
+            <h3>수주잔고 (26Y 1Q)</h3>
             <div className="metric">
-              <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
-                {money(LAUNCH_BACKLOG_FY2025 / 1000)}
+              <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+                {money(LAUNCH_BACKLOG_Q1_2026 / 1000)}
               </a>
             </div>
             <div className="delta">발사 서비스 수주잔고</div>
             <div className="metric-sub backlog-metric-sub">
               <span className="metric-sub-rule" />
-              총 수주잔고 <strong>{money(TOTAL_BACKLOG_FY2025 / 1000)}</strong>
+              총 수주잔고 <strong>{money(TOTAL_BACKLOG_Q1_2026 / 1000)}</strong>
             </div>
           </div>
 
@@ -196,7 +188,7 @@ export default async function Home() {
               className="backlog-donut"
               style={{
                 background: `conic-gradient(from 0deg, #244A9B 0 ${(
-                  (LAUNCH_BACKLOG_FY2025 / TOTAL_BACKLOG_FY2025) *
+                  (LAUNCH_BACKLOG_Q1_2026 / TOTAL_BACKLOG_Q1_2026) *
                   100
                 ).toFixed(1)}%, #CFCFCF 0 100%)`
               }}
@@ -224,33 +216,33 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>순이익 (FY{latest.year})</h3>
-          <div className="metric">
-            <a href={filingLink(latest.netIncome)} target="_blank" rel="noopener noreferrer">
-              {money(latest.netIncome)}
+          <h3>순이익 (26Y 1Q)</h3>
+          <div className="metric metric-negative">
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {money(Q1_2026_NET_INCOME / 1000)}
             </a>
           </div>
-          <div className="delta">순이익률 {pct(r.netMargin)}</div>
+          <div className="delta">순이익률 {pct(Q1_2026_NET_INCOME / Q1_2026_REVENUE)}</div>
         </div>
 
         <div className="card">
-          <h3>영업현금흐름 (FY{latest.year})</h3>
-          <div className="metric">
-            <a href={filingLink(latest.operatingCashFlow)} target="_blank" rel="noopener noreferrer">
-              {money(latest.operatingCashFlow)}
+          <h3>영업현금흐름 (26Y 1Q)</h3>
+          <div className="metric metric-negative">
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {money(Q1_2026_OPERATING_CASH_FLOW / 1000)}
             </a>
           </div>
-          <div className="delta">영업현금흐름 마진 {pct(r.ocfMargin)}</div>
+          <div className="delta">영업현금흐름 마진 {pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}</div>
         </div>
 
         <div className="card">
-          <h3>ROE / 부채비율 (FY{latest.year})</h3>
-          <div className="metric">
-            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
-              {pct(r.roe)}
+          <h3>ROE / 부채비율 (26Y 1Q)</h3>
+          <div className="metric metric-negative">
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {pct(Q1_2026_NET_INCOME / Q1_2026_TOTAL_EQUITY)}
             </a>
           </div>
-          <div className="delta">부채비율 {pct(r.debtRatio)}</div>
+          <div className="delta">부채비율 {pct(Q1_2026_TOTAL_LIABILITIES / Q1_2026_TOTAL_ASSETS)}</div>
         </div>
       </section>
 
