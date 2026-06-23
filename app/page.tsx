@@ -40,6 +40,18 @@ const LAUNCH_COST_FY2025 = LAUNCH_REVENUE_FY2025 - LAUNCH_GROSS_PROFIT_FY2025;
 const LAUNCH_BACKLOG_FY2025 = 475600;
 const TOTAL_BACKLOG_FY2025 = 1847322;
 
+const Q1_2025_OPERATING_LOSS = -59188;
+const Q2_2025_OPERATING_LOSS = -59639;
+const Q3_2025_OPERATING_LOSS = -58969;
+const FY2025_OPERATING_LOSS = -228838;
+const Q1_2026_OPERATING_LOSS = -55969;
+const Q4_2025_OPERATING_LOSS =
+  FY2025_OPERATING_LOSS - Q1_2025_OPERATING_LOSS - Q2_2025_OPERATING_LOSS - Q3_2025_OPERATING_LOSS;
+const TTM_OPERATING_LOSS =
+  Q2_2025_OPERATING_LOSS + Q3_2025_OPERATING_LOSS + Q4_2025_OPERATING_LOSS + Q1_2026_OPERATING_LOSS;
+
+const Q1_2026_FILING_URL = 'https://investors.rocketlabcorp.com/node/12471/html';
+
 // value is in millions (as returned by the SEC companyfacts API); filings report in thousands.
 // Reconstructs the thousands figure and jumps to/highlights the matching text on the 10-K page (Chrome/Edge text fragments).
 function filingLink(value: number) {
@@ -195,6 +207,19 @@ export default async function Home() {
               <span><i className="backlog-dot" style={{ background: '#244A9B' }} />발사</span>
               <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />우주</span>
             </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>영업손실 (26Y 1Q)</h3>
+          <div className="metric metric-negative">
+            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              {money(Q1_2026_OPERATING_LOSS / 1000)}
+            </a>
+          </div>
+          <div className="delta">분기 영업손실</div>
+          <div className="metric-sub">
+            누적 영업손실(최근 4개 분기) <strong className="metric-negative">{money(TTM_OPERATING_LOSS / 1000)}</strong>
           </div>
         </div>
 

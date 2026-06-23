@@ -36,7 +36,8 @@ p { color: var(--muted); line-height: 1.6; }
 .search { display: flex; gap: 8px; background: rgba(15, 23, 42, .7); border: 1px solid var(--line); padding: 8px; border-radius: 14px; }
 .search input { min-width: 220px; background: transparent; border: 0; outline: 0; color: var(--text); padding: 10px; font-size: 14px; }
 button { background: var(--accent); color: #001018; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; }
+.metric-negative, .metric-negative a { color: #f87171; }
 .grid .card { padding: 12px; }
 .grid .card h3 { font-size: 11px; }
 .grid .metric { font-size: 19px; }
