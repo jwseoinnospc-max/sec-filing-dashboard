@@ -164,16 +164,36 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="card">
-          <h3>수주잔고 (FY2025)</h3>
-          <div className="metric">
-            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
-              {money(LAUNCH_BACKLOG_FY2025 / 1000)}
-            </a>
+        <div className="card backlog-card">
+          <div className="backlog-text">
+            <h3>수주잔고 (FY2025)</h3>
+            <div className="metric">
+              <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
+                {money(LAUNCH_BACKLOG_FY2025 / 1000)}
+              </a>
+            </div>
+            <div className="delta">발사 서비스 수주잔고</div>
+            <div className="metric-sub">
+              총 수주잔고 <strong>{money(TOTAL_BACKLOG_FY2025 / 1000)}</strong>
+            </div>
           </div>
-          <div className="delta">발사 서비스 수주잔고</div>
-          <div className="metric-sub">
-            총 수주잔고 <strong>{money(TOTAL_BACKLOG_FY2025 / 1000)}</strong>
+
+          <div className="backlog-donut-wrap">
+            <div
+              className="backlog-donut"
+              style={{
+                background: `conic-gradient(from 0deg, #244A9B 0 ${(
+                  (LAUNCH_BACKLOG_FY2025 / TOTAL_BACKLOG_FY2025) *
+                  100
+                ).toFixed(1)}%, #CFCFCF 0 100%)`
+              }}
+            >
+              <div className="backlog-donut-hole" />
+            </div>
+            <div className="backlog-legend">
+              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />발사</span>
+              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />우주</span>
+            </div>
           </div>
         </div>
 
