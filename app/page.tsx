@@ -17,6 +17,16 @@ function growth(now: number, before: number) {
   return `${g >= 0 ? '+' : ''}${pct(g)}`;
 }
 
+// Chrome/Edge text-fragment navigation: jumps to and highlights the matching number on the filing page.
+function filingTextLink(url: string, text: string) {
+  return `${url}#:~:text=${encodeURIComponent(text)}`;
+}
+
+// thousands is a signed integer (e.g. -55969); filings show negatives in parentheses without a minus sign.
+function filingNumber(thousands: number) {
+  return thousands < 0 ? `(${Math.abs(thousands).toLocaleString()})` : thousands.toLocaleString();
+}
+
 // Static figures sourced from Rocket Lab's FY2025 10-K and Q1/Q2/Q3 2025 + Q1 2026 10-Qs/earnings releases (see /financial-statement).
 // Revenue is in thousands; converted to millions below to reuse the money() formatter.
 const Q1_2025_REVENUE = 122569;
@@ -127,7 +137,7 @@ export default async function Home() {
         <div className="card">
           <h3>매출 (26Y 1Q)</h3>
           <div className="metric">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+            <a href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_REVENUE))} target="_blank" rel="noopener noreferrer">
               {money(Q1_2026_REVENUE / 1000)}
             </a>
           </div>
@@ -148,7 +158,7 @@ export default async function Home() {
           <div className="metric-sub">
             누적 발사 횟수{" "}
             <strong>
-              <a href={ELECTRON_PAGE_URL} target="_blank" rel="noopener noreferrer">
+              <a href={filingTextLink(ELECTRON_PAGE_URL, `${LAUNCHES_CUMULATIVE} launches to date`)} target="_blank" rel="noopener noreferrer">
                 {LAUNCHES_CUMULATIVE}회
               </a>
             </strong>
@@ -158,7 +168,11 @@ export default async function Home() {
         <div className="card">
           <h3>발사 서비스 수익성 (26Y 1Q)</h3>
           <div className="metric">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_REVENUE_Q1_2026))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {money(LAUNCH_REVENUE_Q1_2026 / 1000)}
             </a>
           </div>
@@ -172,7 +186,11 @@ export default async function Home() {
           <div className="backlog-text">
             <h3>수주잔고 (26Y 1Q)</h3>
             <div className="metric">
-              <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+              <a
+                href={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_BACKLOG_Q1_2026))}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {money(LAUNCH_BACKLOG_Q1_2026 / 1000)}
               </a>
             </div>
@@ -205,7 +223,11 @@ export default async function Home() {
         <div className="card">
           <h3>영업손실 (26Y 1Q)</h3>
           <div className="metric metric-negative">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {money(Q1_2026_OPERATING_LOSS / 1000)}
             </a>
           </div>
@@ -218,7 +240,11 @@ export default async function Home() {
         <div className="card">
           <h3>순이익 (26Y 1Q)</h3>
           <div className="metric metric-negative">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_NET_INCOME))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {money(Q1_2026_NET_INCOME / 1000)}
             </a>
           </div>
@@ -228,7 +254,11 @@ export default async function Home() {
         <div className="card">
           <h3>영업현금흐름 (26Y 1Q)</h3>
           <div className="metric metric-negative">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_CASH_FLOW))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {money(Q1_2026_OPERATING_CASH_FLOW / 1000)}
             </a>
           </div>
