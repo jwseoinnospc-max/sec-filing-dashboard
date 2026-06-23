@@ -131,6 +131,37 @@ export default async function Home() {
           <p>
             분기별 실적 추이는 2025 1Q부터 2026 1Q까지의 매출, 매출총이익, 순이익, 영업현금흐름을 기준으로 표시됩니다.
           </p>
+
+          <h3 className="insight-title">인사이트</h3>
+
+          <ul className="insight-list">
+            <li>분기 매출 $2억 돌파</li>
+            <li>발사 서비스 비중 상승, HASTE 매출 인식 본격화</li>
+            <li>우주 시스템 성장이 핵심</li>
+          </ul>
+
+          <ul className="insight-list">
+            <li>미션 복잡도 높아지면서 단가 상승 &amp; 생산 자동화 및 규모의 경제를 통해 제조 원가 절감된 결과</li>
+            <li>발사 서비스 부문의 수익성 개선이 전체 이익률 상승 견인<br />∴ 매출 성장에 따른 고정비 희석 효과와 제조 효율화</li>
+            <li>전년 동기(20.3%) 대비 비약적인 수익성 개선</li>
+          </ul>
+
+          <ul className="insight-list">
+            <li>핵심 부품을 직접 설계/제조하여 자사 위성에 탑재할 뿐만 아니라 외부 시장(Merchant Market)에도 판매</li>
+          </ul>
+
+          <ul className="insight-list">
+            <li>주식 발행(ATM) 등으로 약 $3.77억 증가</li>
+          </ul>
+
+          <ul className="insight-list">
+            <li>2025년 말 대비 약 93.7% 증가</li>
+          </ul>
+
+          <ul className="insight-list">
+            <li>2024년 약 14대→2025년 약 24대→2026년 1분기 약 5대</li>
+            <li>2026년 채용 비용 증가</li>
+          </ul>
         </div>
       </section>
 
