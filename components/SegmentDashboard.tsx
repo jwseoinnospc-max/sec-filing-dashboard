@@ -220,7 +220,7 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 145px 1fr;
+          grid-template-columns: 1fr 175px 1fr;
           align-items: center;
           gap: 12px;
           padding: 22px 14px 18px;
@@ -325,6 +325,7 @@ function CompareCard({
           font-size: 13px;
           color: #1d4ed8;
           font-weight: 700;
+          white-space: nowrap;
         }
 
         .growth-text strong {
