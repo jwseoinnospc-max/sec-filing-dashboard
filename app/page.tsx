@@ -30,7 +30,8 @@ const Q4_2025_REVENUE = FY2025_REVENUE - Q1_2025_REVENUE - Q2_2025_REVENUE - Q3_
 const TTM_REVENUE = Q2_2025_REVENUE + Q3_2025_REVENUE + Q4_2025_REVENUE + Q1_2026_REVENUE;
 
 const LAUNCHES_FY2025 = 21;
-const LAUNCHES_CUMULATIVE = 87; // all-time Electron/HASTE missions as of the Q1 FY2026 earnings release
+const LAUNCHES_CUMULATIVE = 88; // all-time Electron launches to date, per rocketlabcorp.com/launch/electron/
+const ELECTRON_PAGE_URL = 'https://rocketlabcorp.com/launch/electron/';
 
 const LAUNCH_REVENUE_FY2025 = 199042;
 const LAUNCH_GROSS_PROFIT_FY2025 = 81270;
@@ -141,7 +142,12 @@ export default async function Home() {
           </div>
           <div className="delta">연간 발사 횟수 (FY2025)</div>
           <div className="metric-sub">
-            누적 발사 횟수 <strong>{LAUNCHES_CUMULATIVE}회</strong>
+            누적 발사 횟수{" "}
+            <strong>
+              <a href={ELECTRON_PAGE_URL} target="_blank" rel="noopener noreferrer">
+                {LAUNCHES_CUMULATIVE}회
+              </a>
+            </strong>
           </div>
         </div>
 
