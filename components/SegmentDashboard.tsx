@@ -6,6 +6,13 @@ const BLUE = "#244A9B";
 const GRAY = "#CFCFCF";
 const LIGHT_BLUE = "#EAF4FF";
 
+const IR_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
+
+// Chrome/Edge text-fragment navigation: jumps to and highlights the matching number on the filing page.
+function filingLink(value: number) {
+  return `${IR_FILING_URL}#:~:text=${encodeURIComponent(formatNumber(value))}`;
+}
+
 type Segment = {
   launch: number;
   spaceSystems: number;
@@ -15,15 +22,7 @@ function pct(value: number) {
   return `${Math.round(value)}%`;
 }
 
-function Donut({
-  total,
-  data,
-  sourceHref
-}: {
-  total: number;
-  data: Segment;
-  sourceHref: string;
-}) {
+function Donut({ total, data }: { total: number; data: Segment }) {
   const launchPct = (data.launch / total) * 100;
 
   return (
@@ -51,7 +50,9 @@ function Donut({
         }}
       >
         <a
-          href={sourceHref}
+          href={filingLink(total)}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{ color: "#2c62d6", fontSize: 16, fontWeight: 800, textDecoration: "none" }}
         >
           {formatNumber(total)}
@@ -98,14 +99,18 @@ function CompareCard({
           <div className="chart-row">
             <div className="side-label left">
               <span>Space Systems</span>
-              <a href={sourceHref}>{formatNumber(previous.spaceSystems)}</a>
+              <a href={filingLink(previous.spaceSystems)} target="_blank" rel="noopener noreferrer">
+                {formatNumber(previous.spaceSystems)}
+              </a>
             </div>
 
-            <Donut total={previousTotal} data={previous} sourceHref={sourceHref} />
+            <Donut total={previousTotal} data={previous} />
 
             <div className="side-label right">
               <span>Launch</span>
-              <a href={sourceHref}>{formatNumber(previous.launch)}</a>
+              <a href={filingLink(previous.launch)} target="_blank" rel="noopener noreferrer">
+                {formatNumber(previous.launch)}
+              </a>
             </div>
           </div>
         </div>
@@ -133,14 +138,18 @@ function CompareCard({
           <div className="chart-row">
             <div className="side-label left current-left">
               <span>Space Systems</span>
-              <a href={sourceHref}>{formatNumber(current.spaceSystems)}</a>
+              <a href={filingLink(current.spaceSystems)} target="_blank" rel="noopener noreferrer">
+                {formatNumber(current.spaceSystems)}
+              </a>
             </div>
 
-            <Donut total={currentTotal} data={current} sourceHref={sourceHref} />
+            <Donut total={currentTotal} data={current} />
 
             <div className="side-label right">
               <span>Launch</span>
-              <a href={sourceHref}>{formatNumber(current.launch)}</a>
+              <a href={filingLink(current.launch)} target="_blank" rel="noopener noreferrer">
+                {formatNumber(current.launch)}
+              </a>
             </div>
           </div>
         </div>
