@@ -81,7 +81,7 @@ export default function StockWidget() {
           border: 1px solid var(--line);
           border-radius: 12px;
           overflow: hidden;
-          height: 255px;
+          height: 400px;
           padding-top: 4px;
         }
 
