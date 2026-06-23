@@ -39,8 +39,12 @@ export default async function Home() {
       <main className="page">
         <section className="header">
           <div>
-            <span className="badge">Rocket Lab 실적 분석 Dashboard</span>
-            <h1>Rocket Lab USA, Inc. 실적 분석</h1>
+            <div className="badge-row">
+              <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
+              <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
+              <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
+            </div>
+            <h1>Rocket Lab 실적분석 Dashboard</h1>
             <p>Rocket Lab 실적 데이터를 찾지 못했습니다.</p>
           </div>
         </section>
