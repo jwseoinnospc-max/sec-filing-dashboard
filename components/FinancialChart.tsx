@@ -6,11 +6,11 @@ import type { QuarterPoint } from '@/lib/quarterData';
 
 export function QuarterChart({ data }: { data: QuarterPoint[] }) {
   return (
-    <ResponsiveContainer width="100%" height={320}>
+    <ResponsiveContainer width="100%" height={480}>
       <LineChart data={data} margin={{ left: 12, right: 12, top: 12, bottom: 12 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="quarter" />
-        <YAxis />
+        <YAxis tickFormatter={(v) => Number(v).toLocaleString()} />
         <Tooltip formatter={(v) => `${Number(v).toLocaleString()}천 달러`} />
         <Legend />
         <Line type="monotone" dataKey="revenue" name="매출" stroke="#244A9B" strokeWidth={3} />
