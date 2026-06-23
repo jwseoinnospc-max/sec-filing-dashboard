@@ -58,7 +58,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .notice strong { color: #fff; }
 .fin-card { overflow-x: auto; }
 .fin-table th, .fin-table td { font-size: 13px; white-space: nowrap; }
-.fin-table th:nth-child(n+2):nth-child(-n+6) { text-align: center; }
+.fin-table th:nth-child(n+2):nth-child(-n+7) { text-align: center; }
 .fin-table td:nth-child(n+2):nth-child(-n+7) { text-align: right; }
 .fin-table tr.fin-indent td:first-child { padding-left: 26px; color: var(--muted); font-size: 12px; }
 .fin-table a { color: var(--accent); font-weight: 700; text-decoration: none; }
