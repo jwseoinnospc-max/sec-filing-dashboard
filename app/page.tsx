@@ -1,7 +1,7 @@
 import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import { getCompanySnapshot } from '@/lib/sec';
-import { quarterPoints } from '@/lib/quarterData';
+import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
 function money(value: number) {
   return `$${Math.round(value).toLocaleString()}M`;
@@ -279,11 +279,20 @@ export default async function Home() {
       <SegmentDashboard />
 
       <section className="main">
-        <div className="card">
-          <div className="section-title">
-            <h2>실적 추이 (FY2021 → 2026 1Q)</h2>
+        <div className="trend-charts">
+          <div className="card">
+            <div className="section-title">
+              <h2>연간 실적 추이 (FY2021 → FY2025)</h2>
+            </div>
+            <QuarterChart data={annualPoints} />
           </div>
-          <QuarterChart data={quarterPoints} />
+
+          <div className="card">
+            <div className="section-title">
+              <h2>분기별 실적 추이 (2025 1Q → 2026 1Q)</h2>
+            </div>
+            <QuarterChart data={quarterlyPoints} />
+          </div>
         </div>
 
         <div className="card">
