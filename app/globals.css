@@ -10,7 +10,18 @@
   --warn: #f59e0b;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: linear-gradient(135deg, #020617, var(--bg)); color: var(--text); }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.82), rgba(15, 23, 42, 0.82)),
+    url('/rocketlab-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--text);
+}
 a { color: inherit; }
 .page { min-height: 100vh; padding: 32px; }
 .header { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 28px; }
