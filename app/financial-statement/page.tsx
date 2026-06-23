@@ -290,10 +290,6 @@ export default function FinancialStatementPage() {
           </tbody>
         </table>
       </div>
-
-      <div className="footer">
-        <Link href="/">← 대시보드로 돌아가기</Link> · Data source: Rocket Lab Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release
-      </div>
     </main>
   );
 }
