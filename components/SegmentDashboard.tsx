@@ -1,6 +1,7 @@
 "use client";
 
 import { rklbQuarterData, growth, formatNumber } from "@/lib/rklbData";
+import StockWidget from "./StockWidget";
 
 const BLUE = "#244A9B";
 const GRAY = "#CFCFCF";
@@ -386,6 +387,8 @@ export default function SegmentDashboard() {
 
   return (
     <section className="segment-dashboard">
+      <StockWidget />
+
       <CompareCard
         title="매출 (Revenue)"
         metric="revenue"
@@ -411,12 +414,12 @@ export default function SegmentDashboard() {
       <style jsx>{`
         .segment-dashboard {
           display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr);
           gap: 24px;
           margin: 20px 0;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1300px) {
           .segment-dashboard {
             grid-template-columns: 1fr;
           }
