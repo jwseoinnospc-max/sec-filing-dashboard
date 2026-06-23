@@ -281,7 +281,7 @@ export default async function Home() {
       <section className="main">
         <div className="card">
           <div className="section-title">
-            <h2>분기별 실적 추이 (2025 1Q → 2026 1Q)</h2>
+            <h2>실적 추이 (FY2021 → 2026 1Q)</h2>
           </div>
           <QuarterChart data={quarterPoints} />
         </div>
