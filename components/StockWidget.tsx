@@ -1,9 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function StockWidget() {
   const container = useRef<HTMLDivElement>(null);
+  const [asOf, setAsOf] = useState("");
+
+  useEffect(() => {
+    setAsOf(
+      new Date().toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul",
+        dateStyle: "short",
+        timeStyle: "short"
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (!container.current) return;
@@ -43,15 +54,26 @@ export default function StockWidget() {
 
   return (
     <div className="stock-widget-card">
+      {asOf && <div className="as-of">기준 시각: {asOf}</div>}
       <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }} />
 
       <style jsx>{`
         .stock-widget-card {
+          position: relative;
           background: rgba(17, 24, 39, 0.78);
           border: 1px solid var(--line);
           border-radius: 12px;
           overflow: hidden;
           height: 255px;
+        }
+
+        .as-of {
+          position: absolute;
+          top: 8px;
+          right: 12px;
+          z-index: 2;
+          font-size: 11px;
+          color: var(--muted);
         }
       `}</style>
     </div>
