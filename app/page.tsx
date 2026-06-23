@@ -71,12 +71,14 @@ export default async function Home() {
         <div className="header-side">
           <p className="made-by">Made by 이노스페이스 투자전략실</p>
 
-          <div className="highlight-pill">
-            2026년 1분기 매출은 우주 시스템 부문의 성장이 견인($1.37억), 발사 서비스 매출($6,366만) 또한 전년 동기 대비 79% 증가
-          </div>
+          <div className="pill-group">
+            <div className="highlight-pill">
+              2026년 1분기 매출은 우주 시스템 부문의 성장이 견인($1.37억), 발사 서비스 매출($6,366만) 또한 전년 동기 대비 79% 증가
+            </div>
 
-          <div className="highlight-pill">
-            발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인 (발사당 단가 상승)
+            <div className="highlight-pill">
+              발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인 (발사당 단가 상승)
+            </div>
           </div>
         </div>
       </section>
