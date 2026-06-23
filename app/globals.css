@@ -36,7 +36,12 @@ p { color: var(--muted); line-height: 1.6; }
 .search { display: flex; gap: 8px; background: rgba(15, 23, 42, .7); border: 1px solid var(--line); padding: 8px; border-radius: 14px; }
 .search input { min-width: 220px; background: transparent; border: 0; outline: 0; color: var(--text); padding: 10px; font-size: 14px; }
 button { background: var(--accent); color: #001018; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+.grid .card { padding: 12px; }
+.grid .card h3 { font-size: 11px; }
+.grid .metric { font-size: 19px; }
+.grid .metric-sub { font-size: 11px; }
+.grid .metric-sub strong { font-size: 13px; }
 .card { background: rgba(17, 24, 39, .78); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: 0 20px 40px rgba(0,0,0,.18); }
 .card h3 { margin: 0 0 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .metric { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
