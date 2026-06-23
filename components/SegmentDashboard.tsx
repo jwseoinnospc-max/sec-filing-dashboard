@@ -22,11 +22,12 @@ function pct(value: number) {
   return `${Math.round(value)}%`;
 }
 
-function Donut({ total, data }: { total: number; data: Segment }) {
+function Donut({ total, data, size }: { total: number; data: Segment; size: number }) {
   const launchPct = (data.launch / total) * 100;
+  const holeInset = size * 0.25;
 
   return (
-    <div style={{ position: "relative", width: 112, height: 112, flexShrink: 0 }}>
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <a
         href={filingLink(total)}
         target="_blank"
@@ -50,8 +51,8 @@ function Donut({ total, data }: { total: number; data: Segment }) {
       <div
         className="donut"
         style={{
-          width: 112,
-          height: 112,
+          width: size,
+          height: size,
           borderRadius: "50%",
           position: "relative",
           background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
@@ -61,7 +62,7 @@ function Donut({ total, data }: { total: number; data: Segment }) {
           className="donut-hole"
           style={{
             position: "absolute",
-            inset: 28,
+            inset: holeInset,
             background: "#ffffff",
             borderRadius: "50%",
             boxShadow: "0 10px 18px rgba(0, 0, 0, 0.18)"
@@ -70,6 +71,14 @@ function Donut({ total, data }: { total: number; data: Segment }) {
       </div>
     </div>
   );
+}
+
+const MAX_DONUT_SIZE = 112;
+const MIN_DONUT_SIZE = 64;
+
+function donutSize(total: number, maxTotal: number) {
+  const scaled = MAX_DONUT_SIZE * Math.sqrt(total / maxTotal);
+  return Math.round(Math.max(MIN_DONUT_SIZE, scaled));
 }
 
 function CompareCard({
@@ -97,6 +106,10 @@ function CompareCard({
 
   const sourceHref = metric === "revenue" ? "/source/revenue" : "/source/net-income";
 
+  const maxTotal = Math.max(previousTotal, currentTotal);
+  const previousSize = donutSize(previousTotal, maxTotal);
+  const currentSize = donutSize(currentTotal, maxTotal);
+
   return (
     <section className="compare-card">
       <div className="title-bar">{title}</div>
@@ -120,7 +133,7 @@ function CompareCard({
               </div>
             </div>
 
-            <Donut total={previousTotal} data={previous} />
+            <Donut total={previousTotal} data={previous} size={previousSize} />
 
             <div className="side-block">
               <div className="connector blue">
@@ -171,7 +184,7 @@ function CompareCard({
               </div>
             </div>
 
-            <Donut total={currentTotal} data={current} />
+            <Donut total={currentTotal} data={current} size={currentSize} />
 
             <div className="side-block">
               <div className="connector blue">
