@@ -6,7 +6,7 @@ import type { QuarterPoint } from '@/lib/quarterData';
 
 export function QuarterChart({ data }: { data: QuarterPoint[] }) {
   return (
-    <ResponsiveContainer width="100%" height={442}>
+    <ResponsiveContainer width="100%" height={404}>
       <LineChart data={data} margin={{ left: 12, right: 12, top: 12, bottom: 12 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="quarter" />

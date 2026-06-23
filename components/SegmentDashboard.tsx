@@ -283,9 +283,12 @@ function CompareCard({
         }
 
         .connector .dot {
+          position: relative;
+          z-index: 2;
           width: 6px;
           height: 6px;
           border-radius: 50%;
+          border: 1.5px solid #ffffff;
           flex-shrink: 0;
         }
 
@@ -294,9 +297,17 @@ function CompareCard({
           background: ${GRAY};
         }
 
+        .connector.gray .dot {
+          margin-right: -10px;
+        }
+
         .connector.blue .line,
         .connector.blue .dot {
           background: ${BLUE};
+        }
+
+        .connector.blue .dot {
+          margin-left: -10px;
         }
 
         .side-label {
