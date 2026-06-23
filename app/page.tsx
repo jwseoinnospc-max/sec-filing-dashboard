@@ -62,6 +62,7 @@ export default async function Home() {
         <div>
           <span className="badge badge-active">Rocket Lab Dashboard</span>
           <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
+          <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
           <h1>Rocket Lab USA, Inc. 실적 분석</h1>
           <p>
             Rocket Lab의 매출, 순이익, 현금흐름, 재무건전성 및 사업부문별 실적을 한 화면에서 확인합니다.
