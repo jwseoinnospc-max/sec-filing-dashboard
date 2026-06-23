@@ -101,7 +101,8 @@ const rows: Row[] = [
     q2y25: cell("32.1%", "q2"),
     q3y25: cell("37.0%", "q3"),
     fy2025: cell("34.4%", "fy"),
-    q1y26: cell("38.2%", "q1")
+    q1y26: cell("38.2%", "q1"),
+    growth: "▲ 9.4%p"
   },
   {
     label: "Launch",
@@ -110,7 +111,8 @@ const rows: Row[] = [
     q2y25: cell("30.5%", "q2"),
     q3y25: cell("58.0%", "q3"),
     fy2025: cell("40.8%", "fy"),
-    q1y26: cell("44.3%", "q1")
+    q1y26: cell("44.3%", "q1"),
+    growth: "▲ 24.0%p"
   },
   {
     label: "Space Systems",
@@ -119,7 +121,8 @@ const rows: Row[] = [
     q2y25: cell("32.9%", "q2"),
     q3y25: cell("29.4%", "q3"),
     fy2025: cell("31.3%", "fy"),
-    q1y26: cell("35.3%", "q1")
+    q1y26: cell("35.3%", "q1"),
+    growth: "▲ 3.1%p"
   },
   {
     label: "영업손실 (Operating Loss)",
@@ -128,7 +131,8 @@ const rows: Row[] = [
     q2y25: cell("(59,639)", "q2"),
     q3y25: cell("(58,969)", "q3"),
     fy2025: cell("(228,838)", "fy"),
-    q1y26: cell("(55,969)", "q1")
+    q1y26: cell("(55,969)", "q1"),
+    growth: "▼ 5%"
   },
   {
     label: "영업손실률 (Operating Loss Margin)",
@@ -136,7 +140,8 @@ const rows: Row[] = [
     q2y25: cell("41.3%", "q2"),
     q3y25: cell("38.0%", "q3"),
     fy2025: cell("38.1%", "fy"),
-    q1y26: cell("27.9%", "q1")
+    q1y26: cell("27.9%", "q1"),
+    growth: "▼ 20.4%p"
   },
   {
     label: "당기순손실 (Net Loss)",
@@ -145,7 +150,8 @@ const rows: Row[] = [
     q2y25: cell("(66,414)", "q2"),
     q3y25: cell("(18,257)", "q3"),
     fy2025: cell("(198,209)", "fy"),
-    q1y26: cell("(45,022)", "q1")
+    q1y26: cell("(45,022)", "q1"),
+    growth: "▼ 26%"
   },
   {
     label: "보유 현금 및 유가증권",
@@ -153,7 +159,8 @@ const rows: Row[] = [
     q2y25: cell("749,299", "q2"),
     q3y25: cell("1,022,942", "q3"),
     fy2025: cell("1,098,824", "fy"),
-    q1y26: cell("1,476,845", "q1")
+    q1y26: cell("1,476,845", "q1"),
+    growth: "▲ 379%"
   },
   {
     label: "수주잔고 (Backlog)",
@@ -171,7 +178,8 @@ const rows: Row[] = [
     q2y25: cell("409,600", "q2"),
     q3y25: cell("509,700", "q3"),
     fy2025: cell("475,600", "fy"),
-    q1y26: cell("921,412", "q1")
+    q1y26: cell("921,412", "q1"),
+    growth: "▲ 118%"
   },
   {
     label: "Space Systems",
@@ -180,7 +188,8 @@ const rows: Row[] = [
     q2y25: cell("585,800", "q2"),
     q3y25: cell("586,300", "q3"),
     fy2025: cell("1,371,722", "fy"),
-    q1y26: cell("1,298,344", "q1")
+    q1y26: cell("1,298,344", "q1"),
+    growth: "▲ 101%"
   },
   {
     label: "발사 횟수",
