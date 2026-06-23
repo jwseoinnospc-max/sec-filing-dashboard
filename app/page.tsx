@@ -39,7 +39,7 @@ export default async function Home() {
       <main className="page">
         <section className="header">
           <div>
-            <span className="badge">Rocket Lab Dashboard</span>
+            <span className="badge">Rocket Lab 실적 분석 Dashboard</span>
             <h1>Rocket Lab USA, Inc. 실적 분석</h1>
             <p>Rocket Lab 실적 데이터를 찾지 못했습니다.</p>
           </div>
@@ -60,12 +60,15 @@ export default async function Home() {
     <main className="page">
       <section className="header">
         <div>
-          <span className="badge badge-active">Rocket Lab Dashboard</span>
+          <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
           <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
           <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
           <h1>Rocket Lab USA, Inc. 실적 분석</h1>
           <p>
             Rocket Lab의 매출, 순이익, 현금흐름, 재무건전성 및 사업부문별 실적을 한 화면에서 확인합니다.
+          </p>
+          <p className="last-updated">
+            최종 업데이트: {new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul", dateStyle: "medium", timeStyle: "short" })}
           </p>
         </div>
 
