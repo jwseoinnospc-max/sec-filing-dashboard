@@ -54,11 +54,6 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             <th className="fin-col-sep">FY 2022</th>
             <th className="fin-col-sep">FY 2023</th>
             <th className="fin-col-sep">FY 2024</th>
-            <th className="fin-col-sep fin-toggle-th">
-              <button type="button" className="fin-toggle-btn" onClick={() => setShowQuarters((v) => !v)}>
-                25Y 1Q–3Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
-              </button>
-            </th>
             {showQuarters && (
               <>
                 <th className="fin-col-sep">25Y 1Q</th>
@@ -66,7 +61,12 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 <th className="fin-col-sep">25Y 3Q</th>
               </>
             )}
-            <th className="fin-col-sep fin-fy-col">FY 2025</th>
+            <th className="fin-col-sep fin-fy-col fin-fy-header">
+              <div>FY 2025</div>
+              <button type="button" className="fin-toggle-btn" onClick={() => setShowQuarters((v) => !v)}>
+                25Y 1Q–3Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
+              </button>
+            </th>
             <th className="fin-highlight-col">26Y 1Q</th>
             <th className="fin-col-sep">전년 동기 대비</th>
           </tr>
@@ -80,7 +80,6 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
               <ValueCell data={row.fy2022} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2023} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2024} negative={row.negative} className="fin-col-sep" />
-              <td className="fin-col-sep fin-toggle-col" />
               {showQuarters && (
                 <>
                   <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep" />
