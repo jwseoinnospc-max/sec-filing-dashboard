@@ -229,7 +229,7 @@ function CompareCard({
           color: #ffffff;
           text-align: center;
           font-size: 16px;
-          font-weight: 800;
+          font-weight: 400;
           padding: 10px;
         }
 
