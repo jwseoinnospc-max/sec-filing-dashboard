@@ -235,6 +235,10 @@ export default function FinancialStatementPage() {
           <h1>Rocket Lab Financial Statement</h1>
           <p>분기별(25Y 1Q → 3Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
         </div>
+
+        <div className="header-side">
+          <p className="made-by">Data source: Rocket Lab Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release</p>
+        </div>
       </section>
 
       <div className="card fin-card">
