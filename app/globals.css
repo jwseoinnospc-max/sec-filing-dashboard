@@ -50,7 +50,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .header-side { position: relative; display: flex; flex-direction: column; justify-content: flex-start; min-width: 0; flex: 1; }
 .made-by { position: absolute; top: 0; right: 0; margin: 0; font-size: 12px; color: var(--muted); }
 .pill-group { display: flex; flex-direction: column; gap: 14px; width: 100%; margin-top: 38px; }
-.highlight-pill { width: 100%; background: #eaf4ff; color: #0b3f99; font-weight: 700; font-size: 17px; text-align: left; padding: 14px 24px; border-radius: 999px; }
+.highlight-pill { width: 100%; background: #eaf4ff; color: #0b3f99; font-weight: 700; font-size: 17px; text-align: left; padding: 14px 24px; border-radius: 0 999px 999px 0; }
 .notice { border-left: 3px solid var(--warn); padding-left: 12px; color: #ffffff; opacity: 1; margin: 0 0 14px; }
 .notice:last-child { margin-bottom: 0; }
 .notice strong { color: #fff; }
