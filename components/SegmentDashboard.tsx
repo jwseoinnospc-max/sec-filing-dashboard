@@ -215,7 +215,7 @@ function CompareCard({
       <style jsx>{`
         .compare-card {
           position: relative;
-          background: rgba(255, 255, 255, 0.72);
+          background: rgba(255, 255, 255, 0.5);
           border: 1px solid #d0d0d0;
           border-radius: 0 0 12px 12px;
           color: #222;
