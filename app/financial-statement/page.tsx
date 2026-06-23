@@ -247,7 +247,9 @@ export default function FinancialStatementPage() {
         </div>
 
         <div className="header-side">
-          <p className="made-by">Data source: Rocket Lab Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release</p>
+          <div className="header-side-top">
+            <p className="data-source">Data source: Rocket Lab Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release</p>
+          </div>
         </div>
       </section>
 
