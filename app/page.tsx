@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import { getCompanySnapshot, ratios } from '@/lib/sec';
@@ -16,6 +15,16 @@ function growth(now: number, before: number) {
   if (!before) return 'N/A';
   const g = (now - before) / before;
   return `${g >= 0 ? '+' : ''}${pct(g)}`;
+}
+
+const FY2025_10K_URL = 'https://investors.rocketlabcorp.com/node/12096/html';
+
+// value is in millions (as returned by the SEC companyfacts API); filings report in thousands.
+// Reconstructs the thousands figure and jumps to/highlights the matching text on the 10-K page (Chrome/Edge text fragments).
+function filingLink(value: number) {
+  const thousands = Math.round(value * 1000);
+  const text = thousands < 0 ? `(${Math.abs(thousands).toLocaleString()})` : thousands.toLocaleString();
+  return `${FY2025_10K_URL}#:~:text=${encodeURIComponent(text)}`;
 }
 
 export default async function Home() {
@@ -61,33 +70,41 @@ export default async function Home() {
 
       <section className="grid">
         <div className="card">
-          <h3>매출</h3>
+          <h3>매출 (FY{latest.year})</h3>
           <div className="metric">
-            <Link href="/source/revenue">{money(latest.revenue)}</Link>
+            <a href={filingLink(latest.revenue)} target="_blank" rel="noopener noreferrer">
+              {money(latest.revenue)}
+            </a>
           </div>
           <div className="delta">전년 동기 대비 {growth(latest.revenue, previous.revenue)}</div>
         </div>
 
         <div className="card">
-          <h3>순이익</h3>
+          <h3>순이익 (FY{latest.year})</h3>
           <div className="metric">
-            <Link href="/source/net-income">{money(latest.netIncome)}</Link>
+            <a href={filingLink(latest.netIncome)} target="_blank" rel="noopener noreferrer">
+              {money(latest.netIncome)}
+            </a>
           </div>
           <div className="delta">순이익률 {pct(r.netMargin)}</div>
         </div>
 
         <div className="card">
-          <h3>영업현금흐름</h3>
+          <h3>영업현금흐름 (FY{latest.year})</h3>
           <div className="metric">
-            <Link href="/source/cashflow">{money(latest.operatingCashFlow)}</Link>
+            <a href={filingLink(latest.operatingCashFlow)} target="_blank" rel="noopener noreferrer">
+              {money(latest.operatingCashFlow)}
+            </a>
           </div>
           <div className="delta">영업현금흐름 마진 {pct(r.ocfMargin)}</div>
         </div>
 
         <div className="card">
-          <h3>ROE / 부채비율</h3>
+          <h3>ROE / 부채비율 (FY{latest.year})</h3>
           <div className="metric">
-            <Link href="/source/assets">{pct(r.roe)}</Link>
+            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
+              {pct(r.roe)}
+            </a>
           </div>
           <div className="delta">부채비율 {pct(r.debtRatio)}</div>
         </div>
