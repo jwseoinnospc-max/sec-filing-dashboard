@@ -36,7 +36,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .card h3 { margin: 0 0 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .metric { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
 .delta { margin-top: 8px; color: var(--good); font-size: 13px; }
-.main { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-top: 16px; }
+.main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .section-title { display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
 .section-title h2 { margin: 0; font-size: 18px; }
 .table { width: 100%; border-collapse: collapse; }
