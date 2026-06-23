@@ -117,7 +117,6 @@ export default async function Home() {
         <div className="card">
           <div className="section-title">
             <h2>분기별 실적 추이 (2025 1Q → 2026 1Q)</h2>
-            <a href={snapshot.filingUrl} target="_blank">SEC Filing 보기</a>
           </div>
           <QuarterChart data={quarterPoints} />
         </div>
