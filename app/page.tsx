@@ -19,6 +19,26 @@ function growth(now: number, before: number) {
 
 const FY2025_10K_URL = 'https://investors.rocketlabcorp.com/node/12096/html';
 
+// Static figures sourced from Rocket Lab's FY2025 10-K and Q1/Q2/Q3 2025 + Q1 2026 10-Qs/earnings releases (see /financial-statement).
+// Revenue is in thousands; converted to millions below to reuse the money() formatter.
+const Q1_2025_REVENUE = 122569;
+const Q2_2025_REVENUE = 144498;
+const Q3_2025_REVENUE = 155080;
+const FY2025_REVENUE = 601799;
+const Q1_2026_REVENUE = 200348;
+const Q4_2025_REVENUE = FY2025_REVENUE - Q1_2025_REVENUE - Q2_2025_REVENUE - Q3_2025_REVENUE;
+const TTM_REVENUE = Q2_2025_REVENUE + Q3_2025_REVENUE + Q4_2025_REVENUE + Q1_2026_REVENUE;
+
+const LAUNCHES_FY2025 = 21;
+const LAUNCHES_CUMULATIVE = 87; // all-time Electron/HASTE missions as of the Q1 FY2026 earnings release
+
+const LAUNCH_REVENUE_FY2025 = 199042;
+const LAUNCH_GROSS_PROFIT_FY2025 = 81270;
+const LAUNCH_COST_FY2025 = LAUNCH_REVENUE_FY2025 - LAUNCH_GROSS_PROFIT_FY2025;
+
+const LAUNCH_BACKLOG_FY2025 = 475600;
+const TOTAL_BACKLOG_FY2025 = 1847322;
+
 // value is in millions (as returned by the SEC companyfacts API); filings report in thousands.
 // Reconstructs the thousands figure and jumps to/highlights the matching text on the 10-K page (Chrome/Edge text fragments).
 function filingLink(value: number) {
@@ -107,6 +127,48 @@ export default async function Home() {
             </a>
           </div>
           <div className="delta">전년 동기 대비 {growth(latest.revenue, previous.revenue)}</div>
+          <div className="metric-sub">
+            누적매출(최근 4개 분기) <strong>{money(TTM_REVENUE / 1000)}</strong>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>발사 횟수</h3>
+          <div className="metric">
+            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
+              {LAUNCHES_FY2025}회
+            </a>
+          </div>
+          <div className="delta">연간 발사 횟수 (FY2025)</div>
+          <div className="metric-sub">
+            누적 발사 횟수 <strong>{LAUNCHES_CUMULATIVE}회</strong>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>발사 서비스 수익성 (FY2025)</h3>
+          <div className="metric">
+            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
+              {money(LAUNCH_REVENUE_FY2025 / 1000)}
+            </a>
+          </div>
+          <div className="delta">발사 수익 (Launch Revenue)</div>
+          <div className="metric-sub">
+            발사 비용(매출원가) <strong>{money(LAUNCH_COST_FY2025 / 1000)}</strong>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>수주잔고 (FY2025)</h3>
+          <div className="metric">
+            <a href={FY2025_10K_URL} target="_blank" rel="noopener noreferrer">
+              {money(LAUNCH_BACKLOG_FY2025 / 1000)}
+            </a>
+          </div>
+          <div className="delta">발사 서비스 수주잔고</div>
+          <div className="metric-sub">
+            총 수주잔고 <strong>{money(TOTAL_BACKLOG_FY2025 / 1000)}</strong>
+          </div>
         </div>
 
         <div className="card">
