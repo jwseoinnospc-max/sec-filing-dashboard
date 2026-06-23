@@ -23,7 +23,7 @@ body {
   color: var(--text);
 }
 a { color: inherit; }
-.page { min-height: 100vh; padding: 32px; }
+.page { min-height: 100vh; padding: 13px 32px 32px; }
 .header { display: flex; justify-content: space-between; gap: 24px; align-items: stretch; margin-bottom: 28px; }
 .badge-row { display: flex; align-items: center; gap: 8px; height: 30px; margin-bottom: 14px; }
 .badge { display: inline-flex; align-items: center; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); font-size: 12px; }
