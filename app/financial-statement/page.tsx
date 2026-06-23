@@ -1,16 +1,18 @@
 import Link from "next/link";
 import FinancialStatementTable, { type Row } from "@/components/FinancialStatementTable";
 
-const FY2021_URL = "https://investors.rocketlabcorp.com/node/8871/html";
-const FY2022_URL = "https://investors.rocketlabcorp.com/node/9416/html";
-const FY2023_URL = "https://investors.rocketlabcorp.com/node/9896/html";
-const FY2024_URL = "https://investors.rocketlabcorp.com/node/10211/html";
+const FY2020_URL = "https://investors.rocketlabcorp.com/node/8871/html";
+const FY2021_URL = "https://investors.rocketlabcorp.com/node/9416/html";
+const FY2022_URL = "https://investors.rocketlabcorp.com/node/9896/html";
+const FY2023_URL = "https://investors.rocketlabcorp.com/node/10211/html";
+const FY2024_URL = "https://investors.rocketlabcorp.com/node/10656/html";
 const FY2025_10K_URL = "https://investors.rocketlabcorp.com/node/12096/html";
 const Q1_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
 const Q2_FILING_URL = "https://investors.rocketlabcorp.com/node/11206/html";
 const Q3_FILING_URL = "https://investors.rocketlabcorp.com/node/11551/html";
 
 const SOURCE_URL = {
+  fy20: FY2020_URL,
   fy21: FY2021_URL,
   fy22: FY2022_URL,
   fy23: FY2023_URL,
@@ -29,6 +31,7 @@ function cell(text: string, source?: keyof typeof SOURCE_URL) {
 const rows: Row[] = [
   {
     label: "매출 (Revenue)",
+    fy2020: cell("35,160", "fy20"),
     fy2021: cell("62,237", "fy21"),
     fy2022: cell("210,996", "fy22"),
     fy2023: cell("244,592", "fy23"),
@@ -43,6 +46,7 @@ const rows: Row[] = [
   {
     label: "Launch",
     indent: true,
+    fy2020: cell("33,085", "fy20"),
     fy2021: cell("38,971", "fy21"),
     fy2022: cell("60,686", "fy22"),
     fy2023: cell("71,894", "fy23"),
@@ -57,6 +61,7 @@ const rows: Row[] = [
   {
     label: "Space Systems",
     indent: true,
+    fy2020: cell("2,075", "fy20"),
     fy2021: cell("23,266", "fy21"),
     fy2022: cell("150,310", "fy22"),
     fy2023: cell("172,698", "fy23"),
@@ -71,6 +76,7 @@ const rows: Row[] = [
   {
     label: "매출총이익 (Gross Profit)",
     negative: true,
+    fy2020: cell("(11,817)", "fy20"),
     fy2021: cell("(1,893)", "fy21"),
     fy2022: cell("18,990", "fy22"),
     fy2023: cell("51,409", "fy23"),
@@ -86,6 +92,7 @@ const rows: Row[] = [
     label: "Launch",
     indent: true,
     negative: true,
+    fy2020: cell("(12,787)", "fy20"),
     fy2021: cell("(14,856)", "fy21"),
     fy2022: cell("(6,954)", "fy22"),
     fy2023: cell("8,067", "fy23"),
@@ -100,6 +107,7 @@ const rows: Row[] = [
   {
     label: "Space Systems",
     indent: true,
+    fy2020: cell("970", "fy20"),
     fy2021: cell("12,963", "fy21"),
     fy2022: cell("25,944", "fy22"),
     fy2023: cell("43,342", "fy23"),
@@ -113,7 +121,8 @@ const rows: Row[] = [
   },
   {
     label: "매출총이익률 (Gross Margin)",
-    fy2021: cell("-3.0%", "fy21"),
+    fy2020: cell("(33.6)%", "fy20"),
+    fy2021: cell("(3.0)%", "fy21"),
     fy2022: cell("9.0%", "fy22"),
     fy2023: cell("21.0%", "fy23"),
     fy2024: cell("26.6%", "fy24"),
@@ -127,10 +136,11 @@ const rows: Row[] = [
   {
     label: "Launch",
     indent: true,
-    fy2021: cell("-38.1%", "fy21"),
-    fy2022: cell("-11.5%", "fy22"),
-    fy2023: cell("11.2%", "fy23"),
-    fy2024: cell("27.6%", "fy24"),
+    fy2020: cell("(38.6)%"),
+    fy2021: cell("(38.1)%"),
+    fy2022: cell("(11.5)%"),
+    fy2023: cell("11.2%"),
+    fy2024: cell("27.6%"),
     q1y25: cell("20.3%", "q1"),
     q2y25: cell("30.5%", "q2"),
     q3y25: cell("58.0%", "q3"),
@@ -141,10 +151,11 @@ const rows: Row[] = [
   {
     label: "Space Systems",
     indent: true,
-    fy2021: cell("55.7%", "fy21"),
-    fy2022: cell("17.3%", "fy22"),
-    fy2023: cell("25.1%", "fy23"),
-    fy2024: cell("26.2%", "fy24"),
+    fy2020: cell("46.7%"),
+    fy2021: cell("55.7%"),
+    fy2022: cell("17.3%"),
+    fy2023: cell("25.1%"),
+    fy2024: cell("26.2%"),
     q1y25: cell("32.2%", "q1"),
     q2y25: cell("32.9%", "q2"),
     q3y25: cell("29.4%", "q3"),
@@ -155,6 +166,7 @@ const rows: Row[] = [
   {
     label: "영업손실 (Operating Loss)",
     negative: true,
+    fy2020: cell("(54,952)", "fy20"),
     fy2021: cell("(102,053)", "fy21"),
     fy2022: cell("(135,204)", "fy22"),
     fy2023: cell("(177,918)", "fy23"),
@@ -168,7 +180,8 @@ const rows: Row[] = [
   },
   {
     label: "영업손실률 (Operating Loss Margin)",
-    fy2021: cell("163.9%", "fy21"),
+    fy2020: cell("(156.2)%", "fy20"),
+    fy2021: cell("(163.9)%", "fy21"),
     fy2022: cell("64.1%", "fy22"),
     fy2023: cell("72.7%", "fy23"),
     fy2024: cell("43.5%", "fy24"),
@@ -182,6 +195,7 @@ const rows: Row[] = [
   {
     label: "당기순손실 (Net Loss)",
     negative: true,
+    fy2020: cell("(55,005)", "fy20"),
     fy2021: cell("(117,320)", "fy21"),
     fy2022: cell("(135,944)", "fy22"),
     fy2023: cell("(182,571)", "fy23"),
@@ -195,6 +209,7 @@ const rows: Row[] = [
   },
   {
     label: "보유 현금 및 유가증권",
+    fy2020: cell("52,792", "fy20"),
     fy2021: cell("690,959", "fy21"),
     fy2022: cell("480,984", "fy22"),
     fy2023: cell("324,020", "fy23"),
@@ -208,6 +223,7 @@ const rows: Row[] = [
   },
   {
     label: "수주잔고 (Backlog)",
+    fy2020: cell("-"),
     fy2021: cell("241,500", "fy21"),
     fy2022: cell("503,600", "fy22"),
     fy2023: cell("1,046,100", "fy23"),
@@ -222,6 +238,7 @@ const rows: Row[] = [
   {
     label: "Launch",
     indent: true,
+    fy2020: cell("-"),
     fy2021: cell("-"),
     fy2022: cell("116,200", "fy22"),
     fy2023: cell("248,300", "fy23"),
@@ -236,6 +253,7 @@ const rows: Row[] = [
   {
     label: "Space Systems",
     indent: true,
+    fy2020: cell("-"),
     fy2021: cell("-"),
     fy2022: cell("387,400", "fy22"),
     fy2023: cell("797,800", "fy23"),
@@ -249,6 +267,7 @@ const rows: Row[] = [
   },
   {
     label: "발사 횟수",
+    fy2020: cell("7회", "fy20"),
     fy2021: cell("6회", "fy21"),
     fy2022: cell("9회", "fy22"),
     fy2023: cell("10회", "fy23"),
@@ -262,6 +281,7 @@ const rows: Row[] = [
   },
   {
     label: "로켓 제작 대수 (Electron)",
+    fy2020: cell("-"),
     fy2021: cell("-"),
     fy2022: cell("-"),
     fy2023: cell("-"),
@@ -274,6 +294,7 @@ const rows: Row[] = [
   },
   {
     label: "인원수 (Headcount)",
+    fy2020: cell("-"),
     fy2021: cell("758명", "fy21"),
     fy2022: cell("1,400명 이상", "fy22"),
     fy2023: cell("1,650명 이상", "fy23"),
@@ -297,13 +318,13 @@ export default function FinancialStatementPage() {
             <Link className="badge badge-link" href="/overview">Rocket Lab Overview</Link>
           </div>
           <h1>Rocket Lab Financial Statement</h1>
-          <p>FY2021 ~ FY2024, 분기별(25Y 1Q → 3Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
+          <p>FY2020 ~ FY2024, 분기별(25Y 1Q → 3Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
         </div>
 
         <div className="header-side">
           <div className="header-side-top">
             <p className="data-source">
-              Data source: Rocket Lab FY2021–2024 10-K · Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release
+              Data source: Rocket Lab FY2021 10-K (FY2020 comparative figures) · FY2022–2024 10-K · Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release
             </p>
           </div>
         </div>

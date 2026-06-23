@@ -8,6 +8,7 @@ export type Row = {
   label: string;
   indent?: boolean;
   negative?: boolean;
+  fy2020: Cell;
   fy2021: Cell;
   fy2022: Cell;
   fy2023: Cell;
@@ -50,6 +51,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
         <thead>
           <tr>
             <th>항목</th>
+            <th className="fin-col-sep">FY 2020</th>
             <th className="fin-col-sep">FY 2021</th>
             <th className="fin-col-sep">FY 2022</th>
             <th className="fin-col-sep">FY 2023</th>
@@ -76,6 +78,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
           {rows.map((row, i) => (
             <tr key={i} className={row.indent ? "fin-indent" : ""}>
               <td>{row.indent ? `– ${row.label}` : row.label}</td>
+              <ValueCell data={row.fy2020} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2021} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2022} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2023} negative={row.negative} className="fin-col-sep" />
