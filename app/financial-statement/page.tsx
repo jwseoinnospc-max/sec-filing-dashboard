@@ -242,12 +242,12 @@ export default function FinancialStatementPage() {
           <thead>
             <tr>
               <th>항목</th>
-              <th>25Y 1Q</th>
-              <th>25Y 2Q</th>
-              <th>25Y 3Q</th>
-              <th>FY 2025</th>
+              <th className="fin-col-sep">25Y 1Q</th>
+              <th className="fin-col-sep">25Y 2Q</th>
+              <th className="fin-col-sep">25Y 3Q</th>
+              <th className="fin-col-sep fin-fy-col">FY 2025</th>
               <th className="fin-highlight-col">26Y 1Q</th>
-              <th>전년 동기 대비</th>
+              <th className="fin-col-sep">전년 동기 대비</th>
             </tr>
           </thead>
 
@@ -255,12 +255,12 @@ export default function FinancialStatementPage() {
             {rows.map((row, i) => (
               <tr key={i} className={row.indent ? "fin-indent" : ""}>
                 <td>{row.indent ? `– ${row.label}` : row.label}</td>
-                <ValueCell data={row.q1y25} negative={row.negative} />
-                <ValueCell data={row.q2y25} negative={row.negative} />
-                <ValueCell data={row.q3y25} negative={row.negative} />
-                <ValueCell data={row.fy2025} negative={row.negative} />
+                <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep" />
+                <ValueCell data={row.q2y25} negative={row.negative} className="fin-col-sep" />
+                <ValueCell data={row.q3y25} negative={row.negative} className="fin-col-sep" />
+                <ValueCell data={row.fy2025} negative={row.negative} className="fin-col-sep fin-fy-col" />
                 <ValueCell data={row.q1y26} negative={row.negative} className="fin-highlight-col" />
-                <td className="fin-growth">{row.growth ?? ""}</td>
+                <td className="fin-col-sep fin-growth">{row.growth ?? ""}</td>
               </tr>
             ))}
           </tbody>
