@@ -14,7 +14,7 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background:
-    linear-gradient(135deg, rgba(2, 6, 23, 0.82), rgba(15, 23, 42, 0.82)),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.6), rgba(15, 23, 42, 0.6)),
     url('/rocketlab-bg.jpg');
   background-size: cover;
   background-position: center;
