@@ -67,6 +67,18 @@ export default async function Home() {
             Rocket Lab의 매출, 순이익, 현금흐름, 재무건전성 및 사업부문별 실적을 한 화면에서 확인합니다.
           </p>
         </div>
+
+        <div className="header-side">
+          <p className="made-by">Made by 이노스페이스 투자전략실</p>
+
+          <div className="highlight-pill">
+            2026년 1분기 매출은 우주 시스템 부문의 성장이 견인($1.37억), 발사 서비스 매출($6,366만) 또한 전년 동기 대비 79% 증가
+          </div>
+
+          <div className="highlight-pill">
+            발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인 (발사당 단가 상승)
+          </div>
+        </div>
       </section>
 
       <section className="grid">
