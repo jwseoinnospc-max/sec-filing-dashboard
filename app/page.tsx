@@ -173,7 +173,8 @@ export default async function Home() {
               </a>
             </div>
             <div className="delta">발사 서비스 수주잔고</div>
-            <div className="metric-sub">
+            <div className="metric-sub backlog-metric-sub">
+              <span className="metric-sub-rule" />
               총 수주잔고 <strong>{money(TOTAL_BACKLOG_FY2025 / 1000)}</strong>
             </div>
           </div>
