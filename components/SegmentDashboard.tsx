@@ -414,12 +414,12 @@ export default function SegmentDashboard() {
       <style jsx>{`
         .segment-dashboard {
           display: grid;
-          grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr);
+          grid-template-columns: 560px minmax(0, 1fr) minmax(0, 1fr);
           gap: 24px;
           margin: 20px 0;
         }
 
-        @media (max-width: 1300px) {
+        @media (max-width: 1600px) {
           .segment-dashboard {
             grid-template-columns: 1fr;
           }
