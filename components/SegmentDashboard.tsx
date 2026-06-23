@@ -26,6 +26,9 @@ function pct(value: number) {
 function Donut({ total, data, size }: { total: number; data: Segment; size: number }) {
   const launchPct = (data.launch / total) * 100;
   const holeInset = size * 0.25;
+  // Center the blue (Launch) arc on the right-side leader line by starting the gradient
+  // half the arc's angle before it — this also centers the gray (Space Systems) arc on the left-side leader line.
+  const startDeg = 90 - (launchPct / 100) * 360 / 2;
 
   return (
     <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
@@ -56,7 +59,7 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
           height: size,
           borderRadius: "50%",
           position: "relative",
-          background: `conic-gradient(from 90deg, ${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
+          background: `conic-gradient(from ${startDeg}deg, ${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
         }}
       >
         <div
