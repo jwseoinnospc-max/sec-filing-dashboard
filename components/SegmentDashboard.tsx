@@ -362,7 +362,7 @@ function CompareCard({
           padding: 6px 10px;
           border-radius: 999px;
           font-size: 12px;
-          font-weight: 800;
+          font-weight: 400;
           text-decoration: none;
         }
 
