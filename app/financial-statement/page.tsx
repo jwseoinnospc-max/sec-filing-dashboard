@@ -274,7 +274,13 @@ export default function FinancialStatementPage() {
                 <ValueCell data={row.q3y25} negative={row.negative} className="fin-col-sep" />
                 <ValueCell data={row.fy2025} negative={row.negative} className="fin-col-sep fin-fy-col" />
                 <ValueCell data={row.q1y26} negative={row.negative} className="fin-highlight-col" />
-                <td className="fin-col-sep fin-growth">{row.growth ?? ""}</td>
+                <td
+                  className={`fin-col-sep fin-growth ${
+                    row.growth?.startsWith("▼") ? "fin-growth-down" : "fin-growth-up"
+                  }`}
+                >
+                  {row.growth ?? ""}
+                </td>
               </tr>
             ))}
           </tbody>
