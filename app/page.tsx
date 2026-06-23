@@ -167,7 +167,8 @@ export default async function Home() {
           </p>
 
           <p className="notice">
-            2024년 약 14대 → 2025년 약 24대 → 2026년 1분기 약 5대,
+            2024년 약 14대 → 2025년 약 24대 → 2026년 1분기 약 5대
+            <br />
             <strong>2026년 채용 비용 증가</strong>
           </p>
         </div>
