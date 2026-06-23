@@ -48,7 +48,7 @@ export default async function Home() {
         <SegmentDashboard />
 
         <div className="footer">
-          Data source: Rocket Lab Excel Data · SEC companyfacts API
+          Data source: SEC companyfacts API · TradingView Widget API
         </div>
       </main>
     );
@@ -74,7 +74,7 @@ export default async function Home() {
 
         <div className="header-side">
           <div className="header-side-top">
-            <p className="data-source">Data source: Rocket Lab Excel Data · SEC companyfacts API · CIK {snapshot.cik}</p>
+            <p className="data-source">Data source: SEC companyfacts API · TradingView Widget API · CIK {snapshot.cik}</p>
             <p className="made-by">Made by 이노스페이스 투자전략실</p>
           </div>
 
