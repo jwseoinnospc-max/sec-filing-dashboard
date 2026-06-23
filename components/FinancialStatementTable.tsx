@@ -56,9 +56,9 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             <th className="fin-col-sep">FY 2024</th>
             {showQuarters && (
               <>
-                <th className="fin-col-sep">25Y 1Q</th>
-                <th className="fin-col-sep">25Y 2Q</th>
-                <th className="fin-col-sep">25Y 3Q</th>
+                <th className="fin-col-sep fin-quarter-col">25Y 1Q</th>
+                <th className="fin-col-sep fin-quarter-col">25Y 2Q</th>
+                <th className="fin-col-sep fin-quarter-col">25Y 3Q</th>
               </>
             )}
             <th className="fin-col-sep fin-fy-col fin-fy-header">
@@ -82,9 +82,9 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
               <ValueCell data={row.fy2024} negative={row.negative} className="fin-col-sep" />
               {showQuarters && (
                 <>
-                  <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep" />
-                  <ValueCell data={row.q2y25} negative={row.negative} className="fin-col-sep" />
-                  <ValueCell data={row.q3y25} negative={row.negative} className="fin-col-sep" />
+                  <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
+                  <ValueCell data={row.q2y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
+                  <ValueCell data={row.q3y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
                 </>
               )}
               <ValueCell data={row.fy2025} negative={row.negative} className="fin-col-sep fin-fy-col" />
