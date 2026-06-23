@@ -26,37 +26,47 @@ function Donut({ total, data }: { total: number; data: Segment }) {
   const launchPct = (data.launch / total) * 100;
 
   return (
-    <div
-      className="donut"
-      style={{
-        width: 112,
-        height: 112,
-        borderRadius: "50%",
-        position: "relative",
-        background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
-      }}
-    >
-      <div
-        className="donut-hole"
+    <div style={{ position: "relative", width: 112, height: 112, flexShrink: 0 }}>
+      <a
+        href={filingLink(total)}
+        target="_blank"
+        rel="noopener noreferrer"
         style={{
           position: "absolute",
-          inset: 28,
-          background: "#ffffff",
-          borderRadius: "50%",
-          boxShadow: "0 10px 18px rgba(0, 0, 0, 0.18)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
+          bottom: "100%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          marginBottom: 6,
+          whiteSpace: "nowrap",
+          color: "#2c62d6",
+          fontSize: 16,
+          fontWeight: 800,
+          textDecoration: "none"
         }}
       >
-        <a
-          href={filingLink(total)}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#2c62d6", fontSize: 16, fontWeight: 800, textDecoration: "none" }}
-        >
-          {formatNumber(total)}
-        </a>
+        {formatNumber(total)}
+      </a>
+
+      <div
+        className="donut"
+        style={{
+          width: 112,
+          height: 112,
+          borderRadius: "50%",
+          position: "relative",
+          background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
+        }}
+      >
+        <div
+          className="donut-hole"
+          style={{
+            position: "absolute",
+            inset: 28,
+            background: "#ffffff",
+            borderRadius: "50%",
+            boxShadow: "0 10px 18px rgba(0, 0, 0, 0.18)"
+          }}
+        />
       </div>
     </div>
   );
@@ -229,6 +239,7 @@ function CompareCard({
           align-items: center;
           justify-content: center;
           min-height: 150px;
+          margin-top: 20px;
         }
 
         .side-block {
