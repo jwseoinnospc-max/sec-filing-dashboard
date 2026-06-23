@@ -98,7 +98,10 @@ function CompareCard({
 
           <div className="chart-row">
             <div className="side-label left">
-              <span>Space Systems</span>
+              <span className="legend">
+                <i className="dot gray" />
+                Space Systems
+              </span>
               <a href={filingLink(previous.spaceSystems)} target="_blank" rel="noopener noreferrer">
                 {formatNumber(previous.spaceSystems)}
               </a>
@@ -107,7 +110,10 @@ function CompareCard({
             <Donut total={previousTotal} data={previous} />
 
             <div className="side-label right">
-              <span>Launch</span>
+              <span className="legend">
+                <i className="dot blue" />
+                Launch
+              </span>
               <a href={filingLink(previous.launch)} target="_blank" rel="noopener noreferrer">
                 {formatNumber(previous.launch)}
               </a>
@@ -137,7 +143,10 @@ function CompareCard({
 
           <div className="chart-row">
             <div className="side-label left current-left">
-              <span>Space Systems</span>
+              <span className="legend">
+                <i className="dot gray" />
+                Space Systems
+              </span>
               <a href={filingLink(current.spaceSystems)} target="_blank" rel="noopener noreferrer">
                 {formatNumber(current.spaceSystems)}
               </a>
@@ -146,7 +155,10 @@ function CompareCard({
             <Donut total={currentTotal} data={current} />
 
             <div className="side-label right">
-              <span>Launch</span>
+              <span className="legend">
+                <i className="dot blue" />
+                Launch
+              </span>
               <a href={filingLink(current.launch)} target="_blank" rel="noopener noreferrer">
                 {formatNumber(current.launch)}
               </a>
@@ -217,6 +229,29 @@ function CompareCard({
 
         .side-label span {
           display: block;
+        }
+
+        .legend {
+          display: flex !important;
+          align-items: center;
+          gap: 5px;
+          white-space: nowrap;
+        }
+
+        .dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .dot.gray {
+          background: ${GRAY};
+        }
+
+        .dot.blue {
+          background: ${BLUE};
         }
 
         .side-label a {
@@ -333,7 +368,8 @@ export default function SegmentDashboard() {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 24px;
-          margin: 20px 0;
+          max-width: 1040px;
+          margin: 20px auto;
         }
 
         @media (max-width: 1100px) {
