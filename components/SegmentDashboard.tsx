@@ -97,20 +97,32 @@ function CompareCard({
           <h3>{previousLabel}</h3>
 
           <div className="chart-row">
-            <div className="side-label left">
-              <span>Space Systems</span>
-              <a href={filingLink(previous.spaceSystems)} target="_blank" rel="noopener noreferrer">
-                {formatNumber(previous.spaceSystems)}
-              </a>
+            <div className="side-block">
+              <div className="side-label left">
+                <span>Space Systems</span>
+                <a href={filingLink(previous.spaceSystems)} target="_blank" rel="noopener noreferrer">
+                  {formatNumber(previous.spaceSystems)}
+                </a>
+              </div>
+              <div className="connector gray">
+                <span className="line" />
+                <span className="dot" />
+              </div>
             </div>
 
             <Donut total={previousTotal} data={previous} />
 
-            <div className="side-label right">
-              <span>Launch</span>
-              <a href={filingLink(previous.launch)} target="_blank" rel="noopener noreferrer">
-                {formatNumber(previous.launch)}
-              </a>
+            <div className="side-block">
+              <div className="connector blue">
+                <span className="dot" />
+                <span className="line" />
+              </div>
+              <div className="side-label right">
+                <span>Launch</span>
+                <a href={filingLink(previous.launch)} target="_blank" rel="noopener noreferrer">
+                  {formatNumber(previous.launch)}
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -136,20 +148,32 @@ function CompareCard({
           <h3>{currentLabel}</h3>
 
           <div className="chart-row">
-            <div className="side-label left current-left">
-              <span>Space Systems</span>
-              <a href={filingLink(current.spaceSystems)} target="_blank" rel="noopener noreferrer">
-                {formatNumber(current.spaceSystems)}
-              </a>
+            <div className="side-block">
+              <div className="side-label left">
+                <span>Space Systems</span>
+                <a href={filingLink(current.spaceSystems)} target="_blank" rel="noopener noreferrer">
+                  {formatNumber(current.spaceSystems)}
+                </a>
+              </div>
+              <div className="connector gray">
+                <span className="line" />
+                <span className="dot" />
+              </div>
             </div>
 
             <Donut total={currentTotal} data={current} />
 
-            <div className="side-label right">
-              <span>Launch</span>
-              <a href={filingLink(current.launch)} target="_blank" rel="noopener noreferrer">
-                {formatNumber(current.launch)}
-              </a>
+            <div className="side-block">
+              <div className="connector blue">
+                <span className="dot" />
+                <span className="line" />
+              </div>
+              <div className="side-label right">
+                <span>Launch</span>
+                <a href={filingLink(current.launch)} target="_blank" rel="noopener noreferrer">
+                  {formatNumber(current.launch)}
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -207,8 +231,40 @@ function CompareCard({
           min-height: 150px;
         }
 
+        .side-block {
+          display: flex;
+          align-items: center;
+        }
+
+        .connector {
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .connector .line {
+          width: 18px;
+          height: 2px;
+        }
+
+        .connector .dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .connector.gray .line,
+        .connector.gray .dot {
+          background: ${GRAY};
+        }
+
+        .connector.blue .line,
+        .connector.blue .dot {
+          background: ${BLUE};
+        }
+
         .side-label {
-          position: absolute;
           font-size: 12px;
           line-height: 1.35;
           color: #666;
@@ -231,21 +287,12 @@ function CompareCard({
         }
 
         .side-label.left {
-          left: 0;
-          top: 32px;
-          text-align: left;
+          text-align: right;
         }
 
         .side-label.right {
-          right: 0;
-          top: 28px;
           text-align: left;
           color: #0b3f99;
-        }
-
-        .current-left {
-          left: -8px;
-          top: 0;
         }
 
         .center {
