@@ -56,7 +56,7 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
           height: size,
           borderRadius: "50%",
           position: "relative",
-          background: `conic-gradient(${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
+          background: `conic-gradient(from 90deg, ${BLUE} 0 ${launchPct}%, ${GRAY} ${launchPct}% 100%)`
         }}
       >
         <div
