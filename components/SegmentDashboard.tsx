@@ -151,7 +151,16 @@ function CompareCard({
         </div>
 
         <div className="center">
-          <div className="arrow" />
+          <svg className="arrow" viewBox="0 0 160 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id={`arrow-gradient-${metric}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={LIGHT_BLUE} stopOpacity="0" />
+                <stop offset="100%" stopColor={LIGHT_BLUE} stopOpacity="1" />
+              </linearGradient>
+            </defs>
+            <rect x="0" y="22" width="105" height="36" fill={`url(#arrow-gradient-${metric})`} />
+            <polygon points="100,0 160,40 100,80" fill={LIGHT_BLUE} />
+          </svg>
           <div className="growth-text">
             <span>전년 동기 대비</span>
             <strong>{pct(totalGrowth)}</strong>
@@ -326,11 +335,9 @@ function CompareCard({
         }
 
         .arrow {
-          width: 0;
-          height: 0;
-          border-top: 38px solid transparent;
-          border-bottom: 38px solid transparent;
-          border-left: 48px solid ${LIGHT_BLUE};
+          display: block;
+          width: 160px;
+          height: 80px;
           margin: 18px auto 0;
         }
 
