@@ -69,7 +69,10 @@ export default async function Home() {
         </div>
 
         <div className="header-side">
-          <p className="made-by">Made by 이노스페이스 투자전략실</p>
+          <div className="header-side-top">
+            <p className="data-source">Data source: Rocket Lab Excel Data · SEC companyfacts API · CIK {snapshot.cik}</p>
+            <p className="made-by">Made by 이노스페이스 투자전략실</p>
+          </div>
 
           <div className="pill-group">
             <div className="highlight-pill">
@@ -175,10 +178,6 @@ export default async function Home() {
           </p>
         </div>
       </section>
-
-      <div className="footer">
-        Data source: Rocket Lab Excel Data · SEC companyfacts API · CIK {snapshot.cik}
-      </div>
     </main>
   );
 }
