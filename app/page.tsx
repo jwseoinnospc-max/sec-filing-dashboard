@@ -60,7 +60,7 @@ export default async function Home() {
     <main className="page">
       <section className="header">
         <div>
-          <span className="badge">Rocket Lab Dashboard</span>
+          <span className="badge badge-active">Rocket Lab Dashboard</span>
           <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
           <h1>Rocket Lab USA, Inc. 실적 분석</h1>
           <p>

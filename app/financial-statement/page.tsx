@@ -181,7 +181,8 @@ export default function FinancialStatementPage() {
     <main className="page">
       <section className="header">
         <div>
-          <span className="badge">Rocket Lab Dashboard</span>
+          <Link className="badge" href="/">Rocket Lab Dashboard</Link>
+          <span className="badge badge-active">Rocket Lab Financial Statement</span>
           <h1>Rocket Lab Financial Statement</h1>
           <p>FY2025 및 분기별(25Y 1Q → 26Y 1Q) 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
         </div>
