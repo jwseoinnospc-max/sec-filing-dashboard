@@ -220,7 +220,7 @@ function CompareCard({
           border-radius: 0 0 12px 12px;
           color: #222;
           overflow: hidden;
-          min-height: 217px;
+          min-height: 179px;
         }
 
         .title-bar {
