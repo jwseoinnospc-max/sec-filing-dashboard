@@ -1,82 +1,60 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-
 export function SpaceStockCard({
-  symbol,
   name,
+  symbol,
   exchange,
-  industry,
-  marketCap,
-  peRatio,
-  kisPrice
+  tag = "실시간",
+  price,
+  change,
+  changePercent,
+  meta
 }: {
-  symbol: string;
   name: string;
+  symbol: string;
   exchange: string;
-  industry?: string;
-  marketCap?: string | null;
-  peRatio?: number;
-  kisPrice?: { last: number; change: number; changePercent: number };
+  tag?: string;
+  price?: number | null;
+  change?: number | null;
+  changePercent?: number | null;
+  meta?: string;
 }) {
-  const container = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!container.current) return;
-
-    container.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
-
-    const script = document.createElement("script");
-    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      symbol,
-      width: "100%",
-      colorTheme: "dark",
-      isTransparent: true,
-      locale: "en"
-    });
-
-    container.current.appendChild(script);
-  }, [symbol]);
-
-  const hasExtraInfo = industry || marketCap || peRatio;
+  const hasPrice = price !== undefined && price !== null;
+  const isUp = (change ?? 0) >= 0;
 
   return (
     <div className="space-stock-card">
       <div className="space-stock-head">
         <span className="space-stock-name">{name}</span>
-        <span className="space-stock-exchange">{exchange}</span>
+        <span className="space-stock-tag">{tag}</span>
       </div>
-      <div className="tradingview-widget-container" ref={container} />
 
-      {kisPrice && (
-        <div className="space-stock-kis">
-          KIS 기준가 ${kisPrice.last.toFixed(2)}{" "}
-          <span className={kisPrice.change >= 0 ? "space-stock-up" : "space-stock-down"}>
-            {kisPrice.change >= 0 ? "+" : ""}
-            {kisPrice.change.toFixed(2)} ({kisPrice.changePercent.toFixed(2)}%)
-          </span>
-        </div>
+      <div className="space-stock-sub">
+        {symbol} · {exchange} · 24h
+      </div>
+
+      {hasPrice ? (
+        <>
+          <div className="space-stock-price">${price!.toFixed(2)}</div>
+          <div className={`space-stock-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+            {isUp ? "+" : ""}
+            {change!.toFixed(2)} {isUp ? "+" : ""}
+            {changePercent!.toFixed(2)}%
+          </div>
+        </>
+      ) : (
+        <div className="space-stock-price space-stock-price-na">조회 중...</div>
       )}
 
-      {hasExtraInfo && (
-        <div className="space-stock-extra">
-          {industry && <span>{industry}</span>}
-          {marketCap && <span>시가총액 {marketCap}</span>}
-          {peRatio !== undefined && <span>PER {peRatio.toFixed(1)}</span>}
-        </div>
-      )}
+      {meta && <div className="space-stock-meta">{meta}</div>}
     </div>
   );
 }
 
 export function SpaceStockPrivateCard({ name, note }: { name: string; note: string }) {
   return (
-    <div className="space-stock-card space-stock-private">
+    <div className="space-stock-card">
       <div className="space-stock-head">
         <span className="space-stock-name">{name}</span>
-        <span className="space-stock-exchange">비상장 (Private)</span>
+        <span className="space-stock-tag space-stock-tag-muted">비상장</span>
       </div>
       <p className="space-stock-note">{note}</p>
     </div>

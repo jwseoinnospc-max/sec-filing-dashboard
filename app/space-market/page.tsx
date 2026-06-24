@@ -1,28 +1,29 @@
 import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
-import { SpaceStockCard, SpaceStockPrivateCard } from "@/components/SpaceStockCard";
-import { getProfile, getQuote } from "@/lib/finnhub";
-import { getKeyMetrics } from "@/lib/fmp";
+import { SpaceStockCard } from "@/components/SpaceStockCard";
+import { getProfile } from "@/lib/finnhub";
 import { getOverseasPrice } from "@/lib/kis";
 
 function formatMarketCap(value: number | null | undefined) {
-  if (!value) return null;
-  return `$${(value / 1000).toFixed(2)}B`; // Finnhub reports marketCapitalization in millions
+  if (!value) return undefined;
+  return `시가총액 $${(value / 1000).toFixed(1)}B`; // Finnhub reports marketCapitalization in millions
 }
 
-async function loadStockInfo(symbol: string) {
-  const [profile, quote, metrics, kisPrice] = await Promise.all([
-    getProfile(symbol),
-    getQuote(symbol),
-    getKeyMetrics(symbol),
-    getOverseasPrice(symbol, "NAS")
-  ]);
+const COMPANIES = [
+  { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ" },
+  { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ" },
+  { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ" },
+  { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ" }
+];
 
-  return { profile, quote, metrics, kisPrice };
+async function loadStock(symbol: string) {
+  const [price, profile] = await Promise.all([getOverseasPrice(symbol, "NAS"), getProfile(symbol)]);
+  return { price, profile };
 }
 
 export default async function SpaceMarketPage() {
-  const [rklb, fly] = await Promise.all([loadStockInfo("RKLB"), loadStockInfo("FLY")]);
+  const results = await Promise.all(COMPANIES.map((c) => loadStock(c.symbol)));
+  const anyKisMissing = results.every((r) => !r.price);
 
   return (
     <main className="page space-market-page">
@@ -30,41 +31,31 @@ export default async function SpaceMarketPage() {
         <div>
           <NavMenu />
           <h1>Space Market</h1>
-          <p>우주 산업 대표 기업의 주가와 핵심 지표를 한 화면에서 확인합니다.</p>
+          <p>우주 산업 대표 기업의 주가를 한 화면에서 확인합니다.</p>
         </div>
       </section>
 
       <section className="space-stock-grid">
-        <SpaceStockPrivateCard
-          name="SpaceX"
-          note="비상장 기업으로 공개된 주가 정보가 없습니다. 최근 비공개 펀딩 라운드 기준 기업가치만 추정 공개됩니다."
-        />
-
-        <SpaceStockCard
-          symbol="NASDAQ:RKLB"
-          name="Rocket Lab"
-          exchange="NASDAQ: RKLB"
-          industry={rklb.profile?.industry}
-          marketCap={formatMarketCap(rklb.profile?.marketCapitalization)}
-          peRatio={rklb.metrics?.peRatio ?? undefined}
-          kisPrice={rklb.kisPrice ?? undefined}
-        />
-
-        <SpaceStockCard
-          symbol="NASDAQ:FLY"
-          name="Firefly Aerospace"
-          exchange="NASDAQ: FLY"
-          industry={fly.profile?.industry}
-          marketCap={formatMarketCap(fly.profile?.marketCapitalization)}
-          peRatio={fly.metrics?.peRatio ?? undefined}
-          kisPrice={fly.kisPrice ?? undefined}
-        />
+        {COMPANIES.map((company, i) => {
+          const { price, profile } = results[i];
+          return (
+            <SpaceStockCard
+              key={company.symbol}
+              name={company.name}
+              symbol={company.symbol}
+              exchange={company.exchange}
+              price={price?.last}
+              change={price?.change}
+              changePercent={price?.changePercent}
+              meta={formatMarketCap(profile?.marketCapitalization)}
+            />
+          );
+        })}
       </section>
 
-      {!rklb.profile && (
+      {anyKisMissing && (
         <p className="space-market-note">
-          ※ Finnhub/FMP API 키가 설정되지 않아 시세 위젯 외 추가 지표(업종, 시가총액, PER)는 표시되지 않습니다.
-          .env.local에 FINNHUB_API_KEY, FMP_API_KEY를 추가하면 자동으로 표시됩니다.
+          ※ KIS_APP_KEY / KIS_APP_SECRET이 설정되지 않아 실시간 가격을 불러오지 못했습니다.
         </p>
       )}
 
