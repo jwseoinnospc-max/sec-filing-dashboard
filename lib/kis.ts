@@ -4,16 +4,11 @@ const KIS_BASE = "https://openapi.koreainvestment.com:9443";
 
 type TokenCache = { accessToken: string; expiresAt: number };
 let tokenCache: TokenCache | null = null;
+// Dedupe concurrent token requests: KIS rate-limits token issuance to 1/minute, and
+// fetching 4 quotes in parallel would otherwise fire 4 simultaneous token requests.
+let pendingTokenRequest: Promise<string | null> | null = null;
 
-async function getAccessToken(): Promise<string | null> {
-  const appKey = process.env.KIS_APP_KEY;
-  const appSecret = process.env.KIS_APP_SECRET;
-  if (!appKey || !appSecret) return null;
-
-  if (tokenCache && tokenCache.expiresAt > Date.now()) {
-    return tokenCache.accessToken;
-  }
-
+async function fetchNewToken(appKey: string, appSecret: string): Promise<string | null> {
   try {
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
@@ -40,6 +35,24 @@ async function getAccessToken(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+async function getAccessToken(): Promise<string | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  if (!appKey || !appSecret) return null;
+
+  if (tokenCache && tokenCache.expiresAt > Date.now()) {
+    return tokenCache.accessToken;
+  }
+
+  if (!pendingTokenRequest) {
+    pendingTokenRequest = fetchNewToken(appKey, appSecret).finally(() => {
+      pendingTokenRequest = null;
+    });
+  }
+
+  return pendingTokenRequest;
 }
 
 export type KisOverseasPrice = {
