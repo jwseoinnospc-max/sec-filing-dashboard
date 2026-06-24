@@ -3,6 +3,7 @@ import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard, SpaceStockPrivateCard } from "@/components/SpaceStockCard";
 import { getProfile, getQuote } from "@/lib/finnhub";
 import { getKeyMetrics } from "@/lib/fmp";
+import { getOverseasPrice } from "@/lib/kis";
 
 function formatMarketCap(value: number | null | undefined) {
   if (!value) return null;
@@ -10,13 +11,14 @@ function formatMarketCap(value: number | null | undefined) {
 }
 
 async function loadStockInfo(symbol: string) {
-  const [profile, quote, metrics] = await Promise.all([
+  const [profile, quote, metrics, kisPrice] = await Promise.all([
     getProfile(symbol),
     getQuote(symbol),
-    getKeyMetrics(symbol)
+    getKeyMetrics(symbol),
+    getOverseasPrice(symbol, "NAS")
   ]);
 
-  return { profile, quote, metrics };
+  return { profile, quote, metrics, kisPrice };
 }
 
 export default async function SpaceMarketPage() {
@@ -45,6 +47,7 @@ export default async function SpaceMarketPage() {
           industry={rklb.profile?.industry}
           marketCap={formatMarketCap(rklb.profile?.marketCapitalization)}
           peRatio={rklb.metrics?.peRatio ?? undefined}
+          kisPrice={rklb.kisPrice ?? undefined}
         />
 
         <SpaceStockCard
@@ -54,6 +57,7 @@ export default async function SpaceMarketPage() {
           industry={fly.profile?.industry}
           marketCap={formatMarketCap(fly.profile?.marketCapitalization)}
           peRatio={fly.metrics?.peRatio ?? undefined}
+          kisPrice={fly.kisPrice ?? undefined}
         />
       </section>
 

@@ -8,7 +8,8 @@ export function SpaceStockCard({
   exchange,
   industry,
   marketCap,
-  peRatio
+  peRatio,
+  kisPrice
 }: {
   symbol: string;
   name: string;
@@ -16,6 +17,7 @@ export function SpaceStockCard({
   industry?: string;
   marketCap?: string | null;
   peRatio?: number;
+  kisPrice?: { last: number; change: number; changePercent: number };
 }) {
   const container = useRef<HTMLDivElement>(null);
 
@@ -47,6 +49,16 @@ export function SpaceStockCard({
         <span className="space-stock-exchange">{exchange}</span>
       </div>
       <div className="tradingview-widget-container" ref={container} />
+
+      {kisPrice && (
+        <div className="space-stock-kis">
+          KIS 기준가 ${kisPrice.last.toFixed(2)}{" "}
+          <span className={kisPrice.change >= 0 ? "space-stock-up" : "space-stock-down"}>
+            {kisPrice.change >= 0 ? "+" : ""}
+            {kisPrice.change.toFixed(2)} ({kisPrice.changePercent.toFixed(2)}%)
+          </span>
+        </div>
+      )}
 
       {hasExtraInfo && (
         <div className="space-stock-extra">
