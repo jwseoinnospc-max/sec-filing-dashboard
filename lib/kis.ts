@@ -7,12 +7,18 @@ let tokenCache: TokenCache | null = null;
 // Dedupe concurrent token requests: KIS rate-limits token issuance to 1/minute, and
 // fetching 4 quotes in parallel would otherwise fire 4 simultaneous token requests.
 let pendingTokenRequest: Promise<string | null> | null = null;
+// Cool-down so a failed/rate-limited attempt doesn't immediately retry and re-trigger the limit.
+let lastAttemptAt = 0;
+const ATTEMPT_COOLDOWN_MS = 65_000;
 
 async function fetchNewToken(appKey: string, appSecret: string): Promise<string | null> {
+  lastAttemptAt = Date.now();
+
   try {
-    // Cached via Next.js's persistent Data Cache (shared across serverless instances, unlike
-    // the in-memory tokenCache below) for ~23h, since KIS only allows 1 token issuance/minute
-    // and serverless functions don't reliably share plain in-memory state between invocations.
+    // NOTE: cache: "no-store" here on purpose — Next.js's fetch cache would otherwise cache
+    // an error response (e.g. KIS's "1 token/minute" rate-limit reply) for the full revalidate
+    // window, locking in a failure. Cross-instance reuse instead relies on the 24h-valid token
+    // already being held by whichever instance is warm; the cooldown below guards retries.
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -21,13 +27,11 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         appkey: appKey,
         appsecret: appSecret
       }),
-      next: { revalidate: 82800 }
+      cache: "no-store"
     });
 
-    if (!res.ok) return null;
-
     const data = await res.json();
-    if (!data.access_token) return null;
+    if (!res.ok || !data.access_token) return null;
 
     // expires_in is in seconds; refresh 5 minutes early to be safe.
     tokenCache = {
@@ -48,6 +52,10 @@ async function getAccessToken(): Promise<string | null> {
 
   if (tokenCache && tokenCache.expiresAt > Date.now()) {
     return tokenCache.accessToken;
+  }
+
+  if (Date.now() - lastAttemptAt < ATTEMPT_COOLDOWN_MS) {
+    return null;
   }
 
   if (!pendingTokenRequest) {
