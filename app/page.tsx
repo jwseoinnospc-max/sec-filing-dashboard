@@ -303,12 +303,15 @@ export default async function Home() {
           </p>
 
           <p className="notice">
-            분기 매출 <strong>$2억 돌파</strong>, 발사 서비스 비중 상승, <strong>HASTE</strong> 매출 인식 본격화 →
-            우주 시스템 성장이 핵심입니다.
+            분기 매출 <strong>$2억 돌파</strong> → 우주 시스템 성장이 핵심입니다.
           </p>
 
           <p className="notice">
-            미션 복잡도가 높아지면서 단가가 상승했고, 생산 자동화 및 규모의 경제를 통해 제조 원가가 절감되었습니다.
+            매출 중 발사 서비스 비중 상승했으며, <strong>HASTE</strong> 매출 인식이 본격화되었습니다.
+          </p>
+
+          <p className="notice">
+            미션 복잡도가 높아지면서 단가가 상승하여 매출총이익이 증가했으며, 생산 자동화 및 규모의 경제를 통해 제조 원가가 절감되었습니다.
           </p>
 
           <p className="notice">
@@ -324,7 +327,7 @@ export default async function Home() {
           </p>
 
           <p className="notice">
-            주식 발행(ATM) 등으로 약 <strong>$3.77억 증가</strong>했습니다.
+            주식 발행(ATM) 등으로 보유 현금 및 유가증권이 약 <strong>$3.77억 증가</strong>했습니다.
           </p>
 
           <p className="notice">
