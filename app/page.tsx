@@ -303,13 +303,16 @@ export default async function Home() {
           </p>
 
           <p className="notice">
-            분기 매출 <strong>$2억 돌파</strong>, 발사 서비스 비중 상승, <strong>HASTE</strong> 매출 인식 본격화 —
-            우주 시스템 성장이 핵심
+            분기 매출 <strong>$2억 돌파</strong>, 발사 서비스 비중 상승, <strong>HASTE</strong> 매출 인식 본격화 →
+            우주 시스템 성장이 핵심입니다.
           </p>
 
           <p className="notice">
             미션 복잡도가 높아지면서 단가가 상승했고, 생산 자동화 및 규모의 경제를 통해 제조 원가가 절감되었습니다.
-            발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인했으며,
+          </p>
+
+          <p className="notice">
+            발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인했습니다.
             <br />∴ 매출 성장에 따른 고정비 희석 효과와 제조 효율화로 전년 동기(20.3%) 대비 <strong>비약적인 수익성 개선</strong>을 이뤘습니다.
           </p>
 
