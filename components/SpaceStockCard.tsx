@@ -1,20 +1,30 @@
+import MiniChart from "./MiniChart";
+
+function formatPrice(price: number, currency: "USD" | "KRW") {
+  return currency === "KRW" ? `₩${price.toLocaleString()}` : `$${price.toFixed(2)}`;
+}
+
 export function SpaceStockCard({
   name,
   symbol,
   exchange,
+  chartSymbol,
   tag = "실시간",
   price,
   change,
   changePercent,
+  currency = "USD",
   meta
 }: {
   name: string;
   symbol: string;
   exchange: string;
+  chartSymbol: string;
   tag?: string;
   price?: number | null;
   change?: number | null;
   changePercent?: number | null;
+  currency?: "USD" | "KRW";
   meta?: string;
 }) {
   const hasPrice = price !== undefined && price !== null;
@@ -33,16 +43,18 @@ export function SpaceStockCard({
 
       {hasPrice ? (
         <>
-          <div className="space-stock-price">${price!.toFixed(2)}</div>
+          <div className="space-stock-price">{formatPrice(price!, currency)}</div>
           <div className={`space-stock-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
             {isUp ? "+" : ""}
-            {change!.toFixed(2)} {isUp ? "+" : ""}
+            {currency === "KRW" ? change!.toLocaleString() : change!.toFixed(2)} {isUp ? "+" : ""}
             {changePercent!.toFixed(2)}%
           </div>
         </>
       ) : (
         <div className="space-stock-price space-stock-price-na">조회 중...</div>
       )}
+
+      <MiniChart symbol={chartSymbol} />
 
       {meta && <div className="space-stock-meta">{meta}</div>}
     </div>

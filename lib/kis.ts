@@ -120,3 +120,58 @@ export async function getOverseasPrice(symbol: string, excd = "NAS"): Promise<Ki
   // One retry: transient network blips on serverless cold starts otherwise show up as missing data.
   return fetchOverseasPriceOnce(symbol, excd);
 }
+
+export type KisDomesticPrice = {
+  code: string;
+  last: number;
+  change: number;
+  changePercent: number;
+  currency: string;
+};
+
+async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  try {
+    const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
+    const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-price?${query.toString()}`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+        appkey: appKey,
+        appsecret: appSecret,
+        tr_id: "FHKST01010100",
+        custtype: "P"
+      },
+      next: { revalidate: 60 }
+    });
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const output = data?.output;
+    if (!output || !output.stck_prpr) return null;
+
+    const sign = Number(output.prdy_vrss_sign); // 2 = up, 5 = down
+    const direction = sign === 5 ? -1 : 1;
+
+    return {
+      code,
+      last: Number(output.stck_prpr),
+      change: direction * Math.abs(Number(output.prdy_vrss ?? 0)),
+      changePercent: direction * Math.abs(Number(output.prdy_ctrt ?? 0)),
+      currency: "KRW"
+    };
+  } catch {
+    return null;
+  }
+}
+
+// FID_INPUT_ISCD: 6-digit KRX stock code (e.g. "012450" for Hanwha Aerospace)
+export async function getDomesticPrice(code: string): Promise<KisDomesticPrice | null> {
+  const first = await fetchDomesticPriceOnce(code);
+  if (first) return first;
+  return fetchDomesticPriceOnce(code);
+}

@@ -2,34 +2,46 @@ import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile } from "@/lib/finnhub";
-import { getOverseasPrice } from "@/lib/kis";
+import { getOverseasPrice, getDomesticPrice } from "@/lib/kis";
 
 function formatMarketCap(value: number | null | undefined) {
   if (!value) return undefined;
   return `시가총액 $${(value / 1000).toFixed(1)}B`; // Finnhub reports marketCapitalization in millions
 }
 
-const COMPANIES = [
+const NASDAQ_COMPANIES = [
   { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ" },
   { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ" },
   { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ" },
   { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ" }
 ];
 
-async function loadStock(symbol: string) {
-  // Fetched sequentially (not Promise.all) across companies: firing 4 concurrent KIS
-  // requests from a single serverless invocation was intermittently dropping 1-2 of them.
+const DOMESTIC_COMPANIES = [
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ" },
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ" },
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI" }
+];
+
+async function loadOverseasStock(symbol: string) {
+  // Fetched sequentially (not Promise.all) across companies: firing concurrent KIS
+  // requests from a single serverless invocation was intermittently dropping some of them.
   const price = await getOverseasPrice(symbol, "NAS");
   const profile = await getProfile(symbol);
   return { price, profile };
 }
 
 export default async function SpaceMarketPage() {
-  const results: Awaited<ReturnType<typeof loadStock>>[] = [];
-  for (const company of COMPANIES) {
-    results.push(await loadStock(company.symbol));
+  const nasdaqResults: Awaited<ReturnType<typeof loadOverseasStock>>[] = [];
+  for (const company of NASDAQ_COMPANIES) {
+    nasdaqResults.push(await loadOverseasStock(company.symbol));
   }
-  const anyKisMissing = results.every((r) => !r.price);
+
+  const domesticPrices = [];
+  for (const company of DOMESTIC_COMPANIES) {
+    domesticPrices.push(await getDomesticPrice(company.code));
+  }
+
+  const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
   return (
     <main className="page space-market-page">
@@ -41,19 +53,41 @@ export default async function SpaceMarketPage() {
         </div>
       </section>
 
+      <h2 className="space-group-title">NASDAQ</h2>
       <section className="space-stock-grid">
-        {COMPANIES.map((company, i) => {
-          const { price, profile } = results[i];
+        {NASDAQ_COMPANIES.map((company, i) => {
+          const { price, profile } = nasdaqResults[i];
           return (
             <SpaceStockCard
               key={company.symbol}
               name={company.name}
               symbol={company.symbol}
               exchange={company.exchange}
+              chartSymbol={`NASDAQ:${company.symbol}`}
               price={price?.last}
               change={price?.change}
               changePercent={price?.changePercent}
               meta={formatMarketCap(profile?.marketCapitalization)}
+            />
+          );
+        })}
+      </section>
+
+      <h2 className="space-group-title">국내 우주항공 기업</h2>
+      <section className="space-stock-grid">
+        {DOMESTIC_COMPANIES.map((company, i) => {
+          const price = domesticPrices[i];
+          return (
+            <SpaceStockCard
+              key={company.code}
+              name={company.name}
+              symbol={company.code}
+              exchange={company.exchange}
+              chartSymbol={`KRX:${company.code}`}
+              price={price?.last}
+              change={price?.change}
+              changePercent={price?.changePercent}
+              currency="KRW"
             />
           );
         })}
