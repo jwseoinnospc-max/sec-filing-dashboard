@@ -214,8 +214,8 @@ export default async function Home() {
               <div className="backlog-donut-hole" />
             </div>
             <div className="backlog-legend">
-              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />발사</span>
-              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />우주</span>
+              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Launch</span>
+              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Space Systems</span>
             </div>
           </div>
         </div>

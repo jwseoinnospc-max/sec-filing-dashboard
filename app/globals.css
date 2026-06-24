@@ -56,7 +56,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .backlog-donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
 .backlog-donut { position: relative; width: 88px; height: 88px; border-radius: 50%; }
 .backlog-donut-hole { position: absolute; inset: 22px; background: var(--panel); border-radius: 50%; }
-.backlog-legend { display: flex; flex-direction: column; gap: 2px; font-size: 9px; color: var(--muted); white-space: nowrap; }
+.backlog-legend { display: flex; flex-direction: row; gap: 8px; font-size: 9px; color: var(--muted); white-space: nowrap; }
 .backlog-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 3px; }
 .main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .trend-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
