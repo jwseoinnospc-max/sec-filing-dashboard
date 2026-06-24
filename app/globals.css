@@ -144,16 +144,18 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-growth-down { color: #60a5fa; }
 .space-market-page { background: var(--bg); }
 .space-group-title { margin: 28px 0 12px; font-size: 14px; font-weight: 800; color: var(--muted); letter-spacing: 0.04em; }
-.space-stock-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.space-stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 .mini-chart { margin-top: 12px; min-height: 80px; }
-.space-stock-card { background: rgba(17, 24, 39, .78); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 220px; }
+.full-chart { margin-top: 8px; min-height: 220px; }
+.space-stock-card { background: rgba(17, 24, 39, .78); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 380px; }
 .space-stock-news { list-style: none; margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--line); display: flex; flex-direction: column; gap: 6px; }
 .space-stock-news li { font-size: 12px; line-height: 1.4; }
 .space-stock-news a { color: var(--text); text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space-stock-news a:hover { color: var(--accent); text-decoration: underline; }
 .space-stock-news-source { color: var(--muted); font-size: 11px; }
 .space-stock-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.space-stock-name { font-weight: 800; font-size: 15px; }
+.space-stock-name { font-weight: 800; font-size: 19px; display: inline-flex; align-items: center; gap: 8px; }
+.space-stock-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: contain; background: #fff; }
 .space-stock-tag { font-size: 11px; color: var(--good); border: 1px solid var(--good); border-radius: 999px; padding: 2px 8px; }
 .space-stock-tag-muted { color: var(--muted); border-color: var(--line); }
 .space-stock-sub { font-size: 11px; color: var(--muted); margin-bottom: 14px; }

@@ -20,7 +20,13 @@ const NASDAQ_COMPANIES = [
 const DOMESTIC_COMPANIES = [
   { name: "이노스페이스", code: "462350", exchange: "KOSDAQ" },
   { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ" },
-  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI" }
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI" },
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI" },
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ" },
+  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ" },
+  { name: "AP위성", code: "211270", exchange: "KOSDAQ" },
+  { name: "켄코아에어로스페이스", code: "274090", exchange: "KOSDAQ" },
+  { name: "LIG넥스원", code: "079550", exchange: "KOSPI" }
 ];
 
 async function loadOverseasStock(symbol: string) {
@@ -75,6 +81,7 @@ export default async function SpaceMarketPage() {
               changePercent={price?.changePercent}
               meta={formatMarketCap(profile?.marketCapitalization)}
               news={nasdaqNews[i]}
+              logo={profile?.logo}
             />
           );
         })}
@@ -96,6 +103,7 @@ export default async function SpaceMarketPage() {
               changePercent={price?.changePercent}
               currency="KRW"
               news={domesticNews[i]}
+              supportsChart={false}
             />
           );
         })}
