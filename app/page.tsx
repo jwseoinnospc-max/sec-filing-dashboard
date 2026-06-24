@@ -151,7 +151,7 @@ export default async function Home() {
 
       <section className="grid">
         <div className="card">
-          <h3>매출 (26Y 1Q)</h3>
+          <h3>💵 매출 (26Y 1Q)</h3>
           <div className="metric">
             <a href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_REVENUE))} target="_blank" rel="noopener noreferrer">
               {money(Q1_2026_REVENUE / 1000)}
@@ -164,7 +164,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>발사 횟수</h3>
+          <h3>🚀 발사 횟수</h3>
           <div className="metric">
             <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
               6회
@@ -182,7 +182,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>발사 서비스 수익성 (26Y 1Q)</h3>
+          <h3>💹 발사 서비스 수익성 (26Y 1Q)</h3>
           <div className="metric">
             <a
               href={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_REVENUE_Q1_2026))}
@@ -200,7 +200,7 @@ export default async function Home() {
 
         <div className="card backlog-card">
           <div className="backlog-text">
-            <h3>수주잔고 (26Y 1Q)</h3>
+            <h3>📦 수주잔고 (26Y 1Q)</h3>
             <div className="metric">
               <a
                 href={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_BACKLOG_Q1_2026))}
@@ -237,7 +237,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>영업손실 (26Y 1Q)</h3>
+          <h3>📉 영업손실 (26Y 1Q)</h3>
           <div className="metric metric-negative">
             <a
               href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
@@ -254,7 +254,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>순이익 (26Y 1Q)</h3>
+          <h3>💸 순이익 (26Y 1Q)</h3>
           <div className="metric metric-negative">
             <a
               href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_NET_INCOME))}
@@ -268,7 +268,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>영업현금흐름 (26Y 1Q)</h3>
+          <h3>💧 영업현금흐름 (26Y 1Q)</h3>
           <div className="metric metric-negative">
             <a
               href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_CASH_FLOW))}
@@ -282,7 +282,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <h3>ROE / 부채비율 (26Y 1Q)</h3>
+          <h3>📊 ROE / 부채비율 (26Y 1Q)</h3>
           <div className="metric metric-negative">
             <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
               {pct(Q1_2026_NET_INCOME / Q1_2026_TOTAL_EQUITY)}
