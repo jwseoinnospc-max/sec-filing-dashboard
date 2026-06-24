@@ -80,6 +80,14 @@ export default async function Home() {
               <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
               <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
               <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
+              <a
+                className="badge badge-link"
+                href="https://investors.rocketlabcorp.com/static-files/c0bd4327-c3ff-4843-8eae-8b0d8a4d4b82"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Rocket Lab Presentation 2026 1Q
+              </a>
             </div>
             <h1>Rocket Lab 실적분석 Dashboard</h1>
             <p>Rocket Lab 실적 데이터를 찾지 못했습니다.</p>
@@ -103,6 +111,14 @@ export default async function Home() {
             <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
             <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
             <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
+            <a
+              className="badge badge-link"
+              href="https://investors.rocketlabcorp.com/static-files/c0bd4327-c3ff-4843-8eae-8b0d8a4d4b82"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Rocket Lab Presentation 2026 1Q
+            </a>
           </div>
           <h1>Rocket Lab 실적분석 Dashboard</h1>
           <p>
