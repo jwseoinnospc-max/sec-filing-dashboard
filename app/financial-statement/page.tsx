@@ -312,6 +312,7 @@ export default function FinancialStatementPage() {
         <div>
           <div className="badge-row">
             <Link className="badge badge-link" href="/">Rocket Lab 실적 분석 Dashboard</Link>
+            <Link className="badge badge-link" href="/space-market">Space Market</Link>
             <span className="badge badge-active">Rocket Lab Financial Statement</span>
             <Link className="badge badge-link" href="/overview">Rocket Lab Overview</Link>
             <a

@@ -78,6 +78,7 @@ export default async function Home() {
           <div>
             <div className="badge-row">
               <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
+              <a className="badge badge-link" href="/space-market">Space Market</a>
               <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
               <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
               <a
@@ -109,6 +110,7 @@ export default async function Home() {
         <div>
           <div className="badge-row">
             <span className="badge badge-active">Rocket Lab 실적 분석 Dashboard</span>
+            <a className="badge badge-link" href="/space-market">Space Market</a>
             <a className="badge badge-link" href="/financial-statement">Rocket Lab Financial Statement</a>
             <a className="badge badge-link" href="/overview">Rocket Lab Overview</a>
             <a
