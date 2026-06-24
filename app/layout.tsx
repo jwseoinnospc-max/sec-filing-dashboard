@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SEC Filing Dashboard',
+  title: 'ISD Dashboard',
   description: 'SEC EDGAR XBRL 기반 재무 분석 대시보드'
 };
 
