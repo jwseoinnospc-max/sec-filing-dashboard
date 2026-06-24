@@ -2,7 +2,7 @@ import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile } from "@/lib/finnhub";
-import { getOverseasPrice, getDomesticPrice } from "@/lib/kis";
+import { getOverseasPrice, getDomesticPrice, type KisDomesticPrice } from "@/lib/kis";
 
 function formatMarketCap(value: number | null | undefined) {
   if (!value) return undefined;
@@ -36,7 +36,7 @@ export default async function SpaceMarketPage() {
     nasdaqResults.push(await loadOverseasStock(company.symbol));
   }
 
-  const domesticPrices = [];
+  const domesticPrices: (KisDomesticPrice | null)[] = [];
   for (const company of DOMESTIC_COMPANIES) {
     domesticPrices.push(await getDomesticPrice(company.code));
   }
