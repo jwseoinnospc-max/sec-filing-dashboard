@@ -313,7 +313,10 @@ export default async function Home() {
 
           <p className="notice">
             발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인했습니다.
-            <br />∴ 매출 성장에 따른 고정비 희석 효과와 제조 효율화로 전년 동기(20.3%) 대비 <strong>비약적인 수익성 개선</strong>을 이뤘습니다.
+          </p>
+
+          <p className="notice">
+            매출 성장에 따른 고정비 희석 효과와 제조 효율화로 전년 동기(20.3%) 대비 <strong>비약적인 수익성 개선</strong>을 이뤘습니다.
           </p>
 
           <p className="notice">
@@ -330,7 +333,9 @@ export default async function Home() {
 
           <p className="notice">
             2024년 약 14대 → 2025년 약 24대 → 2026년 1분기 약 5대
-            <br />
+          </p>
+
+          <p className="notice">
             <strong>2026년 채용 비용이 증가했습니다.</strong>
           </p>
         </div>
