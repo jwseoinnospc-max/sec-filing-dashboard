@@ -2,7 +2,21 @@
 
 import { useEffect, useRef } from "react";
 
-export function SpaceStockCard({ symbol, name, exchange }: { symbol: string; name: string; exchange: string }) {
+export function SpaceStockCard({
+  symbol,
+  name,
+  exchange,
+  industry,
+  marketCap,
+  peRatio
+}: {
+  symbol: string;
+  name: string;
+  exchange: string;
+  industry?: string;
+  marketCap?: string | null;
+  peRatio?: number;
+}) {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +38,8 @@ export function SpaceStockCard({ symbol, name, exchange }: { symbol: string; nam
     container.current.appendChild(script);
   }, [symbol]);
 
+  const hasExtraInfo = industry || marketCap || peRatio;
+
   return (
     <div className="space-stock-card">
       <div className="space-stock-head">
@@ -31,6 +47,14 @@ export function SpaceStockCard({ symbol, name, exchange }: { symbol: string; nam
         <span className="space-stock-exchange">{exchange}</span>
       </div>
       <div className="tradingview-widget-container" ref={container} />
+
+      {hasExtraInfo && (
+        <div className="space-stock-extra">
+          {industry && <span>{industry}</span>}
+          {marketCap && <span>시가총액 {marketCap}</span>}
+          {peRatio !== undefined && <span>PER {peRatio.toFixed(1)}</span>}
+        </div>
+      )}
     </div>
   );
 }
