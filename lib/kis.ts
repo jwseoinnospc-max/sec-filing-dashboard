@@ -10,6 +10,9 @@ let pendingTokenRequest: Promise<string | null> | null = null;
 
 async function fetchNewToken(appKey: string, appSecret: string): Promise<string | null> {
   try {
+    // Cached via Next.js's persistent Data Cache (shared across serverless instances, unlike
+    // the in-memory tokenCache below) for ~23h, since KIS only allows 1 token issuance/minute
+    // and serverless functions don't reliably share plain in-memory state between invocations.
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -17,7 +20,8 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         grant_type: "client_credentials",
         appkey: appKey,
         appsecret: appSecret
-      })
+      }),
+      next: { revalidate: 82800 }
     });
 
     if (!res.ok) return null;
