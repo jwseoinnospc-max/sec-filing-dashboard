@@ -236,3 +236,97 @@ export async function getDomesticDailyHistory(code: string): Promise<KisDailyBar
   if (first) return first;
   return fetchDomesticDailyHistoryOnce(code);
 }
+
+export type KisMinuteBar = { time: string; close: number }; // time: "HHMM"
+
+async function fetchMinuteChunk(
+  code: string,
+  hour: string,
+  token: string,
+  appKey: string,
+  appSecret: string
+): Promise<{ time: string; close: number }[] | null> {
+  try {
+    const query = new URLSearchParams({
+      FID_ETC_CLS_CODE: "",
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: code,
+      FID_INPUT_HOUR_1: hour,
+      FID_PW_DATA_INCU_YN: "Y"
+    });
+    const res = await fetch(
+      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?${query.toString()}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          appkey: appKey,
+          appsecret: appSecret,
+          tr_id: "FHKST03010200",
+          custtype: "P"
+        },
+        cache: "no-store"
+      }
+    );
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const rows = data?.output2;
+    if (!Array.isArray(rows)) return null;
+
+    return rows
+      .filter((r) => r.stck_cntg_hour && r.stck_prpr)
+      .map((r) => ({ time: r.stck_cntg_hour as string, close: Number(r.stck_prpr) }));
+  } catch {
+    return null;
+  }
+}
+
+// Paginates KIS's 30-min-per-call minute endpoint back to market open (09:00) for a 1-day intraday chart.
+// Intentionally not bundled into the main page load (called on-demand via /api/intraday) since it can
+// take ~10+ sequential KIS calls per stock.
+export async function getDomesticIntradayHistory(code: string): Promise<KisMinuteBar[] | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  // Server runtime (Vercel) is UTC; KIS expects Korea Standard Time (UTC+9).
+  const kstParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Seoul",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(new Date());
+  const kstHour = kstParts.find((p) => p.type === "hour")?.value ?? "15";
+  const kstMinute = kstParts.find((p) => p.type === "minute")?.value ?? "30";
+  let hour = `${kstHour}${kstMinute}00`; // HHMMSS, clamped to market hours below
+
+  const all: { time: string; close: number }[] = [];
+  const seen = new Set<string>();
+
+  for (let page = 0; page < 16; page++) {
+    const chunk = await fetchMinuteChunk(code, hour, token, appKey, appSecret);
+    if (!chunk || chunk.length === 0) break;
+
+    for (const bar of chunk) {
+      if (!seen.has(bar.time)) {
+        seen.add(bar.time);
+        all.push(bar);
+      }
+    }
+
+    const oldest = chunk[chunk.length - 1].time;
+    if (oldest <= "090000") break; // reached market open
+
+    // Step back 1 minute before the oldest bar in this chunk to fetch the next (older) page.
+    const h = Number(oldest.slice(0, 2));
+    const m = Number(oldest.slice(2, 4));
+    const prevMinuteTotal = h * 60 + m - 1;
+    if (prevMinuteTotal < 9 * 60) break;
+    hour = `${String(Math.floor(prevMinuteTotal / 60)).padStart(2, "0")}${String(prevMinuteTotal % 60).padStart(2, "0")}00`;
+  }
+
+  if (all.length === 0) return null;
+  return all.sort((a, b) => (a.time < b.time ? -1 : 1));
+}

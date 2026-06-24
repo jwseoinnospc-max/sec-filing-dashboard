@@ -73,7 +73,7 @@ export function SpaceStockCard({
           ) : (
             <div className="space-stock-price space-stock-price-na">조회 중...</div>
           )}
-          {history && <DomesticChart data={history} />}
+          {history && <DomesticChart code={symbol} data={history} />}
         </>
       )}
 
