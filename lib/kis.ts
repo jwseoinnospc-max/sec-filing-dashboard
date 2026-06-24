@@ -64,7 +64,7 @@ export type KisOverseasPrice = {
 };
 
 // EXCD codes: NAS (Nasdaq), NYS (NYSE), AMS (AMEX)
-export async function getOverseasPrice(symbol: string, excd = "NAS"): Promise<KisOverseasPrice | null> {
+async function fetchOverseasPriceOnce(symbol: string, excd: string): Promise<KisOverseasPrice | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken();
@@ -99,4 +99,12 @@ export async function getOverseasPrice(symbol: string, excd = "NAS"): Promise<Ki
   } catch {
     return null;
   }
+}
+
+export async function getOverseasPrice(symbol: string, excd = "NAS"): Promise<KisOverseasPrice | null> {
+  const first = await fetchOverseasPriceOnce(symbol, excd);
+  if (first) return first;
+
+  // One retry: transient network blips on serverless cold starts otherwise show up as missing data.
+  return fetchOverseasPriceOnce(symbol, excd);
 }

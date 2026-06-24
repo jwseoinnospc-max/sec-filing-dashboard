@@ -17,12 +17,18 @@ const COMPANIES = [
 ];
 
 async function loadStock(symbol: string) {
-  const [price, profile] = await Promise.all([getOverseasPrice(symbol, "NAS"), getProfile(symbol)]);
+  // Fetched sequentially (not Promise.all) across companies: firing 4 concurrent KIS
+  // requests from a single serverless invocation was intermittently dropping 1-2 of them.
+  const price = await getOverseasPrice(symbol, "NAS");
+  const profile = await getProfile(symbol);
   return { price, profile };
 }
 
 export default async function SpaceMarketPage() {
-  const results = await Promise.all(COMPANIES.map((c) => loadStock(c.symbol)));
+  const results: Awaited<ReturnType<typeof loadStock>>[] = [];
+  for (const company of COMPANIES) {
+    results.push(await loadStock(company.symbol));
+  }
   const anyKisMissing = results.every((r) => !r.price);
 
   return (
