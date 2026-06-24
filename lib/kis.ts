@@ -175,3 +175,64 @@ export async function getDomesticPrice(code: string): Promise<KisDomesticPrice |
   if (first) return first;
   return fetchDomesticPriceOnce(code);
 }
+
+export type KisDailyBar = { date: string; close: number };
+
+function formatDate(d: Date) {
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+}
+
+async function fetchDomesticDailyHistoryOnce(code: string): Promise<KisDailyBar[] | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(start.getDate() - 200); // KIS caps each call at ~100 trading days regardless of range.
+
+  try {
+    const query = new URLSearchParams({
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: code,
+      FID_INPUT_DATE_1: formatDate(start),
+      FID_INPUT_DATE_2: formatDate(today),
+      FID_PERIOD_DIV_CODE: "D",
+      FID_ORG_ADJ_PRC: "0"
+    });
+    const res = await fetch(
+      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?${query.toString()}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          appkey: appKey,
+          appsecret: appSecret,
+          tr_id: "FHKST03010100",
+          custtype: "P"
+        },
+        next: { revalidate: 3600 }
+      }
+    );
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const rows = data?.output2;
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+
+    return rows
+      .filter((r) => r.stck_bsop_date && r.stck_clpr)
+      .map((r) => ({ date: r.stck_bsop_date as string, close: Number(r.stck_clpr) }))
+      .reverse(); // KIS returns most-recent-first; charts want oldest-first.
+  } catch {
+    return null;
+  }
+}
+
+// Daily close-price history (~last 100 trading days, KIS's per-call cap) for charting.
+export async function getDomesticDailyHistory(code: string): Promise<KisDailyBar[] | null> {
+  const first = await fetchDomesticDailyHistoryOnce(code);
+  if (first) return first;
+  return fetchDomesticDailyHistoryOnce(code);
+}

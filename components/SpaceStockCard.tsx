@@ -1,6 +1,7 @@
-import MiniChart from "./MiniChart";
 import FullChart from "./FullChart";
+import DomesticChart from "./DomesticChart";
 import type { NewsItem } from "@/lib/news";
+import type { KisDailyBar } from "@/lib/kis";
 
 function formatPrice(price: number, currency: "USD" | "KRW") {
   return currency === "KRW" ? `₩${price.toLocaleString()}` : `$${price.toFixed(2)}`;
@@ -19,8 +20,10 @@ export function SpaceStockCard({
   meta,
   news,
   logo,
-  // TradingView's free embed only supports US-listed symbols; KRX symbols render an error.
-  supportsChart = true
+  // TradingView's free embed only supports US-listed symbols; KRX symbols render an error,
+  // so those use `history` (fetched via KIS) with our own DomesticChart instead.
+  supportsChart = true,
+  history
 }: {
   name: string;
   symbol: string;
@@ -35,6 +38,7 @@ export function SpaceStockCard({
   news?: NewsItem[];
   logo?: string;
   supportsChart?: boolean;
+  history?: KisDailyBar[] | null;
 }) {
   const hasPrice = price !== undefined && price !== null;
   const isUp = (change ?? 0) >= 0;
@@ -69,7 +73,7 @@ export function SpaceStockCard({
           ) : (
             <div className="space-stock-price space-stock-price-na">조회 중...</div>
           )}
-          <MiniChart symbol={chartSymbol} />
+          {history && <DomesticChart data={history} />}
         </>
       )}
 

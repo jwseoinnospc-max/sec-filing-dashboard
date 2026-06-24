@@ -2,7 +2,7 @@ import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile } from "@/lib/finnhub";
-import { getOverseasPrice, getDomesticPrice, type KisDomesticPrice } from "@/lib/kis";
+import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
 import { getCompanyNews } from "@/lib/news";
 
 function formatMarketCap(value: number | null | undefined) {
@@ -44,8 +44,10 @@ export default async function SpaceMarketPage() {
   }
 
   const domesticPrices: (KisDomesticPrice | null)[] = [];
+  const domesticHistory: (KisDailyBar[] | null)[] = [];
   for (const company of DOMESTIC_COMPANIES) {
     domesticPrices.push(await getDomesticPrice(company.code));
+    domesticHistory.push(await getDomesticDailyHistory(company.code));
   }
 
   const [nasdaqNews, domesticNews] = await Promise.all([
@@ -104,6 +106,7 @@ export default async function SpaceMarketPage() {
               currency="KRW"
               news={domesticNews[i]}
               supportsChart={false}
+              history={domesticHistory[i]}
             />
           );
         })}
