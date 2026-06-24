@@ -314,48 +314,48 @@ export default async function Home() {
         <div className="card">
           <div className="section-title"><h2>분석 코멘트</h2></div>
           <p className="notice">
-            2026년 1분기 매출은 전년 동기 대비 <strong>+38.0%</strong> 증가했으며,
+            📈 2026년 1분기 매출은 전년 동기 대비 <strong>+38.0%</strong> 증가했으며,
             매출총이익은 전년 동기 대비 <strong>+117.0%</strong> 증가했습니다.
           </p>
 
           <p className="notice">
-            분기 매출 <strong>$2억 돌파</strong> → 우주 시스템 성장이 핵심입니다.
+            🚀 분기 매출 <strong>$2억 돌파</strong> → 우주 시스템 성장이 핵심입니다.
           </p>
 
           <p className="notice">
-            매출 중 발사 서비스 비중 상승했으며, <strong>HASTE</strong> 매출 인식이 본격화되었습니다.
+            🛰️ 매출 중 발사 서비스 비중 상승했으며, <strong>HASTE</strong> 매출 인식이 본격화되었습니다.
           </p>
 
           <p className="notice">
-            미션 복잡도가 높아지면서 단가가 상승하여 매출총이익이 증가했으며, 생산 자동화 및 규모의 경제를 통해 제조 원가가 절감되었습니다.
+            ⚙️ 미션 복잡도가 높아지면서 단가가 상승하여 매출총이익이 증가했으며, 생산 자동화 및 규모의 경제를 통해 제조 원가가 절감되었습니다.
           </p>
 
           <p className="notice">
-            발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인했습니다.
+            💰 발사 서비스 부문의 수익성 개선이 전체 이익률 상승을 견인했습니다.
           </p>
 
           <p className="notice">
-            매출 성장에 따른 고정비 희석 효과와 제조 효율화로 전년 동기(20.3%) 대비 <strong>비약적인 수익성 개선</strong>을 이뤘습니다.
+            💰 매출 성장에 따른 고정비 희석 효과와 제조 효율화로 전년 동기(20.3%) 대비 <strong>비약적인 수익성 개선</strong>을 이뤘습니다.
           </p>
 
           <p className="notice">
-            핵심 부품을 직접 설계/제조하여 자사 위성에 탑재할 뿐만 아니라 외부 시장(<strong>Merchant Market</strong>)에도 판매합니다.
+            🎯 핵심 부품을 직접 설계/제조하여 자사 위성에 탑재할 뿐만 아니라 외부 시장(<strong>Merchant Market</strong>)에도 판매합니다.
           </p>
 
           <p className="notice">
-            주식 발행(ATM) 등으로 보유 현금 및 유가증권이 약 <strong>$3.77억 증가</strong>했습니다.
+            🏦 주식 발행(ATM) 등으로 보유 현금 및 유가증권이 약 <strong>$3.77억 증가</strong>했습니다.
           </p>
 
           <p className="notice">
-            2025년 말 대비 약 <strong>93.7% 증가</strong>했습니다.
+            📊 2025년 말 대비 약 <strong>93.7% 증가</strong>했습니다.
           </p>
 
           <p className="notice">
-            2024년 약 14대 → 2025년 약 24대 → 2026년 1분기 약 5대
+            🏭 2024년 약 14대 → 2025년 약 24대 → 2026년 1분기 약 5대
           </p>
 
           <p className="notice">
-            <strong>2026년 채용 비용이 증가했습니다.</strong>
+            👥 <strong>2026년 채용 비용이 증가했습니다.</strong>
           </p>
         </div>
       </section>
