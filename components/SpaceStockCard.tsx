@@ -1,4 +1,5 @@
 import MiniChart from "./MiniChart";
+import type { NewsItem } from "@/lib/news";
 
 function formatPrice(price: number, currency: "USD" | "KRW") {
   return currency === "KRW" ? `₩${price.toLocaleString()}` : `$${price.toFixed(2)}`;
@@ -14,7 +15,8 @@ export function SpaceStockCard({
   change,
   changePercent,
   currency = "USD",
-  meta
+  meta,
+  news
 }: {
   name: string;
   symbol: string;
@@ -26,6 +28,7 @@ export function SpaceStockCard({
   changePercent?: number | null;
   currency?: "USD" | "KRW";
   meta?: string;
+  news?: NewsItem[];
 }) {
   const hasPrice = price !== undefined && price !== null;
   const isUp = (change ?? 0) >= 0;
@@ -57,6 +60,19 @@ export function SpaceStockCard({
       <MiniChart symbol={chartSymbol} />
 
       {meta && <div className="space-stock-meta">{meta}</div>}
+
+      {news && news.length > 0 && (
+        <ul className="space-stock-news">
+          {news.map((item, i) => (
+            <li key={i}>
+              <a href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
+                {item.title}
+              </a>
+              {item.source && <span className="space-stock-news-source"> · {item.source}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

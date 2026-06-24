@@ -3,6 +3,7 @@ import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, type KisDomesticPrice } from "@/lib/kis";
+import { getCompanyNews } from "@/lib/news";
 
 function formatMarketCap(value: number | null | undefined) {
   if (!value) return undefined;
@@ -41,6 +42,11 @@ export default async function SpaceMarketPage() {
     domesticPrices.push(await getDomesticPrice(company.code));
   }
 
+  const [nasdaqNews, domesticNews] = await Promise.all([
+    Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en"))),
+    Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko")))
+  ]);
+
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
   return (
@@ -68,6 +74,7 @@ export default async function SpaceMarketPage() {
               change={price?.change}
               changePercent={price?.changePercent}
               meta={formatMarketCap(profile?.marketCapitalization)}
+              news={nasdaqNews[i]}
             />
           );
         })}
@@ -88,6 +95,7 @@ export default async function SpaceMarketPage() {
               change={price?.change}
               changePercent={price?.changePercent}
               currency="KRW"
+              news={domesticNews[i]}
             />
           );
         })}
