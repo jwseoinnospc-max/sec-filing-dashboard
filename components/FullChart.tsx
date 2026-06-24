@@ -21,7 +21,7 @@ export default function FullChart({ symbol }: { symbol: string }) {
       chartOnly: false,
       width: "100%",
       height: 220,
-      locale: "kr",
+      locale: "en",
       colorTheme: "dark",
       autosize: true,
       showVolume: false,
