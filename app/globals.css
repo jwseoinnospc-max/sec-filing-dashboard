@@ -33,6 +33,7 @@ a { color: inherit; }
 
 .nav-menu { position: relative; display: inline-block; margin-bottom: 14px; }
 .nav-menu-toggle { background: var(--accent); color: #001018; border: 0; border-radius: 8px; padding: 8px 16px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.nav-current-group { margin-left: 10px; font-size: 13px; color: var(--muted); font-weight: 700; }
 .nav-menu-panel {
   position: absolute;
   top: calc(100% + 6px);

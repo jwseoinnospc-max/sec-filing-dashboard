@@ -15,16 +15,26 @@ const ROCKET_LAB_LINKS = [
   }
 ];
 
+const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/overview"]);
+
+function currentGroupLabel(pathname: string) {
+  if (pathname === "/space-market") return "Space Market";
+  if (ROCKET_LAB_PATHS.has(pathname)) return "Rocket Lab";
+  return null;
+}
+
 export default function NavMenu() {
   const [open, setOpen] = useState(false);
   const [rocketOpen, setRocketOpen] = useState(true);
   const pathname = usePathname();
+  const groupLabel = currentGroupLabel(pathname);
 
   return (
     <div className="nav-menu">
       <button type="button" className="nav-menu-toggle" onClick={() => setOpen((v) => !v)}>
         ☰ 메뉴
       </button>
+      {groupLabel && <span className="nav-current-group">{groupLabel}</span>}
 
       {open && (
         <div className="nav-menu-panel">
