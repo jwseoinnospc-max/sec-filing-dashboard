@@ -145,7 +145,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-growth-down { color: #60a5fa; }
 .space-market-page { background: var(--bg); }
 .space-group-title { margin: 28px 0 12px; font-size: 14px; font-weight: 800; color: var(--muted); letter-spacing: 0.04em; }
-.space-stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.space-stock-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .full-chart { margin-top: 8px; min-height: 220px; }
 .domestic-chart { margin-top: 12px; }
 .domestic-chart-tabs { display: flex; gap: 6px; margin-bottom: 4px; }
