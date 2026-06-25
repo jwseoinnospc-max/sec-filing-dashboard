@@ -22,15 +22,21 @@ const NASDAQ_COMPANIES = [
   { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ" }
 ];
 
+// Clearbit's free Logo API (logo.clearbit.com) was shut down on 2025-12-08, so logos use
+// Google's favicon service instead — no API key required.
+function favicon(domain: string) {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+}
+
 const DOMESTIC_COMPANIES = [
-  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/innospc.com" },
-  { name: "LIG넥스원", code: "079550", exchange: "KOSPI", logo: "https://logo.clearbit.com/lignex1.com" },
-  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: "https://logo.clearbit.com/hanwhaaerospace.com" },
-  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "https://logo.clearbit.com/koreaaero.com" },
-  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/satreci.com" },
-  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/intelliantech.com" },
-  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/apsi.co.kr" },
-  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/naraspace.com" }
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: favicon("innospc.com") },
+  { name: "LIG넥스원", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") },
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: favicon("koreaaero.com") },
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: favicon("satreci.com") },
+  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },
+  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: favicon("apsi.co.kr") },
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: favicon("naraspace.com") }
 ];
 
 async function loadOverseasStock(symbol: string) {
