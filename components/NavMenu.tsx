@@ -8,14 +8,10 @@ const ROCKET_LAB_LINKS = [
   { href: "/", label: "Rocket Lab 실적분석 Dashboard" },
   { href: "/financial-statement", label: "Rocket Lab Financial Statement" },
   { href: "/overview", label: "Rocket Lab Overview" },
-  {
-    href: "https://investors.rocketlabcorp.com/static-files/c0bd4327-c3ff-4843-8eae-8b0d8a4d4b82",
-    label: "Rocket Lab Presentation 2026 1Q",
-    external: true
-  }
+  { href: "/rocket-lab-presentation", label: "Rocket Lab Presentation" }
 ];
 
-const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/overview"]);
+const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/overview", "/rocket-lab-presentation"]);
 
 function currentGroupLabel(pathname: string) {
   if (pathname === "/space-market") return "Space Market";
@@ -52,22 +48,16 @@ export default function NavMenu() {
 
           {rocketOpen && (
             <div className="nav-subgroup">
-              {ROCKET_LAB_LINKS.map((link) =>
-                link.external ? (
-                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="nav-subitem">
-                    {link.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`nav-subitem ${pathname === link.href ? "active" : ""}`}
-                    onClick={() => setOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                )
-              )}
+              {ROCKET_LAB_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`nav-subitem ${pathname === link.href ? "active" : ""}`}
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           )}
         </div>
