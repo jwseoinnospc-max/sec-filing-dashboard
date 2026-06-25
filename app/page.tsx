@@ -4,6 +4,8 @@ import NavMenu from '@/components/NavMenu';
 import LaunchCountCard from '@/components/LaunchCountCard';
 import RevenueCard from '@/components/RevenueCard';
 import LaunchEconomicsCard from '@/components/LaunchEconomicsCard';
+import BacklogCard from '@/components/BacklogCard';
+import OperatingLossCard from '@/components/OperatingLossCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -149,7 +151,7 @@ export default async function Home() {
           costText={money(LAUNCH_COST_Q1_2026 / 1000)}
         />
 
-        <div className="card backlog-card">
+        <BacklogCard>
           <div className="backlog-text">
             <h3>📦 수주잔고 (26Y 1Q)</h3>
             <div className="metric">
@@ -185,24 +187,13 @@ export default async function Home() {
               <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Space Systems</span>
             </div>
           </div>
-        </div>
+        </BacklogCard>
 
-        <div className="card">
-          <h3>📉 영업손실 (26Y 1Q)</h3>
-          <div className="metric metric-negative">
-            <a
-              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {money(Q1_2026_OPERATING_LOSS / 1000)}
-            </a>
-          </div>
-          <div className="delta">분기 영업손실</div>
-          <div className="metric-sub">
-            누적 영업손실(최근 4개 분기) <strong className="metric-negative">{money(TTM_OPERATING_LOSS / 1000)}</strong>
-          </div>
-        </div>
+        <OperatingLossCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
+          lossText={money(Q1_2026_OPERATING_LOSS / 1000)}
+          ttmLossText={money(TTM_OPERATING_LOSS / 1000)}
+        />
 
         <div className="card">
           <h3>💸 순이익 (26Y 1Q)</h3>
