@@ -72,12 +72,19 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             {HIST_YEARS.map((year) => (
               <Fragment key={year}>
                 {showHistYear[year] &&
-                  HIST_QUARTERS.map((q) => (
-                    <th key={`${year}${q}`} className="fin-col-sep fin-quarter-col">
+                  HIST_QUARTERS.map((q, qi) => (
+                    <th
+                      key={`${year}${q}`}
+                      className={`fin-col-sep fin-quarter-col fin-hist-group ${qi === 0 ? "fin-hist-group-start" : ""}`}
+                    >
                       {year}Y {q}
                     </th>
                   ))}
-                <th className="fin-col-sep fin-fy-col fin-fy-header">
+                <th
+                  className={`fin-col-sep fin-fy-col fin-fy-header ${
+                    showHistYear[year] ? "fin-hist-group fin-hist-group-end" : ""
+                  }`}
+                >
                   <div>FY 20{year}</div>
                   <button type="button" className="fin-toggle-btn" onClick={() => toggleHistYear(year)}>
                     {year}Y 1Q–4Q {showHistYear[year] ? "▲ 접기" : "▼ 펼치기"}
@@ -115,15 +122,21 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 return (
                   <Fragment key={year}>
                     {showHistYear[year] &&
-                      HIST_QUARTERS.map((q) => (
+                      HIST_QUARTERS.map((q, qi) => (
                         <ValueCell
                           key={`${year}${q}`}
                           data={row.hist?.[`${year}${q}` as HistQuarterKey] ?? EMPTY_CELL}
                           negative={row.negative}
-                          className="fin-col-sep fin-quarter-col"
+                          className={`fin-col-sep fin-quarter-col fin-hist-group ${qi === 0 ? "fin-hist-group-start" : ""}`}
                         />
                       ))}
-                    <ValueCell data={fyCell} negative={row.negative} className="fin-col-sep fin-fy-col" />
+                    <ValueCell
+                      data={fyCell}
+                      negative={row.negative}
+                      className={`fin-col-sep fin-fy-col ${
+                        showHistYear[year] ? "fin-hist-group fin-hist-group-end" : ""
+                      }`}
+                    />
                   </Fragment>
                 );
               })}
