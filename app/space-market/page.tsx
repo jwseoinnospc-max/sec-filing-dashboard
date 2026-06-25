@@ -10,15 +10,9 @@ function formatMarketCap(value: number | null | undefined) {
   return `시가총액 $${(value / 1000).toFixed(1)}B`; // Finnhub reports marketCapitalization in millions
 }
 
-function formatDomesticMeta(parValue: number | null | undefined, marketCapEok: number | null | undefined) {
-  const parts: string[] = [];
-  if (parValue) parts.push(`액면가 ${parValue.toLocaleString()}원`);
-  if (marketCapEok) {
-    parts.push(
-      marketCapEok >= 10000 ? `시가총액 ${(marketCapEok / 10000).toFixed(1)}조원` : `시가총액 ${marketCapEok.toLocaleString()}억원`
-    );
-  }
-  return parts.length > 0 ? parts.join(" · ") : undefined;
+function formatDomesticMeta(marketCapEok: number | null | undefined) {
+  if (!marketCapEok) return undefined;
+  return marketCapEok >= 10000 ? `시가총액 ${(marketCapEok / 10000).toFixed(1)}조원` : `시가총액 ${marketCapEok.toLocaleString()}억원`;
 }
 
 // Clearbit's free Logo API (logo.clearbit.com) was shut down on 2025-12-08, so logos use
@@ -131,7 +125,7 @@ export default async function SpaceMarketPage() {
               change={price?.change}
               changePercent={price?.changePercent}
               currency="KRW"
-              meta={formatDomesticMeta(price?.parValue, price?.marketCapEok)}
+              meta={formatDomesticMeta(price?.marketCapEok)}
               news={domesticNews[i]}
               supportsChart={false}
               history={domesticHistory[i]}

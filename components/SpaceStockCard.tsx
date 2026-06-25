@@ -59,7 +59,10 @@ export function SpaceStockCard({
 
       {hasPrice ? (
         <>
-          <div className="space-stock-price">{formatPrice(price!, currency)}</div>
+          <div className="space-stock-price">
+            {formatPrice(price!, currency)}
+            {meta && <span className="space-stock-marketcap">{meta}</span>}
+          </div>
           <div className={`space-stock-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
             {isUp ? "+" : ""}
             {currency === "KRW" ? change!.toLocaleString() : change!.toFixed(2)} {isUp ? "+" : ""}
@@ -81,8 +84,6 @@ export function SpaceStockCard({
       ) : (
         history && <DomesticChart code={symbol} data={history} />
       )}
-
-      {meta && <div className="space-stock-meta">{meta}</div>}
 
       {news && news.length > 0 && (
         <>
