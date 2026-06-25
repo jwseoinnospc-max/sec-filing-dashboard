@@ -175,6 +175,7 @@ export type KisDomesticPrice = {
   change: number;
   changePercent: number;
   currency: string;
+  marketCapEok: number | null; // 시가총액, 단위: 억원 (KIS의 hts_avls 그대로)
 };
 
 async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | null> {
@@ -210,7 +211,8 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
       last: Number(output.stck_prpr),
       change: direction * Math.abs(Number(output.prdy_vrss ?? 0)),
       changePercent: direction * Math.abs(Number(output.prdy_ctrt ?? 0)),
-      currency: "KRW"
+      currency: "KRW",
+      marketCapEok: output.hts_avls ? Number(output.hts_avls) : null
     };
   } catch {
     return null;

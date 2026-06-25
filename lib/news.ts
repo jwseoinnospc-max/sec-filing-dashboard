@@ -2,7 +2,25 @@ export type NewsItem = {
   title: string;
   url: string;
   source: string;
+  titleKo?: string;
 };
+
+// Unofficial Google Translate endpoint — no API key required, used only for the small amount
+// of English headline text on NASDAQ news cards (Korean-language news isn't translated).
+async function translateToKorean(text: string): Promise<string | undefined> {
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodeURIComponent(
+      text
+    )}`;
+    const res = await fetch(url, { next: { revalidate: 1800 } });
+    if (!res.ok) return undefined;
+    const data = await res.json();
+    const translated = data?.[0]?.map((chunk: unknown[]) => chunk[0]).join("");
+    return translated || undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 function decodeEntities(text: string) {
   return text
@@ -48,6 +66,12 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
 
       if (title && link) {
         items.push({ title, url: link.trim(), source: decodeEntities(sourceRaw) });
+      }
+    }
+
+    if (locale === "en") {
+      for (const item of items) {
+        item.titleKo = await translateToKorean(item.title);
       }
     }
 

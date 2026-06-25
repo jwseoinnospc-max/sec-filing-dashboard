@@ -10,6 +10,11 @@ function formatMarketCap(value: number | null | undefined) {
   return `시가총액 $${(value / 1000).toFixed(1)}B`; // Finnhub reports marketCapitalization in millions
 }
 
+function formatMarketCapKrw(eok: number | null | undefined) {
+  if (!eok) return undefined;
+  return eok >= 10000 ? `시가총액 ${(eok / 10000).toFixed(1)}조원` : `시가총액 ${eok.toLocaleString()}억원`;
+}
+
 const NASDAQ_COMPANIES = [
   { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ" },
   { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ" },
@@ -18,14 +23,14 @@ const NASDAQ_COMPANIES = [
 ];
 
 const DOMESTIC_COMPANIES = [
-  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ" },
-  { name: "LIG넥스원", code: "079550", exchange: "KOSPI" },
-  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI" },
-  { name: "한국항공우주", code: "047810", exchange: "KOSPI" },
-  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ" },
-  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ" },
-  { name: "AP위성", code: "211270", exchange: "KOSDAQ" },
-  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ" }
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/innospc.com" },
+  { name: "LIG넥스원", code: "079550", exchange: "KOSPI", logo: "https://logo.clearbit.com/lignex1.com" },
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: "https://logo.clearbit.com/hanwhaaerospace.com" },
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "https://logo.clearbit.com/koreaaero.com" },
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/satreci.com" },
+  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/intelliantech.com" },
+  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/apsi.co.kr" },
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://logo.clearbit.com/naraspace.com" }
 ];
 
 async function loadOverseasStock(symbol: string) {
@@ -103,9 +108,11 @@ export default async function SpaceMarketPage() {
               change={price?.change}
               changePercent={price?.changePercent}
               currency="KRW"
+              meta={formatMarketCapKrw(price?.marketCapEok)}
               news={domesticNews[i]}
               supportsChart={false}
               history={domesticHistory[i]}
+              logo={company.logo}
             />
           );
         })}
