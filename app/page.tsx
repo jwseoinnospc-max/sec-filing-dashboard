@@ -94,7 +94,9 @@ export default async function Home() {
         <section className="header">
           <div>
             <NavMenu />
-            <h1>Rocket Lab 실적분석 Dashboard</h1>
+            <h1>
+              Rocket Lab Dashboard <span className="h1-accent">(26Y1Q)</span>
+            </h1>
             <p>Rocket Lab 실적 데이터를 찾지 못했습니다.</p>
           </div>
         </section>
@@ -113,7 +115,9 @@ export default async function Home() {
       <section className="header">
         <div>
           <NavMenu />
-          <h1>Rocket Lab 실적분석 Dashboard</h1>
+          <h1>
+            Rocket Lab Dashboard <span className="h1-accent">(26Y1Q)</span>
+          </h1>
           <p>
             Rocket Lab의 매출, 순이익, 현금흐름, 재무건전성 및 사업부문별 실적을 한 화면에서 확인합니다.
             <br />
