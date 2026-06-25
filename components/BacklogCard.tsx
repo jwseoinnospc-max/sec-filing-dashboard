@@ -47,7 +47,9 @@ export default function BacklogCard({ children }: { children: ReactNode }) {
               />
               <Legend
                 wrapperStyle={{ fontSize: 11 }}
-                formatter={(value) => (value === "launchBacklog" ? "발사 수주잔고" : "총 수주잔고")}
+                formatter={(value) =>
+                  value === "launchBacklog" ? "발사 수주잔고" : value === "totalBacklog" ? "총 수주잔고" : "총잔고대비 비중(%)"
+                }
               />
               <Bar yAxisId="backlog" dataKey="totalBacklog" fill="#334155" barSize={14} radius={[4, 4, 0, 0]} />
               <Bar yAxisId="backlog" dataKey="launchBacklog" fill="#38bdf8" barSize={14} radius={[4, 4, 0, 0]} />
