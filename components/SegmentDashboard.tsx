@@ -220,10 +220,10 @@ function CompareCard({
       <style jsx>{`
         .compare-card {
           position: relative;
-          background: rgba(255, 255, 255, 0.5);
-          border: 1px solid #d0d0d0;
+          background: rgba(17, 24, 39, 0.88);
+          border: 1px solid var(--line);
           border-radius: 0 0 12px 12px;
-          color: #222;
+          color: var(--text);
           overflow: hidden;
           min-height: 179px;
         }
@@ -244,7 +244,7 @@ function CompareCard({
           right: 14px;
           font-size: 13px;
           font-weight: 800;
-          color: #000;
+          color: var(--muted);
         }
 
         .body {
@@ -318,7 +318,7 @@ function CompareCard({
         .side-label {
           font-size: 12px;
           line-height: 1.35;
-          color: #666;
+          color: var(--muted);
           min-width: 90px;
         }
 
@@ -327,7 +327,7 @@ function CompareCard({
         }
 
         .side-label a {
-          color: #0b3f99;
+          color: var(--accent);
           font-weight: 800;
           text-decoration: none;
         }
@@ -343,7 +343,7 @@ function CompareCard({
 
         .side-label.right {
           text-align: left;
-          color: #0b3f99;
+          color: var(--accent);
         }
 
         .center {
@@ -371,7 +371,7 @@ function CompareCard({
           width: 100%;
           transform: translateY(-50%);
           font-size: 13px;
-          color: #1d4ed8;
+          color: var(--accent);
           font-weight: 700;
           white-space: nowrap;
         }
