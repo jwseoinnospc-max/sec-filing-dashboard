@@ -141,6 +141,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-negative,
 .fin-table .fin-negative a { color: #f87171; }
 .fin-table .fin-highlight-col { border-left: 1px solid var(--accent); border-right: 1px solid var(--accent); background: rgba(56, 189, 248, .08); }
+.fin-new-badge { background: var(--good); color: #001018; font-size: 9px; font-weight: 800; border-radius: 999px; padding: 1px 6px; letter-spacing: 0.03em; margin-left: 4px; vertical-align: middle; }
 .fin-table thead .fin-highlight-col { border-top: 1px solid var(--accent); }
 .fin-table tbody tr:last-child .fin-highlight-col { border-bottom: 1px solid var(--accent); }
 .fin-table .fin-col-sep { border-left: 1px solid var(--line); }

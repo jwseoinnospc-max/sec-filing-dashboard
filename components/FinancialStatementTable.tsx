@@ -110,7 +110,9 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 25Y 1Q–4Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
               </button>
             </th>
-            <th className="fin-highlight-col">26Y 1Q</th>
+            <th className="fin-highlight-col">
+              26Y 1Q <span className="fin-new-badge">New</span>
+            </th>
             <th className="fin-col-sep">전년 동기 대비</th>
           </tr>
         </thead>
