@@ -10,23 +10,29 @@ function formatMarketCap(value: number | null | undefined) {
   return `시가총액 $${(value / 1000).toFixed(1)}B`; // Finnhub reports marketCapitalization in millions
 }
 
-function formatMarketCapKrw(eok: number | null | undefined) {
-  if (!eok) return undefined;
-  return eok >= 10000 ? `시가총액 ${(eok / 10000).toFixed(1)}조원` : `시가총액 ${eok.toLocaleString()}억원`;
+function formatDomesticMeta(parValue: number | null | undefined, marketCapEok: number | null | undefined) {
+  const parts: string[] = [];
+  if (parValue) parts.push(`액면가 ${parValue.toLocaleString()}원`);
+  if (marketCapEok) {
+    parts.push(
+      marketCapEok >= 10000 ? `시가총액 ${(marketCapEok / 10000).toFixed(1)}조원` : `시가총액 ${marketCapEok.toLocaleString()}억원`
+    );
+  }
+  return parts.length > 0 ? parts.join(" · ") : undefined;
 }
-
-const NASDAQ_COMPANIES = [
-  { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ" },
-  { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ" },
-  { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ" },
-  { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ" }
-];
 
 // Clearbit's free Logo API (logo.clearbit.com) was shut down on 2025-12-08, so logos use
 // Google's favicon service as a fallback — no API key required.
 function favicon(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
+
+const NASDAQ_COMPANIES = [
+  { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ", logo: favicon("spacex.com") },
+  { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ", logo: favicon("rocketlabcorp.com") },
+  { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ", logo: favicon("fireflyspace.com") },
+  { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ", logo: favicon("intuitivemachines.com") }
+];
 
 // Most logos are the companies' official member logos hosted by KASP (한국우주산업협회),
 // https://www.kasp.or.kr/member/info.html — higher quality than a favicon fallback.
@@ -104,7 +110,7 @@ export default async function SpaceMarketPage() {
               changePercent={price?.changePercent}
               meta={formatMarketCap(profile?.marketCapitalization)}
               news={nasdaqNews[i]}
-              logo={profile?.logo}
+              logo={profile?.logo || company.logo}
             />
           );
         })}
@@ -125,7 +131,7 @@ export default async function SpaceMarketPage() {
               change={price?.change}
               changePercent={price?.changePercent}
               currency="KRW"
-              meta={formatMarketCapKrw(price?.marketCapEok)}
+              meta={formatDomesticMeta(price?.parValue, price?.marketCapEok)}
               news={domesticNews[i]}
               supportsChart={false}
               history={domesticHistory[i]}
