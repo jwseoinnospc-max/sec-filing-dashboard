@@ -150,16 +150,16 @@ export default async function Home() {
           ttmText={money(CUMULATIVE_REVENUE / 1000)}
         />
 
-        <LaunchCountCard
-          filingUrl={Q1_2026_FILING_URL}
-          cumulativeUrl={filingTextLink(ELECTRON_PAGE_URL, `${LAUNCHES_CUMULATIVE} launches to date`)}
-          cumulative={LAUNCHES_CUMULATIVE}
-        />
-
         <LaunchEconomicsCard
           filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_REVENUE_Q1_2026))}
           revenueText={money(LAUNCH_REVENUE_Q1_2026 / 1000)}
           costText={money(LAUNCH_COST_Q1_2026 / 1000)}
+        />
+
+        <LaunchCountCard
+          filingUrl={Q1_2026_FILING_URL}
+          cumulativeUrl={filingTextLink(ELECTRON_PAGE_URL, `${LAUNCHES_CUMULATIVE} launches to date`)}
+          cumulative={LAUNCHES_CUMULATIVE}
         />
 
         <BacklogCard>
