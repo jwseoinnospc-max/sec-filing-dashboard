@@ -2,6 +2,7 @@ import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import NavMenu from '@/components/NavMenu';
 import LaunchCountCard from '@/components/LaunchCountCard';
+import RevenueCard from '@/components/RevenueCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -128,18 +129,12 @@ export default async function Home() {
       </section>
 
       <section className="grid">
-        <div className="card">
-          <h3>💵 매출 (26Y 1Q)</h3>
-          <div className="metric">
-            <a href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_REVENUE))} target="_blank" rel="noopener noreferrer">
-              {money(Q1_2026_REVENUE / 1000)}
-            </a>
-          </div>
-          <div className="delta">전년 동기 대비 {growth(Q1_2026_REVENUE, Q1_2025_REVENUE)}</div>
-          <div className="metric-sub">
-            누적매출(최근 4개 분기) <strong>{money(TTM_REVENUE / 1000)}</strong>
-          </div>
-        </div>
+        <RevenueCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_REVENUE))}
+          revenueText={money(Q1_2026_REVENUE / 1000)}
+          growthText={growth(Q1_2026_REVENUE, Q1_2025_REVENUE)}
+          ttmText={money(TTM_REVENUE / 1000)}
+        />
 
         <LaunchCountCard
           filingUrl={Q1_2026_FILING_URL}
