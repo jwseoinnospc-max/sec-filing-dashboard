@@ -172,11 +172,11 @@ function CompareCard({
           </div>
 
           <a className="pill blue" href={sourceHref}>
-            Launch 매출: 전년 동기 대비 {pct(launchGrowth)} 증가
+            전년 동기 대비 {pct(launchGrowth)} 증가
           </a>
 
           <a className="pill gray" href={sourceHref}>
-            Space Systems 매출: 전년 동기 대비 {pct(systemsGrowth)} 증가
+            전년 동기 대비 {pct(systemsGrowth)} 증가
           </a>
         </div>
 
