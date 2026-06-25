@@ -58,7 +58,12 @@ export function SpaceStockCard({
       </div>
 
       {supportsChart ? (
-        <FullChart symbol={chartSymbol} />
+        <>
+          <FullChart symbol={chartSymbol} />
+          <div className="space-stock-chart-legend">
+            <strong>D</strong> 지연시세(실시간 대비 최대 15분 지연) · 가격 옆 숫자/% 는 직전 종가 대비 변동 · 우측 라벨은 선택된 기간(1D/1M/3M/1Y) 기준
+          </div>
+        </>
       ) : (
         <>
           {hasPrice ? (
