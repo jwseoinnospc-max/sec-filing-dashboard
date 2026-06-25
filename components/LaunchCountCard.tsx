@@ -4,15 +4,15 @@ import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // Launch counts are sourced from Rocket Lab's 10-Ks (see /financial-statement). Production
-// volume (Electron vehicles built) isn't disclosed by Rocket Lab in SEC filings — these figures
-// come from a third-party investor summary slide the user supplied; 2025 wasn't covered by that
-// slide, so it's left blank rather than estimated.
+// volume (Electron vehicles built) isn't disclosed by Rocket Lab in SEC filings for 2021-2024 —
+// those figures come from a third-party investor summary slide the user supplied. 2025 ("약
+// 24대") matches the figure already used in the /financial-statement table.
 const ANNUAL_LAUNCHES = [
   { year: "2021", count: 6, production: 8 },
   { year: "2022", count: 9, production: 12 },
   { year: "2023", count: 10, production: 11 },
   { year: "2024", count: 16, production: 14 },
-  { year: "2025", count: 21, production: null }
+  { year: "2025", count: 21, production: 24 }
 ];
 
 export default function LaunchCountCard({
