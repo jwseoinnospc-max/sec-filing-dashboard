@@ -35,13 +35,13 @@ export default function LaunchCountCard({
       onMouseLeave={() => setHovered(false)}
       onClick={() => setPinned((v) => !v)}
     >
-      <h3>🚀 발사 횟수</h3>
+      <h3>🚀 발사 횟수(26Y1Q)</h3>
       <div className="metric">
         <a href={filingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
           6회
         </a>
       </div>
-      <div className="delta">분기 발사 횟수 (26Y 1Q)</div>
+      <div className="delta">분기 발사 횟수</div>
       <div className="metric-sub">
         누적 발사 횟수{" "}
         <strong>
