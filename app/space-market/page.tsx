@@ -40,7 +40,7 @@ const KASP_LOGO_BASE = "https://www.kasp.or.kr/admin/data/company_logo";
 
 const DOMESTIC_COMPANIES = [
   { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_68_1.jpg` },
-  { name: "LIG넥스원", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
+  { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
   { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: `${KASP_LOGO_BASE}/picture_4_1.jpg` },
   { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: `${KASP_LOGO_BASE}/picture_12_1.jpg` },
   { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_20_1.png` },
