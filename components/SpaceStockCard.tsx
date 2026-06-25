@@ -94,7 +94,7 @@ export function SpaceStockCard({
                 {item.title}
               </a>
               {item.titleKo && <div className="space-stock-news-ko">{item.titleKo}</div>}
-              {item.source && <span className="space-stock-news-source"> · {item.source}</span>}
+              {item.source && <span className="space-stock-news-source-badge">{item.source}</span>}
             </li>
           ))}
           </ul>
