@@ -1,4 +1,4 @@
-import FinancialStatementTable, { type Row } from "@/components/FinancialStatementTable";
+import FinancialStatementTable, { type Row, type HistQuarterKey } from "@/components/FinancialStatementTable";
 import NavMenu from "@/components/NavMenu";
 
 const FY2021_URL = "https://investors.rocketlabcorp.com/node/9416/html";
@@ -10,6 +10,29 @@ const Q1_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
 const Q2_FILING_URL = "https://investors.rocketlabcorp.com/node/11206/html";
 const Q3_FILING_URL = "https://investors.rocketlabcorp.com/node/11551/html";
 const Q4_FILING_URL = "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000012/rklb-02262026ex991.htm";
+
+// Historical quarterly earnings press releases (Exhibit 99.1 to each quarter's 8-K), used for
+// the FY2022–2024 펼치기 columns. FY2020/2021 quarterly figures aren't included: Rocket Lab
+// was a private company until its Aug 2021 SPAC merger, so no quarterly filings exist for
+// 2020 or H1 2021.
+const HIST_URL: Record<HistQuarterKey, string> = {
+  "22Q1": "https://www.sec.gov/Archives/edgar/data/1819994/000119312522151833/d342077dex991.htm",
+  "22Q2": "https://www.sec.gov/Archives/edgar/data/1819994/000119312522218581/d297956dex991.htm",
+  "22Q3": "https://www.sec.gov/Archives/edgar/data/1819994/000095017022023906/rklb-ex99_1.htm",
+  "22Q4": "https://www.sec.gov/Archives/edgar/data/1819994/000095017023005103/rklb-ex99_1.htm",
+  "23Q1": "https://www.sec.gov/Archives/edgar/data/1819994/000095017023019699/rklb-ex99_1.htm",
+  "23Q2": "https://www.sec.gov/Archives/edgar/data/1819994/000095017023039844/rklb-ex99_1.htm",
+  "23Q3": "https://www.sec.gov/Archives/edgar/data/1819994/000095017023061155/rklb-ex99_1.htm",
+  "23Q4": "https://www.sec.gov/Archives/edgar/data/1819994/000095017024021114/rklb-ex99_1.htm",
+  "24Q1": "https://www.sec.gov/Archives/edgar/data/1819994/000095017024053620/rklb-ex99_1.htm",
+  "24Q2": "https://www.sec.gov/Archives/edgar/data/1819994/000095017024094034/rklb-ex99_1.htm",
+  "24Q3": "https://www.sec.gov/Archives/edgar/data/1819994/000095017024125448/rklb-ex99_1.htm",
+  "24Q4": "https://www.sec.gov/Archives/edgar/data/1819994/000162828025008658/rklb-ex99_1.htm"
+};
+
+function histCell(key: HistQuarterKey, text: string) {
+  return { text, url: HIST_URL[key] };
+}
 
 const SOURCE_URL = {
   fy21: FY2021_URL,
@@ -42,7 +65,21 @@ const rows: Row[] = [
     q4y25: cell("179,652", "q4"),
     fy2025: cell("601,799", "fy"),
     q1y26: cell("200,348", "q1"),
-    growth: "▲ 63%"
+    growth: "▲ 63%",
+    hist: {
+      "22Q1": histCell("22Q1", "40,703"),
+      "22Q2": histCell("22Q2", "55,474"),
+      "22Q3": histCell("22Q3", "63,057"),
+      "22Q4": histCell("22Q4", "51,762"),
+      "23Q1": histCell("23Q1", "54,895"),
+      "23Q2": histCell("23Q2", "62,045"),
+      "23Q3": histCell("23Q3", "67,661"),
+      "23Q4": histCell("23Q4", "59,991"),
+      "24Q1": histCell("24Q1", "92,767"),
+      "24Q2": histCell("24Q2", "106,251"),
+      "24Q3": histCell("24Q3", "104,808"),
+      "24Q4": histCell("24Q4", "132,388")
+    }
   },
   {
     label: "Launch",
@@ -90,7 +127,21 @@ const rows: Row[] = [
     q4y25: cell("68,232", "q4"),
     fy2025: cell("207,181", "fy"),
     q1y26: cell("76,493", "q1"),
-    growth: "▲ 117%"
+    growth: "▲ 117%",
+    hist: {
+      "22Q1": histCell("22Q1", "3,735"),
+      "22Q2": histCell("22Q2", "4,958"),
+      "22Q3": histCell("22Q3", "8,467"),
+      "22Q4": histCell("22Q4", "1,830"),
+      "23Q1": histCell("23Q1", "6,357"),
+      "23Q2": histCell("23Q2", "14,593"),
+      "23Q3": histCell("23Q3", "14,967"),
+      "23Q4": histCell("23Q4", "15,492"),
+      "24Q1": histCell("24Q1", "24,174"),
+      "24Q2": histCell("24Q2", "27,162"),
+      "24Q3": histCell("24Q3", "27,996"),
+      "24Q4": histCell("24Q4", "36,817")
+    }
   },
   {
     label: "Launch",
@@ -138,7 +189,21 @@ const rows: Row[] = [
     q4y25: cell("38.0%", "q4"),
     fy2025: cell("34.4%", "fy"),
     q1y26: cell("38.2%", "q1"),
-    growth: "▲ 9.4%p"
+    growth: "▲ 9.4%p",
+    hist: {
+      "22Q1": histCell("22Q1", "9.2%"),
+      "22Q2": histCell("22Q2", "8.9%"),
+      "22Q3": histCell("22Q3", "13.4%"),
+      "22Q4": histCell("22Q4", "3.5%"),
+      "23Q1": histCell("23Q1", "11.6%"),
+      "23Q2": histCell("23Q2", "23.5%"),
+      "23Q3": histCell("23Q3", "22.1%"),
+      "23Q4": histCell("23Q4", "25.8%"),
+      "24Q1": histCell("24Q1", "26.1%"),
+      "24Q2": histCell("24Q2", "25.6%"),
+      "24Q3": histCell("24Q3", "26.7%"),
+      "24Q4": histCell("24Q4", "27.8%")
+    }
   },
   {
     label: "Launch",
@@ -186,7 +251,21 @@ const rows: Row[] = [
     q4y25: cell("(51,042)", "q4"),
     fy2025: cell("(228,838)", "fy"),
     q1y26: cell("(55,969)", "q1"),
-    growth: "▼ 5%"
+    growth: "▼ 5%",
+    hist: {
+      "22Q1": histCell("22Q1", "(32,820)"),
+      "22Q2": histCell("22Q2", "(33,159)"),
+      "22Q3": histCell("22Q3", "(32,002)"),
+      "22Q4": histCell("22Q4", "(37,223)"),
+      "23Q1": histCell("23Q1", "(46,017)"),
+      "23Q2": histCell("23Q2", "(45,159)"),
+      "23Q3": histCell("23Q3", "(38,859)"),
+      "23Q4": histCell("23Q4", "(47,883)"),
+      "24Q1": histCell("24Q1", "(43,079)"),
+      "24Q2": histCell("24Q2", "(43,274)"),
+      "24Q3": histCell("24Q3", "(51,899)"),
+      "24Q4": histCell("24Q4", "(51,549)")
+    }
   },
   {
     label: "영업손실률 (Operating Loss Margin)",
@@ -201,7 +280,21 @@ const rows: Row[] = [
     q4y25: cell("(28.4)%", "q4"),
     fy2025: cell("38.1%", "fy"),
     q1y26: cell("27.9%", "q1"),
-    growth: "▼ 20.4%p"
+    growth: "▼ 20.4%p",
+    hist: {
+      "22Q1": histCell("22Q1", "(80.6)%"),
+      "22Q2": histCell("22Q2", "(59.8)%"),
+      "22Q3": histCell("22Q3", "(50.7)%"),
+      "22Q4": histCell("22Q4", "(71.9)%"),
+      "23Q1": histCell("23Q1", "(83.8)%"),
+      "23Q2": histCell("23Q2", "(72.8)%"),
+      "23Q3": histCell("23Q3", "(57.4)%"),
+      "23Q4": histCell("23Q4", "(79.8)%"),
+      "24Q1": histCell("24Q1", "(46.4)%"),
+      "24Q2": histCell("24Q2", "(40.7)%"),
+      "24Q3": histCell("24Q3", "(49.5)%"),
+      "24Q4": histCell("24Q4", "(38.9)%")
+    }
   },
   {
     label: "당기순손실 (Net Loss)",
@@ -217,7 +310,21 @@ const rows: Row[] = [
     q4y25: cell("(52,922)", "q4"),
     fy2025: cell("(198,209)", "fy"),
     q1y26: cell("(45,022)", "q1"),
-    growth: "▼ 26%"
+    growth: "▼ 26%",
+    hist: {
+      "22Q1": histCell("22Q1", "(26,709)"),
+      "22Q2": histCell("22Q2", "(37,417)"),
+      "22Q3": histCell("22Q3", "(34,610)"),
+      "22Q4": histCell("22Q4", "(37,208)"),
+      "23Q1": histCell("23Q1", "(45,617)"),
+      "23Q2": histCell("23Q2", "(45,889)"),
+      "23Q3": histCell("23Q3", "(40,568)"),
+      "23Q4": histCell("23Q4", "(50,497)"),
+      "24Q1": histCell("24Q1", "(44,260)"),
+      "24Q2": histCell("24Q2", "(41,631)"),
+      "24Q3": histCell("24Q3", "(51,939)"),
+      "24Q4": histCell("24Q4", "(52,345)")
+    }
   },
   {
     label: "보유 현금 및 유가증권",

@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 export type Cell = { text: string; url?: string };
+
+// Quarterly breakdown for the collapsible FY2022–2024 columns. Key format: "22Q1".."24Q4".
+export type HistQuarterKey =
+  | "22Q1" | "22Q2" | "22Q3" | "22Q4"
+  | "23Q1" | "23Q2" | "23Q3" | "23Q4"
+  | "24Q1" | "24Q2" | "24Q3" | "24Q4";
 
 export type Row = {
   label: string;
@@ -20,7 +26,12 @@ export type Row = {
   fy2025: Cell;
   q1y26: Cell;
   growth?: string;
+  hist?: Partial<Record<HistQuarterKey, Cell>>;
 };
+
+const EMPTY_CELL: Cell = { text: "-" };
+const HIST_YEARS = ["22", "23", "24"] as const;
+const HIST_QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
 // Chrome/Edge text-fragment navigation: jumps to and highlights the matching text on the filing page.
 function filingLink(url: string, text: string) {
@@ -45,6 +56,10 @@ function ValueCell({ data, className, negative }: { data: Cell; className?: stri
 
 export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
   const [showQuarters, setShowQuarters] = useState(false);
+  const [showHistYear, setShowHistYear] = useState<Record<string, boolean>>({});
+
+  const toggleHistYear = (year: string) =>
+    setShowHistYear((prev) => ({ ...prev, [year]: !prev[year] }));
 
   return (
     <div className="card fin-card">
@@ -54,9 +69,14 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             <th className="fin-label-header">항목</th>
             <th className="fin-col-sep">FY 2020</th>
             <th className="fin-col-sep">FY 2021</th>
-            <th className="fin-col-sep">FY 2022</th>
-            <th className="fin-col-sep">FY 2023</th>
-            <th className="fin-col-sep">FY 2024</th>
+            {HIST_YEARS.map((year) => (
+              <th key={year} className="fin-col-sep fin-fy-col fin-fy-header">
+                <div>FY 20{year}</div>
+                <button type="button" className="fin-toggle-btn" onClick={() => toggleHistYear(year)}>
+                  {year}Y 1Q–4Q {showHistYear[year] ? "▲ 접기" : "▼ 펼치기"}
+                </button>
+              </th>
+            ))}
             {showQuarters && (
               <>
                 <th className="fin-col-sep fin-quarter-col">25Y 1Q</th>
@@ -68,7 +88,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             <th className="fin-col-sep fin-fy-col fin-fy-header">
               <div>FY 2025</div>
               <button type="button" className="fin-toggle-btn" onClick={() => setShowQuarters((v) => !v)}>
-                25Y 1Q–3Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
+                25Y 1Q–4Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
               </button>
             </th>
             <th className="fin-highlight-col">26Y 1Q</th>
@@ -82,9 +102,23 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
               <td>{row.indent ? `– ${row.label}` : row.label}</td>
               <ValueCell data={row.fy2020} negative={row.negative} className="fin-col-sep" />
               <ValueCell data={row.fy2021} negative={row.negative} className="fin-col-sep" />
-              <ValueCell data={row.fy2022} negative={row.negative} className="fin-col-sep" />
-              <ValueCell data={row.fy2023} negative={row.negative} className="fin-col-sep" />
-              <ValueCell data={row.fy2024} negative={row.negative} className="fin-col-sep" />
+              {HIST_YEARS.map((year) => {
+                const fyCell = year === "22" ? row.fy2022 : year === "23" ? row.fy2023 : row.fy2024;
+                return (
+                  <Fragment key={year}>
+                    {showHistYear[year] &&
+                      HIST_QUARTERS.map((q) => (
+                        <ValueCell
+                          key={`${year}${q}`}
+                          data={row.hist?.[`${year}${q}` as HistQuarterKey] ?? EMPTY_CELL}
+                          negative={row.negative}
+                          className="fin-col-sep fin-quarter-col"
+                        />
+                      ))}
+                    <ValueCell data={fyCell} negative={row.negative} className="fin-col-sep fin-fy-col" />
+                  </Fragment>
+                );
+              })}
               {showQuarters && (
                 <>
                   <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
