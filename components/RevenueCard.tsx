@@ -47,7 +47,7 @@ export default function RevenueCard({
 
       {open && (
         <div className="revenue-popover" onClick={(e) => e.stopPropagation()}>
-          <div className="revenue-popover-title">연도별 매출 및 매출총이익률</div>
+          <div className="revenue-popover-title">연도별 매출 및 매출총이익률(GPM)</div>
           <ResponsiveContainer width="100%" height={160}>
             <ComposedChart data={ANNUAL_REVENUE} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
               <XAxis dataKey="year" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={{ stroke: "#334155" }} tickLine={false} />
