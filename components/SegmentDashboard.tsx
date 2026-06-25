@@ -372,7 +372,9 @@ function CompareCard({
 
         .pill {
           display: block;
-          width: 190px;
+          width: max-content;
+          max-width: 100%;
+          white-space: nowrap;
           margin: 34px auto 0;
           padding: 6px 10px;
           border-radius: 999px;
