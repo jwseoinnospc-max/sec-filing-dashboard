@@ -155,20 +155,22 @@ function CompareCard({
         </div>
 
         <div className="center">
-          <svg className="arrow" viewBox="0 0 160 80" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id={`arrow-gradient-${metric}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={LIGHT_BLUE} stopOpacity="0" />
-                <stop offset="100%" stopColor={LIGHT_BLUE} stopOpacity="1" />
-              </linearGradient>
-            </defs>
-            <rect x="0" y="22" width="105" height="36" fill={`url(#arrow-gradient-${metric})`} />
-            <polygon points="100,0 160,40 100,80" fill={LIGHT_BLUE} />
-          </svg>
-          <div className="growth-text">
-            <span>전년 동기 대비</span>
-            <strong>{pct(totalGrowth)}</strong>
-            <span> 증가</span>
+          <div className="arrow-wrap">
+            <svg className="arrow" viewBox="0 0 160 80" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id={`arrow-gradient-${metric}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor={LIGHT_BLUE} stopOpacity="0" />
+                  <stop offset="100%" stopColor={LIGHT_BLUE} stopOpacity="1" />
+                </linearGradient>
+              </defs>
+              <rect x="0" y="22" width="105" height="36" fill={`url(#arrow-gradient-${metric})`} />
+              <polygon points="100,0 160,40 100,80" fill={LIGHT_BLUE} />
+            </svg>
+            <div className="growth-text">
+              <span>전년 동기 대비</span>
+              <strong>{pct(totalGrowth)}</strong>
+              <span> 증가</span>
+            </div>
           </div>
 
           <a className="pill blue" href={sourceHref}>
@@ -349,15 +351,25 @@ function CompareCard({
           position: relative;
         }
 
-        .arrow {
-          display: block;
+        .arrow-wrap {
+          position: relative;
           width: 160px;
           height: 80px;
           margin: 18px auto 0;
         }
 
+        .arrow {
+          display: block;
+          width: 160px;
+          height: 80px;
+        }
+
         .growth-text {
-          margin-top: -58px;
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          transform: translateY(-50%);
           font-size: 13px;
           color: #1d4ed8;
           font-weight: 700;
@@ -375,7 +387,7 @@ function CompareCard({
           width: max-content;
           max-width: 100%;
           white-space: nowrap;
-          margin: 34px auto 0;
+          margin: -4px auto 0;
           padding: 8px 22px;
           border-radius: 999px;
           font-size: 12px;
