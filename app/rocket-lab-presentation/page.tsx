@@ -38,6 +38,7 @@ function groupByYear(quarters: typeof QUARTERS) {
     }
     group.quarters.push(q);
   }
+  years.forEach((g) => g.quarters.reverse());
   return years;
 }
 
