@@ -1,6 +1,7 @@
 import { QuarterChart } from '@/components/FinancialChart';
 import SegmentDashboard from '@/components/SegmentDashboard';
 import NavMenu from '@/components/NavMenu';
+import LaunchCountCard from '@/components/LaunchCountCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -140,23 +141,11 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="card">
-          <h3>🚀 발사 횟수</h3>
-          <div className="metric">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
-              6회
-            </a>
-          </div>
-          <div className="delta">분기 발사 횟수 (26Y 1Q)</div>
-          <div className="metric-sub">
-            누적 발사 횟수{" "}
-            <strong>
-              <a href={filingTextLink(ELECTRON_PAGE_URL, `${LAUNCHES_CUMULATIVE} launches to date`)} target="_blank" rel="noopener noreferrer">
-                {LAUNCHES_CUMULATIVE}회
-              </a>
-            </strong>
-          </div>
-        </div>
+        <LaunchCountCard
+          filingUrl={Q1_2026_FILING_URL}
+          cumulativeUrl={filingTextLink(ELECTRON_PAGE_URL, `${LAUNCHES_CUMULATIVE} launches to date`)}
+          cumulative={LAUNCHES_CUMULATIVE}
+        />
 
         <div className="card">
           <h3>💹 발사 서비스 수익성 (26Y 1Q)</h3>
