@@ -93,7 +93,7 @@ export default function DomesticChart({ code, data }: { code: string; data: KisD
         <div className="domestic-chart-loading">1D 데이터 없음</div>
       ) : (
         <ResponsiveContainer width="100%" height={140}>
-          <AreaChart data={points} margin={{ top: 4, right: 4, left: 4, bottom: isIntraday ? 4 : 0 }}>
+          <AreaChart data={points} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
             <defs>
               <linearGradient id={`domesticChartFill-${code}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={color} stopOpacity={0.35} />
@@ -103,7 +103,6 @@ export default function DomesticChart({ code, data }: { code: string; data: KisD
             <XAxis
               dataKey="key"
               tickFormatter={formatLabel}
-              hide={!isIntraday}
               tick={{ fill: "#94a3b8", fontSize: 10 }}
               axisLine={{ stroke: "#334155" }}
               tickLine={false}
