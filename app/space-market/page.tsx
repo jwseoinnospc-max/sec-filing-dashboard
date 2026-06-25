@@ -79,6 +79,13 @@ export default async function SpaceMarketPage() {
           <h1>Space Market</h1>
           <p>우주 산업 대표 기업의 주가를 한 화면에서 확인합니다.</p>
         </div>
+
+        <div className="header-side">
+          <div className="header-side-top">
+            <p className="data-source">Data source: 한국투자증권 OpenAPI (KIS) · Finnhub · Google News RSS</p>
+            <p className="made-by">Made by 이노스페이스 투자전략실</p>
+          </div>
+        </div>
       </section>
 
       <h2 className="space-group-title">NASDAQ</h2>
