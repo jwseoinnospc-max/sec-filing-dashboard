@@ -42,7 +42,7 @@ export default function RevenueCard({
       </div>
       <div className="delta">전년 동기 대비 {growthText}</div>
       <div className="metric-sub">
-        누적매출(최근 4개 분기) <strong>{ttmText}</strong>
+        누적매출(전체) <strong>{ttmText}</strong>
       </div>
 
       {open && (

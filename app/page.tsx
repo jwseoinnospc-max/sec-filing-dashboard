@@ -44,7 +44,15 @@ const Q3_2025_REVENUE = 155080;
 const FY2025_REVENUE = 601799;
 const Q1_2026_REVENUE = 200348;
 const Q4_2025_REVENUE = FY2025_REVENUE - Q1_2025_REVENUE - Q2_2025_REVENUE - Q3_2025_REVENUE;
-const TTM_REVENUE = Q2_2025_REVENUE + Q3_2025_REVENUE + Q4_2025_REVENUE + Q1_2026_REVENUE;
+
+// All-time cumulative revenue since FY2020 (annual figures from /financial-statement) + Q1 2026.
+const FY2020_REVENUE = 35160;
+const FY2021_REVENUE = 62237;
+const FY2022_REVENUE = 210996;
+const FY2023_REVENUE = 244592;
+const FY2024_REVENUE = 436214;
+const CUMULATIVE_REVENUE =
+  FY2020_REVENUE + FY2021_REVENUE + FY2022_REVENUE + FY2023_REVENUE + FY2024_REVENUE + FY2025_REVENUE + Q1_2026_REVENUE;
 
 const LAUNCHES_CUMULATIVE = 88; // all-time Electron launches to date, per rocketlabcorp.com/launch/electron/
 const ELECTRON_PAGE_URL = 'https://rocketlabcorp.com/launch/electron/';
@@ -139,7 +147,7 @@ export default async function Home() {
           filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_REVENUE))}
           revenueText={money(Q1_2026_REVENUE / 1000)}
           growthText={growth(Q1_2026_REVENUE, Q1_2025_REVENUE)}
-          ttmText={money(TTM_REVENUE / 1000)}
+          ttmText={money(CUMULATIVE_REVENUE / 1000)}
         />
 
         <LaunchCountCard
