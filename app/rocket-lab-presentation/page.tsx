@@ -25,7 +25,25 @@ const QUARTERS: { label: string; url: string | null }[] = [
   { label: "2022 1Q", url: "https://investors.rocketlabcorp.com/static-files/36bda1d4-c842-457e-8c82-20b142a68ba0" }
 ];
 
+const LATEST_LABEL = QUARTERS[0].label;
+
+function groupByYear(quarters: typeof QUARTERS) {
+  const years: { year: string; quarters: typeof QUARTERS }[] = [];
+  for (const q of quarters) {
+    const year = q.label.slice(0, 4);
+    let group = years.find((g) => g.year === year);
+    if (!group) {
+      group = { year, quarters: [] };
+      years.push(group);
+    }
+    group.quarters.push(q);
+  }
+  return years;
+}
+
 export default function RocketLabPresentationPage() {
+  const years = groupByYear(QUARTERS);
+
   return (
     <main className="page">
       <section className="header">
@@ -36,27 +54,35 @@ export default function RocketLabPresentationPage() {
         </div>
       </section>
 
-      <section className="presentation-grid">
-        {QUARTERS.map((q) => (
-          <div key={q.label} className="presentation-card">
-            <div className="presentation-label">{q.label}</div>
-            {q.url ? (
-              <a href={q.url} target="_blank" rel="noopener noreferrer" className="presentation-btn">
-                PDF 보기
-              </a>
-            ) : (
-              <a
-                href="https://investors.rocketlabcorp.com/financial-information/quarterly-results"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="presentation-btn presentation-btn-muted"
-              >
-                준비 중
-              </a>
-            )}
+      {years.map(({ year, quarters }) => (
+        <div key={year} className="presentation-year-row">
+          <div className="presentation-year-label">{year}</div>
+          <div className="presentation-grid">
+            {quarters.map((q) => (
+              <div key={q.label} className="presentation-card">
+                <div className="presentation-label">
+                  {q.label}
+                  {q.label === LATEST_LABEL && <span className="presentation-new-badge">New</span>}
+                </div>
+                {q.url ? (
+                  <a href={q.url} target="_blank" rel="noopener noreferrer" className="presentation-btn">
+                    PDF 보기
+                  </a>
+                ) : (
+                  <a
+                    href="https://investors.rocketlabcorp.com/financial-information/quarterly-results"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="presentation-btn presentation-btn-muted"
+                  >
+                    준비 중
+                  </a>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </section>
+        </div>
+      ))}
 
       <div className="footer">
         <Link href="/">← 대시보드로 돌아가기</Link>
