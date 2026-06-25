@@ -4,25 +4,37 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const ROCKET_LAB_LINKS = [
-  { href: "/", label: "Rocket Lab Dashboard" },
-  { href: "/financial-statement", label: "Rocket Lab Financial Statement" },
-  { href: "/rocket-lab-presentation", label: "Rocket Lab Presentation" }
+const GROUPS = [
+  {
+    label: "Rocket Lab",
+    links: [
+      { href: "/", label: "Rocket Lab Dashboard" },
+      { href: "/financial-statement", label: "Rocket Lab Financial Statement" },
+      { href: "/rocket-lab-presentation", label: "Rocket Lab Presentation" }
+    ]
+  },
+  {
+    label: "Firefly Aerospace",
+    links: [{ href: "/firefly-financial-statement", label: "Firefly Aerospace Financial Statement" }]
+  }
 ];
-
-const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/rocket-lab-presentation"]);
 
 function currentGroupLabel(pathname: string) {
   if (pathname === "/space-market") return "Space Market";
-  if (ROCKET_LAB_PATHS.has(pathname)) return "Rocket Lab";
-  return null;
+  const group = GROUPS.find((g) => g.links.some((link) => link.href === pathname));
+  return group?.label ?? null;
 }
 
 export default function NavMenu() {
   const [open, setOpen] = useState(false);
-  const [rocketOpen, setRocketOpen] = useState(true);
   const pathname = usePathname();
   const groupLabel = currentGroupLabel(pathname);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    "Rocket Lab": true,
+    "Firefly Aerospace": true
+  });
+
+  const toggleGroup = (label: string) => setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
 
   return (
     <div className="nav-menu">
@@ -41,24 +53,28 @@ export default function NavMenu() {
             Space Market
           </Link>
 
-          <button type="button" className="nav-group-toggle" onClick={() => setRocketOpen((v) => !v)}>
-            {rocketOpen ? "▾" : "▸"} Rocket Lab
-          </button>
+          {GROUPS.map((group) => (
+            <div key={group.label}>
+              <button type="button" className="nav-group-toggle" onClick={() => toggleGroup(group.label)}>
+                {openGroups[group.label] ? "▾" : "▸"} {group.label}
+              </button>
 
-          {rocketOpen && (
-            <div className="nav-subgroup">
-              {ROCKET_LAB_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`nav-subitem ${pathname === link.href ? "active" : ""}`}
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {openGroups[group.label] && (
+                <div className="nav-subgroup">
+                  {group.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`nav-subitem ${pathname === link.href ? "active" : ""}`}
+                      onClick={() => setOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
