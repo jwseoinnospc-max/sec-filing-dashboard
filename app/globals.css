@@ -168,6 +168,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .space-stock-price { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
 .space-stock-price-na { font-size: 16px; color: var(--muted); font-weight: 600; }
 .space-stock-change { margin-top: 4px; font-size: 13px; font-weight: 700; }
+.space-stock-change-basis { color: var(--muted); font-size: 11px; font-weight: 500; }
 .space-stock-up { color: #f87171; }
 .space-stock-down { color: #60a5fa; }
 .space-stock-meta { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 11px; color: var(--muted); }

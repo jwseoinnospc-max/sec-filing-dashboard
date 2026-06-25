@@ -68,6 +68,7 @@ export function SpaceStockCard({
                 {isUp ? "+" : ""}
                 {currency === "KRW" ? change!.toLocaleString() : change!.toFixed(2)} {isUp ? "+" : ""}
                 {changePercent!.toFixed(2)}%
+                <span className="space-stock-change-basis"> (전일 종가 대비)</span>
               </div>
             </>
           ) : (
