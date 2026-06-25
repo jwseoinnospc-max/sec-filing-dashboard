@@ -23,20 +23,24 @@ const NASDAQ_COMPANIES = [
 ];
 
 // Clearbit's free Logo API (logo.clearbit.com) was shut down on 2025-12-08, so logos use
-// Google's favicon service instead — no API key required.
+// Google's favicon service as a fallback — no API key required.
 function favicon(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
 
+// Most logos are the companies' official member logos hosted by KASP (한국우주산업협회),
+// https://www.kasp.or.kr/member/info.html — higher quality than a favicon fallback.
+const KASP_LOGO_BASE = "https://www.kasp.or.kr/admin/data/company_logo";
+
 const DOMESTIC_COMPANIES = [
-  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: favicon("innospc.com") },
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_68_1.jpg` },
   { name: "LIG넥스원", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
-  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") },
-  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: favicon("koreaaero.com") },
-  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: favicon("satreci.com") },
-  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },
-  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: favicon("apsi.co.kr") },
-  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: favicon("naraspace.com") }
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: `${KASP_LOGO_BASE}/picture_4_1.jpg` },
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: `${KASP_LOGO_BASE}/picture_12_1.jpg` },
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_20_1.png` },
+  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_10_1.jpg` },
+  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_17_1.jpg` },
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: `${KASP_LOGO_BASE}/picture_31_1.jpg` }
 ];
 
 async function loadOverseasStock(symbol: string) {
