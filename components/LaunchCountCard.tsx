@@ -5,11 +5,11 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 
 // Annual Electron launch counts, sourced from Rocket Lab's FY2021–FY2024 10-Ks (see /financial-statement).
 const ANNUAL_LAUNCHES = [
-  { year: "2020", count: 7 },
   { year: "2021", count: 6 },
   { year: "2022", count: 9 },
   { year: "2023", count: 10 },
-  { year: "2024", count: 16 }
+  { year: "2024", count: 16 },
+  { year: "2025", count: 21 }
 ];
 
 export default function LaunchCountCard({

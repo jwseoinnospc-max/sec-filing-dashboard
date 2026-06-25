@@ -5,11 +5,11 @@ import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } 
 
 // Annual revenue ($M) and gross margin (%), sourced from Rocket Lab's FY2021–FY2024 10-Ks (see /financial-statement).
 const ANNUAL_REVENUE = [
-  { year: "2020", revenue: 35.2, gpm: -33.6 },
   { year: "2021", revenue: 62.2, gpm: -3.0 },
   { year: "2022", revenue: 211.0, gpm: 9.0 },
   { year: "2023", revenue: 244.6, gpm: 21.0 },
-  { year: "2024", revenue: 436.2, gpm: 26.6 }
+  { year: "2024", revenue: 436.2, gpm: 26.6 },
+  { year: "2025", revenue: 601.8, gpm: 34.4 }
 ];
 
 export default function RevenueCard({
