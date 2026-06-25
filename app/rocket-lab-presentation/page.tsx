@@ -51,7 +51,7 @@ export default function RocketLabPresentationPage() {
         <div>
           <NavMenu />
           <h1>Rocket Lab Presentation</h1>
-          <p>분기별 Investor Presentation을 한 화면에서 확인합니다.</p>
+          <p>분기별 Investor Presentation 자료를 바로 볼 수 있습니다.</p>
         </div>
       </section>
 
