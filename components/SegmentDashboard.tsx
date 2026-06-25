@@ -169,7 +169,7 @@ function CompareCard({
             <div className="growth-text">
               <span>전년 동기 대비</span>
               <strong>{pct(totalGrowth)}</strong>
-              <span> 증가</span>
+              <span> {totalGrowth >= 0 ? "↑" : "↓"}</span>
             </div>
           </div>
 
