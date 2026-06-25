@@ -7,11 +7,10 @@ import { usePathname } from "next/navigation";
 const ROCKET_LAB_LINKS = [
   { href: "/", label: "Rocket Lab Dashboard" },
   { href: "/financial-statement", label: "Rocket Lab Financial Statement" },
-  { href: "/overview", label: "Rocket Lab Overview" },
   { href: "/rocket-lab-presentation", label: "Rocket Lab Presentation" }
 ];
 
-const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/overview", "/rocket-lab-presentation"]);
+const ROCKET_LAB_PATHS = new Set(["/", "/financial-statement", "/rocket-lab-presentation"]);
 
 function currentGroupLabel(pathname: string) {
   if (pathname === "/space-market") return "Space Market";
