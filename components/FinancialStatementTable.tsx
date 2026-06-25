@@ -70,12 +70,20 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
             <th className="fin-col-sep">FY 2020</th>
             <th className="fin-col-sep">FY 2021</th>
             {HIST_YEARS.map((year) => (
-              <th key={year} className="fin-col-sep fin-fy-col fin-fy-header">
-                <div>FY 20{year}</div>
-                <button type="button" className="fin-toggle-btn" onClick={() => toggleHistYear(year)}>
-                  {year}Y 1Q–4Q {showHistYear[year] ? "▲ 접기" : "▼ 펼치기"}
-                </button>
-              </th>
+              <Fragment key={year}>
+                {showHistYear[year] &&
+                  HIST_QUARTERS.map((q) => (
+                    <th key={`${year}${q}`} className="fin-col-sep fin-quarter-col">
+                      {year}Y {q}
+                    </th>
+                  ))}
+                <th className="fin-col-sep fin-fy-col fin-fy-header">
+                  <div>FY 20{year}</div>
+                  <button type="button" className="fin-toggle-btn" onClick={() => toggleHistYear(year)}>
+                    {year}Y 1Q–4Q {showHistYear[year] ? "▲ 접기" : "▼ 펼치기"}
+                  </button>
+                </th>
+              </Fragment>
             ))}
             {showQuarters && (
               <>
