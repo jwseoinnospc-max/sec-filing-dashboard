@@ -16,6 +16,7 @@ export type Row = {
   q1y25: Cell;
   q2y25: Cell;
   q3y25: Cell;
+  q4y25: Cell;
   fy2025: Cell;
   q1y26: Cell;
   growth?: string;
@@ -50,7 +51,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
       <table className="table fin-table">
         <thead>
           <tr>
-            <th>항목</th>
+            <th className="fin-label-header">항목</th>
             <th className="fin-col-sep">FY 2020</th>
             <th className="fin-col-sep">FY 2021</th>
             <th className="fin-col-sep">FY 2022</th>
@@ -61,6 +62,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 <th className="fin-col-sep fin-quarter-col">25Y 1Q</th>
                 <th className="fin-col-sep fin-quarter-col">25Y 2Q</th>
                 <th className="fin-col-sep fin-quarter-col">25Y 3Q</th>
+                <th className="fin-col-sep fin-quarter-col">25Y 4Q</th>
               </>
             )}
             <th className="fin-col-sep fin-fy-col fin-fy-header">
@@ -88,6 +90,7 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                   <ValueCell data={row.q1y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
                   <ValueCell data={row.q2y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
                   <ValueCell data={row.q3y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
+                  <ValueCell data={row.q4y25} negative={row.negative} className="fin-col-sep fin-quarter-col" />
                 </>
               )}
               <ValueCell data={row.fy2025} negative={row.negative} className="fin-col-sep fin-fy-col" />

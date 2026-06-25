@@ -9,6 +9,7 @@ const FY2025_10K_URL = "https://investors.rocketlabcorp.com/node/12096/html";
 const Q1_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
 const Q2_FILING_URL = "https://investors.rocketlabcorp.com/node/11206/html";
 const Q3_FILING_URL = "https://investors.rocketlabcorp.com/node/11551/html";
+const Q4_FILING_URL = "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000012/rklb-02262026ex991.htm";
 
 const SOURCE_URL = {
   fy21: FY2021_URL,
@@ -18,7 +19,8 @@ const SOURCE_URL = {
   fy: FY2025_10K_URL,
   q1: Q1_FILING_URL,
   q2: Q2_FILING_URL,
-  q3: Q3_FILING_URL
+  q3: Q3_FILING_URL,
+  q4: Q4_FILING_URL
 } as const;
 
 function cell(text: string, source?: keyof typeof SOURCE_URL) {
@@ -37,6 +39,7 @@ const rows: Row[] = [
     q1y25: cell("122,569", "q1"),
     q2y25: cell("144,498", "q2"),
     q3y25: cell("155,080", "q3"),
+    q4y25: cell("179,652", "q4"),
     fy2025: cell("601,799", "fy"),
     q1y26: cell("200,348", "q1"),
     growth: "▲ 63%"
@@ -52,6 +55,7 @@ const rows: Row[] = [
     q1y25: cell("35,592", "q1"),
     q2y25: cell("46,646", "q2"),
     q3y25: cell("40,921", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("199,042", "fy"),
     q1y26: cell("63,663", "q1"),
     growth: "▲ 79%"
@@ -67,6 +71,7 @@ const rows: Row[] = [
     q1y25: cell("86,977", "q1"),
     q2y25: cell("97,852", "q2"),
     q3y25: cell("114,159", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("402,757", "fy"),
     q1y26: cell("136,685", "q1"),
     growth: "▲ 57%"
@@ -82,6 +87,7 @@ const rows: Row[] = [
     q1y25: cell("35,247", "q1"),
     q2y25: cell("46,388", "q2"),
     q3y25: cell("57,314", "q3"),
+    q4y25: cell("68,232", "q4"),
     fy2025: cell("207,181", "fy"),
     q1y26: cell("76,493", "q1"),
     growth: "▲ 117%"
@@ -98,6 +104,7 @@ const rows: Row[] = [
     q1y25: cell("7,217", "q1"),
     q2y25: cell("14,220", "q2"),
     q3y25: cell("23,758", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("81,270", "fy"),
     q1y26: cell("28,223", "q1"),
     growth: "▲ 291%"
@@ -113,6 +120,7 @@ const rows: Row[] = [
     q1y25: cell("28,030", "q1"),
     q2y25: cell("32,168", "q2"),
     q3y25: cell("33,556", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("125,911", "fy"),
     q1y26: cell("48,270", "q1"),
     growth: "▲ 72%"
@@ -127,6 +135,7 @@ const rows: Row[] = [
     q1y25: cell("28.8%", "q1"),
     q2y25: cell("32.1%", "q2"),
     q3y25: cell("37.0%", "q3"),
+    q4y25: cell("38.0%", "q4"),
     fy2025: cell("34.4%", "fy"),
     q1y26: cell("38.2%", "q1"),
     growth: "▲ 9.4%p"
@@ -142,6 +151,7 @@ const rows: Row[] = [
     q1y25: cell("20.3%", "q1"),
     q2y25: cell("30.5%", "q2"),
     q3y25: cell("58.0%", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("40.8%", "fy"),
     q1y26: cell("44.3%", "q1"),
     growth: "▲ 24.0%p"
@@ -157,6 +167,7 @@ const rows: Row[] = [
     q1y25: cell("32.2%", "q1"),
     q2y25: cell("32.9%", "q2"),
     q3y25: cell("29.4%", "q3"),
+    q4y25: cell("-"),
     fy2025: cell("31.3%", "fy"),
     q1y26: cell("35.3%", "q1"),
     growth: "▲ 3.1%p"
@@ -172,6 +183,7 @@ const rows: Row[] = [
     q1y25: cell("(59,188)", "q1"),
     q2y25: cell("(59,639)", "q2"),
     q3y25: cell("(58,969)", "q3"),
+    q4y25: cell("(51,042)", "q4"),
     fy2025: cell("(228,838)", "fy"),
     q1y26: cell("(55,969)", "q1"),
     growth: "▼ 5%"
@@ -186,6 +198,7 @@ const rows: Row[] = [
     q1y25: cell("48.3%", "q1"),
     q2y25: cell("41.3%", "q2"),
     q3y25: cell("38.0%", "q3"),
+    q4y25: cell("(28.4)%", "q4"),
     fy2025: cell("38.1%", "fy"),
     q1y26: cell("27.9%", "q1"),
     growth: "▼ 20.4%p"
@@ -201,6 +214,7 @@ const rows: Row[] = [
     q1y25: cell("(60,616)", "q1"),
     q2y25: cell("(66,414)", "q2"),
     q3y25: cell("(18,257)", "q3"),
+    q4y25: cell("(52,922)", "q4"),
     fy2025: cell("(198,209)", "fy"),
     q1y26: cell("(45,022)", "q1"),
     growth: "▼ 26%"
@@ -215,6 +229,7 @@ const rows: Row[] = [
     q1y25: cell("308,251", "q1"),
     q2y25: cell("749,299", "q2"),
     q3y25: cell("1,022,942", "q3"),
+    q4y25: cell("1,098,824", "fy"),
     fy2025: cell("1,098,824", "fy"),
     q1y26: cell("1,476,845", "q1"),
     growth: "▲ 379%"
@@ -229,6 +244,7 @@ const rows: Row[] = [
     q1y25: cell("1,066,946", "q1"),
     q2y25: cell("995,400", "q2"),
     q3y25: cell("1,096,000", "q3"),
+    q4y25: cell("1,847,322", "fy"),
     fy2025: cell("1,847,322", "fy"),
     q1y26: cell("2,219,756", "q1"),
     growth: "▲ 108%"
@@ -244,6 +260,7 @@ const rows: Row[] = [
     q1y25: cell("422,100", "q1"),
     q2y25: cell("409,600", "q2"),
     q3y25: cell("509,700", "q3"),
+    q4y25: cell("475,600", "fy"),
     fy2025: cell("475,600", "fy"),
     q1y26: cell("921,412", "q1"),
     growth: "▲ 118%"
@@ -259,6 +276,7 @@ const rows: Row[] = [
     q1y25: cell("644,800", "q1"),
     q2y25: cell("585,800", "q2"),
     q3y25: cell("586,300", "q3"),
+    q4y25: cell("1,371,722", "fy"),
     fy2025: cell("1,371,722", "fy"),
     q1y26: cell("1,298,344", "q1"),
     growth: "▲ 101%"
@@ -273,6 +291,7 @@ const rows: Row[] = [
     q1y25: cell("5회", "q1"),
     q2y25: cell("5회", "q2"),
     q3y25: cell("4회", "q3"),
+    q4y25: cell("7회", "q4"),
     fy2025: cell("21회", "fy"),
     q1y26: cell("6회", "q1"),
     growth: "▲ 1회"
@@ -287,6 +306,7 @@ const rows: Row[] = [
     q1y25: cell("-"),
     q2y25: cell("-"),
     q3y25: cell("-"),
+    q4y25: cell("-"),
     fy2025: cell("약 24대", "fy"),
     q1y26: cell("약 5대", "q1")
   },
@@ -300,6 +320,7 @@ const rows: Row[] = [
     q1y25: cell("-"),
     q2y25: cell("-"),
     q3y25: cell("-"),
+    q4y25: cell("2,600명 이상", "fy"),
     fy2025: cell("2,600명 이상", "fy"),
     q1y26: cell("-")
   }
@@ -312,7 +333,7 @@ export default function FinancialStatementPage() {
         <div>
           <NavMenu />
           <h1>Rocket Lab Financial Statement</h1>
-          <p>FY2020 ~ FY2024, 분기별(25Y 1Q → 3Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
+          <p>FY2020 ~ FY2024, 분기별(25Y 1Q → 4Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
         </div>
 
         <div className="header-side">
