@@ -81,7 +81,9 @@ export function SpaceStockCard({
       {meta && <div className="space-stock-meta">{meta}</div>}
 
       {news && news.length > 0 && (
-        <ul className="space-stock-news">
+        <>
+          <div className="space-stock-news-title">최신뉴스</div>
+          <ul className="space-stock-news">
           {news.map((item, i) => (
             <li key={i}>
               <a href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
@@ -90,7 +92,8 @@ export function SpaceStockCard({
               {item.source && <span className="space-stock-news-source"> · {item.source}</span>}
             </li>
           ))}
-        </ul>
+          </ul>
+        </>
       )}
     </div>
   );
