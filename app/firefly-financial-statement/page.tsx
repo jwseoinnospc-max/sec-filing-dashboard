@@ -3,7 +3,7 @@ import NavMenu from "@/components/NavMenu";
 
 export default function FireflyFinancialStatementPage() {
   return (
-    <main className="page">
+    <main className="page firefly-page">
       <section className="header">
         <div>
           <NavMenu />
