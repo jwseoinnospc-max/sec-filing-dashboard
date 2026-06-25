@@ -39,6 +39,21 @@ export default function DomesticChart({ code, data }: { code: string; data: KisD
       .finally(() => setLoadingIntraday(false));
   }, [range, code, intraday, loadingIntraday]);
 
+  // Auto-refresh the 1D chart every 5s while it's the active tab. The shared KV-backed token
+  // cache in lib/kis.ts means this polling doesn't trigger extra KIS token issuance.
+  useEffect(() => {
+    if (range !== "1D") return;
+
+    const interval = setInterval(() => {
+      fetch(`/api/intraday/${code}`)
+        .then((res) => res.json())
+        .then((json) => setIntraday(json.bars ?? []))
+        .catch(() => {});
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [range, code]);
+
   if (!data || data.length === 0) {
     return <div className="domestic-chart-empty">차트 데이터 없음</div>;
   }

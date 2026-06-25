@@ -4,12 +4,50 @@ const KIS_BASE = "https://openapi.koreainvestment.com:9443";
 
 type TokenCache = { accessToken: string; expiresAt: number };
 let tokenCache: TokenCache | null = null;
-// Dedupe concurrent token requests: KIS rate-limits token issuance to 1/minute, and
-// fetching 4 quotes in parallel would otherwise fire 4 simultaneous token requests.
+// Dedupe concurrent token requests within this instance: KIS rate-limits token issuance to
+// 1/minute, and fetching 4 quotes in parallel would otherwise fire 4 simultaneous requests.
 let pendingTokenRequest: Promise<string | null> | null = null;
 // Cool-down so a failed/rate-limited attempt doesn't immediately retry and re-trigger the limit.
 let lastAttemptAt = 0;
 const ATTEMPT_COOLDOWN_MS = 65_000;
+
+// Token is additionally shared across all serverless instances via Upstash Redis (Vercel KV),
+// since each Vercel function instance otherwise has its own in-memory cache and would re-issue
+// a brand new (still-valid) token on every cold start — flooding KIS's "token issued" KakaoTalk
+// alert and wasting the 1/minute issuance allowance.
+const KV_URL = process.env.KV_REST_API_URL;
+const KV_TOKEN = process.env.KV_REST_API_TOKEN;
+const KV_KEY = "kis_access_token";
+
+async function kvGetToken(): Promise<TokenCache | null> {
+  if (!KV_URL || !KV_TOKEN) return null;
+  try {
+    const res = await fetch(`${KV_URL}/get/${KV_KEY}`, {
+      headers: { authorization: `Bearer ${KV_TOKEN}` },
+      cache: "no-store"
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.result) return null;
+    const parsed = JSON.parse(data.result) as TokenCache;
+    if (!parsed.accessToken || parsed.expiresAt <= Date.now()) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+async function kvSetToken(cache: TokenCache, ttlSeconds: number): Promise<void> {
+  if (!KV_URL || !KV_TOKEN) return;
+  try {
+    await fetch(`${KV_URL}/set/${KV_KEY}/${encodeURIComponent(JSON.stringify(cache))}?EX=${ttlSeconds}`, {
+      headers: { authorization: `Bearer ${KV_TOKEN}` },
+      cache: "no-store"
+    });
+  } catch {
+    // Non-fatal: this instance still has the token in memory either way.
+  }
+}
 
 async function fetchNewToken(appKey: string, appSecret: string): Promise<string | null> {
   lastAttemptAt = Date.now();
@@ -17,8 +55,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
   try {
     // NOTE: cache: "no-store" here on purpose — Next.js's fetch cache would otherwise cache
     // an error response (e.g. KIS's "1 token/minute" rate-limit reply) for the full revalidate
-    // window, locking in a failure. Cross-instance reuse instead relies on the 24h-valid token
-    // already being held by whichever instance is warm; the cooldown below guards retries.
+    // window, locking in a failure.
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -34,10 +71,13 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
     if (!res.ok || !data.access_token) return null;
 
     // expires_in is in seconds; refresh 5 minutes early to be safe.
+    const expiresInSec = Number(data.expires_in) - 300;
     tokenCache = {
       accessToken: data.access_token,
-      expiresAt: Date.now() + (Number(data.expires_in) - 300) * 1000
+      expiresAt: Date.now() + expiresInSec * 1000
     };
+
+    await kvSetToken(tokenCache, expiresInSec);
 
     return tokenCache.accessToken;
   } catch {
@@ -52,6 +92,14 @@ async function getAccessToken(): Promise<string | null> {
 
   if (tokenCache && tokenCache.expiresAt > Date.now()) {
     return tokenCache.accessToken;
+  }
+
+  // Another instance may already hold a valid token — check the shared store before
+  // considering a brand new issuance.
+  const shared = await kvGetToken();
+  if (shared) {
+    tokenCache = shared;
+    return shared.accessToken;
   }
 
   if (Date.now() - lastAttemptAt < ATTEMPT_COOLDOWN_MS) {
