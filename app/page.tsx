@@ -3,6 +3,7 @@ import SegmentDashboard from '@/components/SegmentDashboard';
 import NavMenu from '@/components/NavMenu';
 import LaunchCountCard from '@/components/LaunchCountCard';
 import RevenueCard from '@/components/RevenueCard';
+import LaunchEconomicsCard from '@/components/LaunchEconomicsCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -142,22 +143,11 @@ export default async function Home() {
           cumulative={LAUNCHES_CUMULATIVE}
         />
 
-        <div className="card">
-          <h3>💹 발사 서비스 수익성 (26Y 1Q)</h3>
-          <div className="metric">
-            <a
-              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_REVENUE_Q1_2026))}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {money(LAUNCH_REVENUE_Q1_2026 / 1000)}
-            </a>
-          </div>
-          <div className="delta">발사 수익 (Launch Revenue)</div>
-          <div className="metric-sub">
-            발사 비용(매출원가) <strong>{money(LAUNCH_COST_Q1_2026 / 1000)}</strong>
-          </div>
-        </div>
+        <LaunchEconomicsCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(LAUNCH_REVENUE_Q1_2026))}
+          revenueText={money(LAUNCH_REVENUE_Q1_2026 / 1000)}
+          costText={money(LAUNCH_COST_Q1_2026 / 1000)}
+        />
 
         <div className="card backlog-card">
           <div className="backlog-text">
