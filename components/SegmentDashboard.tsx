@@ -376,11 +376,12 @@ function CompareCard({
           max-width: 100%;
           white-space: nowrap;
           margin: 34px auto 0;
-          padding: 6px 10px;
+          padding: 8px 22px;
           border-radius: 999px;
           font-size: 12px;
           font-weight: 400;
           text-decoration: none;
+          text-align: center;
         }
 
         .pill.blue {
