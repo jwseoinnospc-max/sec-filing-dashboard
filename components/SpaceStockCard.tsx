@@ -57,30 +57,29 @@ export function SpaceStockCard({
         {symbol} · {exchange} · 24h
       </div>
 
+      {hasPrice ? (
+        <>
+          <div className="space-stock-price">{formatPrice(price!, currency)}</div>
+          <div className={`space-stock-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+            {isUp ? "+" : ""}
+            {currency === "KRW" ? change!.toLocaleString() : change!.toFixed(2)} {isUp ? "+" : ""}
+            {changePercent!.toFixed(2)}%
+            <span className="space-stock-change-basis"> (전일 종가 대비)</span>
+          </div>
+        </>
+      ) : (
+        <div className="space-stock-price space-stock-price-na">조회 중...</div>
+      )}
+
       {supportsChart ? (
         <>
           <FullChart symbol={chartSymbol} />
           <div className="space-stock-chart-legend">
-            <strong>D</strong> 지연시세(실시간 대비 최대 15분 지연) · 가격 옆 숫자/% 는 직전 종가 대비 변동 · 우측 라벨은 선택된 기간(1D/1M/3M/1Y) 기준
+            <strong>D</strong> 지연시세(실시간 대비 최대 15분 지연) · 차트 내 가격/%는 TradingView 자체 표시 · 우측 라벨은 선택된 기간(1D/1M/3M/1Y) 기준
           </div>
         </>
       ) : (
-        <>
-          {hasPrice ? (
-            <>
-              <div className="space-stock-price">{formatPrice(price!, currency)}</div>
-              <div className={`space-stock-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
-                {isUp ? "+" : ""}
-                {currency === "KRW" ? change!.toLocaleString() : change!.toFixed(2)} {isUp ? "+" : ""}
-                {changePercent!.toFixed(2)}%
-                <span className="space-stock-change-basis"> (전일 종가 대비)</span>
-              </div>
-            </>
-          ) : (
-            <div className="space-stock-price space-stock-price-na">조회 중...</div>
-          )}
-          {history && <DomesticChart code={symbol} data={history} />}
-        </>
+        history && <DomesticChart code={symbol} data={history} />
       )}
 
       {meta && <div className="space-stock-meta">{meta}</div>}

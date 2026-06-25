@@ -27,7 +27,7 @@ export default function FullChart({ symbol }: { symbol: string }) {
       showVolume: false,
       hideDateRanges: false,
       hideMarketStatus: false,
-      hideSymbolLogo: false,
+      hideSymbolLogo: true,
       scalePosition: "right",
       scaleMode: "Normal",
       fontSize: "10",
