@@ -6,6 +6,9 @@ import RevenueCard from '@/components/RevenueCard';
 import LaunchEconomicsCard from '@/components/LaunchEconomicsCard';
 import BacklogCard from '@/components/BacklogCard';
 import OperatingLossCard from '@/components/OperatingLossCard';
+import NetIncomeCard from '@/components/NetIncomeCard';
+import OperatingCashFlowCard from '@/components/OperatingCashFlowCard';
+import RoeDebtCard from '@/components/RoeDebtCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -195,43 +198,23 @@ export default async function Home() {
           ttmLossText={money(TTM_OPERATING_LOSS / 1000)}
         />
 
-        <div className="card">
-          <h3>💸 순이익 (26Y 1Q)</h3>
-          <div className="metric metric-negative">
-            <a
-              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_NET_INCOME))}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {money(Q1_2026_NET_INCOME / 1000)}
-            </a>
-          </div>
-          <div className="delta">순이익률 {pct(Q1_2026_NET_INCOME / Q1_2026_REVENUE)}</div>
-        </div>
+        <NetIncomeCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_NET_INCOME))}
+          netIncomeText={money(Q1_2026_NET_INCOME / 1000)}
+          marginText={pct(Q1_2026_NET_INCOME / Q1_2026_REVENUE)}
+        />
 
-        <div className="card">
-          <h3>💧 영업현금흐름 (26Y 1Q)</h3>
-          <div className="metric metric-negative">
-            <a
-              href={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_CASH_FLOW))}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {money(Q1_2026_OPERATING_CASH_FLOW / 1000)}
-            </a>
-          </div>
-          <div className="delta">영업현금흐름 마진 {pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}</div>
-        </div>
+        <OperatingCashFlowCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_CASH_FLOW))}
+          ocfText={money(Q1_2026_OPERATING_CASH_FLOW / 1000)}
+          marginText={pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}
+        />
 
-        <div className="card">
-          <h3>📊 ROE / 부채비율 (26Y 1Q)</h3>
-          <div className="metric metric-negative">
-            <a href={Q1_2026_FILING_URL} target="_blank" rel="noopener noreferrer">
-              {pct(Q1_2026_NET_INCOME / Q1_2026_TOTAL_EQUITY)}
-            </a>
-          </div>
-          <div className="delta">부채비율 {pct(Q1_2026_TOTAL_LIABILITIES / Q1_2026_TOTAL_ASSETS)}</div>
-        </div>
+        <RoeDebtCard
+          filingUrl={Q1_2026_FILING_URL}
+          roeText={pct(Q1_2026_NET_INCOME / Q1_2026_TOTAL_EQUITY)}
+          debtRatioText={pct(Q1_2026_TOTAL_LIABILITIES / Q1_2026_TOTAL_ASSETS)}
+        />
       </section>
 
       <SegmentDashboard />
