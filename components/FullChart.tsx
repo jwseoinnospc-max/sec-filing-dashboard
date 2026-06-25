@@ -35,7 +35,7 @@ export default function FullChart({ symbol }: { symbol: string }) {
       valuesTracking: "1",
       changeMode: "price-and-percent",
       chartType: "area",
-      dateRanges: ["1m|30", "1d|1", "3m|60", "12m|1D"]
+      dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D"]
     });
 
     container.current.appendChild(script);
