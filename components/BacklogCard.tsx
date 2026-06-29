@@ -51,7 +51,7 @@ export default function BacklogCard({ children }: { children: ReactNode }) {
                   value === "launchBacklog" ? "발사 수주잔고" : value === "totalBacklog" ? "총 수주잔고" : "총잔고대비 비중(%)"
                 }
               />
-              <Bar yAxisId="backlog" dataKey="totalBacklog" fill="#334155" barSize={14} radius={[4, 4, 0, 0]} />
+              <Bar yAxisId="backlog" dataKey="totalBacklog" fill="#a855f7" barSize={14} radius={[4, 4, 0, 0]} />
               <Bar yAxisId="backlog" dataKey="launchBacklog" fill="#38bdf8" barSize={14} radius={[4, 4, 0, 0]} />
               <Line yAxisId="share" type="monotone" dataKey="sharePct" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
             </ComposedChart>
