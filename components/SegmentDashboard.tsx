@@ -255,6 +255,12 @@ function CompareCard({
           padding: 22px 14px 18px;
         }
 
+        .period {
+          border: 2px solid #ffffff;
+          border-radius: 8px;
+          padding: 16px 12px;
+        }
+
         .period h3 {
           text-align: center;
           margin: 0 0 10px;
