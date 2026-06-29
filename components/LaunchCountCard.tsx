@@ -66,7 +66,7 @@ export default function LaunchCountCard({
                 wrapperStyle={{ fontSize: 11 }}
                 formatter={(value) => (value === "production" ? "발사체 생산량" : "발사 횟수")}
               />
-              <Bar dataKey="production" fill="#244A9B" barSize={14} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="production" fill="#f59e0b" barSize={14} radius={[4, 4, 0, 0]} />
               <Bar dataKey="count" fill="#38bdf8" barSize={14} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
