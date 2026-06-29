@@ -219,13 +219,13 @@ function CompareCard({
 
       <style jsx>{`
         .compare-card {
+          container-type: inline-size;
           position: relative;
           background: rgba(17, 24, 39, 0.88);
           border: 1px solid var(--line);
           border-radius: 0 0 12px 12px;
           color: var(--text);
-          overflow-x: auto;
-          overflow-y: hidden;
+          overflow: hidden;
           min-height: 179px;
         }
 
@@ -250,10 +250,9 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: minmax(280px, 1fr) 150px minmax(280px, 1fr);
+          grid-template-columns: 1fr 150px 1fr;
           align-items: center;
           gap: 12px;
-          min-width: 760px;
           padding: 22px 14px 18px;
         }
 
@@ -407,6 +406,27 @@ function CompareCard({
           background: ${GRAY};
           color: #111111;
           margin-top: 8px;
+        }
+
+        /* Below this container width there isn't room for [period][center][period] side by
+           side without shrinking text/donuts past readability — stack them vertically instead
+           so nothing ever needs to be clipped or scrolled. */
+        @container (max-width: 620px) {
+          .body {
+            grid-template-columns: 1fr;
+            row-gap: 18px;
+          }
+        }
+
+        @container (max-width: 380px) {
+          .side-label {
+            min-width: 56px;
+            font-size: 11px;
+          }
+
+          .connector .line {
+            width: 10px;
+          }
         }
       `}</style>
     </section>
