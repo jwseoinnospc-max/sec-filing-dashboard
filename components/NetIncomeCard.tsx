@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 // Annual net loss ($M) and net margin (%), sourced from Rocket Lab's FY2021–FY2025 10-Ks
@@ -13,7 +13,7 @@ const ANNUAL_NET_INCOME = [
   { year: "2025", netIncome: -198.2, margin: -32.9 }
 ];
 
-export default function NetIncomeCard({ filingUrl, netIncomeText, marginText }: { filingUrl: string; netIncomeText: string; marginText: string }) {
+export default function NetIncomeCard({ filingUrl, netIncomeText, marginText }: { filingUrl: string; netIncomeText: ReactNode; marginText: string }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const open = pinned || hovered;

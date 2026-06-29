@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 // Annual operating cash flow ($M) and OCF margin (%), sourced from Rocket Lab's
@@ -13,7 +13,7 @@ const ANNUAL_OCF = [
   { year: "2025", ocf: -165.5, margin: -27.5 }
 ];
 
-export default function OperatingCashFlowCard({ filingUrl, ocfText, marginText }: { filingUrl: string; ocfText: string; marginText: string }) {
+export default function OperatingCashFlowCard({ filingUrl, ocfText, marginText }: { filingUrl: string; ocfText: ReactNode; marginText: string }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const open = pinned || hovered;

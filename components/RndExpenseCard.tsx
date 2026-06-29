@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 // Annual R&D expense ($M, "Research and development, net" line), sourced from Rocket Lab's
@@ -13,7 +13,7 @@ const ANNUAL_RND = [
   { year: "2025", rnd: 270.7 }
 ];
 
-export default function RndExpenseCard({ filingUrl, rndText, growthText }: { filingUrl: string; rndText: string; growthText: string }) {
+export default function RndExpenseCard({ filingUrl, rndText, growthText }: { filingUrl: string; rndText: ReactNode; growthText: string }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const open = pinned || hovered;

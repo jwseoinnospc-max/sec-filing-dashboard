@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 // Average revenue/cost per launch ($M) = Launch segment revenue / cost ÷ launch count for that
@@ -20,8 +20,8 @@ export default function LaunchEconomicsCard({
   costText
 }: {
   filingUrl: string;
-  revenueText: string;
-  costText: string;
+  revenueText: ReactNode;
+  costText: ReactNode;
 }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);

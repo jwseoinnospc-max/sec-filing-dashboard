@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 // Annual revenue ($M) and gross margin (%), sourced from Rocket Lab's FY2021–FY2024 10-Ks (see /financial-statement).
@@ -19,9 +19,9 @@ export default function RevenueCard({
   ttmText
 }: {
   filingUrl: string;
-  revenueText: string;
+  revenueText: ReactNode;
   growthText: string;
-  ttmText: string;
+  ttmText: ReactNode;
 }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);

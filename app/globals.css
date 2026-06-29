@@ -201,6 +201,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 }
 .card h3 { margin: 0 0 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .metric { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+.krw-equiv { font-size: 13px; font-weight: 600; color: var(--muted); }
 .delta { margin-top: 8px; color: var(--good); font-size: 13px; }
 .metric-sub { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
 .metric-sub strong { color: var(--text); font-size: 16px; font-weight: 800; margin-left: 4px; }

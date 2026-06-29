@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 // Annual operating loss ($M) and operating margin (%), sourced from Rocket Lab's
@@ -19,8 +19,8 @@ export default function OperatingLossCard({
   ttmLossText
 }: {
   filingUrl: string;
-  lossText: string;
-  ttmLossText: string;
+  lossText: ReactNode;
+  ttmLossText: ReactNode;
 }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);

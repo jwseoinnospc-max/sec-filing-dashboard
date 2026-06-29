@@ -12,8 +12,21 @@ import RndExpenseCard from '@/components/RndExpenseCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
+// Approximate USD/KRW rate used only to give a rough won-equivalent alongside dollar figures.
+const USD_KRW_RATE = 1400;
+
+function krwEquivalent(usdMillions: number) {
+  const krwEok = (Math.abs(usdMillions) * USD_KRW_RATE) / 100; // $1M * 1400 = 14억원 = 14 억
+  const sign = usdMillions < 0 ? '-' : '';
+  return krwEok >= 10000 ? `${sign}₩${(krwEok / 10000).toFixed(1)}조` : `${sign}₩${Math.round(krwEok).toLocaleString()}억`;
+}
+
 function money(value: number) {
-  return `$${Math.round(value).toLocaleString()}M`;
+  return (
+    <>
+      ${Math.round(value).toLocaleString()}M<span className="krw-equiv"> ({krwEquivalent(value)})</span>
+    </>
+  );
 }
 
 function pct(value: number) {
