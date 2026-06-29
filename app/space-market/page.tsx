@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
-import { getProfile } from "@/lib/finnhub";
+import { getProfile, getValuation } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
 import { getCompanyNews } from "@/lib/news";
 
@@ -48,7 +48,8 @@ async function loadOverseasStock(symbol: string) {
   // requests from a single serverless invocation was intermittently dropping some of them.
   const price = await getOverseasPrice(symbol, "NAS");
   const profile = await getProfile(symbol);
-  return { price, profile };
+  const valuation = await getValuation(symbol);
+  return { price, profile, valuation };
 }
 
 export default async function SpaceMarketPage() {
@@ -136,7 +137,7 @@ export default async function SpaceMarketPage() {
       <h2 className="space-group-title">NASDAQ</h2>
       <section className="space-stock-grid">
         {NASDAQ_COMPANIES.map((company, i) => {
-          const { price, profile } = nasdaqResults[i];
+          const { price, profile, valuation } = nasdaqResults[i];
           return (
             <SpaceStockCard
               key={company.symbol}
@@ -150,6 +151,7 @@ export default async function SpaceMarketPage() {
               meta={formatMarketCap(profile?.marketCapitalization)}
               news={nasdaqNews[i]}
               logo={profile?.logo || company.logo}
+              valuation={valuation ?? undefined}
             />
           );
         })}

@@ -67,7 +67,7 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
           style={{
             position: "absolute",
             inset: holeInset,
-            background: "transparent",
+            background: "rgba(17, 24, 39, 0.88)",
             borderRadius: "50%"
           }}
         />

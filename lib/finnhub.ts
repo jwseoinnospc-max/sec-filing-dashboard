@@ -53,6 +53,28 @@ export async function getQuote(symbol: string): Promise<FinnhubQuote | null> {
   };
 }
 
+export type FinnhubValuation = {
+  per: number | null;
+  pbr: number | null;
+  eps: number | null;
+  bps: number | null;
+};
+
+// KIS's overseas quote endpoint doesn't return valuation ratios for US tickers, so NASDAQ
+// cards use Finnhub's basic financials instead (requires FINNHUB_API_KEY).
+export async function getValuation(symbol: string): Promise<FinnhubValuation | null> {
+  const data = await finnhubGet<{ metric?: Record<string, number> }>("/stock/metric", { symbol, metric: "all" });
+  if (!data?.metric) return null;
+
+  const m = data.metric;
+  return {
+    per: m.peTTM ?? m.peBasicExclExtraTTM ?? null,
+    pbr: m.pbAnnual ?? m.pbQuarterly ?? null,
+    eps: m.epsTTM ?? m.epsBasicExclExtraItemsTTM ?? null,
+    bps: m.bookValuePerShareAnnual ?? m.bookValuePerShareQuarterly ?? null
+  };
+}
+
 export async function getProfile(symbol: string): Promise<FinnhubProfile | null> {
   const data = await finnhubGet<{
     name: string;
