@@ -377,7 +377,7 @@ function CompareCard({
           width: 100%;
           transform: translateY(-50%);
           font-size: 13px;
-          color: var(--accent);
+          color: #dc2626;
           font-weight: 700;
           white-space: nowrap;
         }
