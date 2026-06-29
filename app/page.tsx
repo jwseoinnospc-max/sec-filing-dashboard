@@ -8,7 +8,7 @@ import BacklogCard from '@/components/BacklogCard';
 import OperatingLossCard from '@/components/OperatingLossCard';
 import NetIncomeCard from '@/components/NetIncomeCard';
 import OperatingCashFlowCard from '@/components/OperatingCashFlowCard';
-import RoeDebtCard from '@/components/RoeDebtCard';
+import RndExpenseCard from '@/components/RndExpenseCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -71,9 +71,9 @@ const Q1_2026_FILING_URL = 'https://investors.rocketlabcorp.com/node/12471/html'
 
 const Q1_2026_NET_INCOME = -45022;
 const Q1_2026_OPERATING_CASH_FLOW = -50332;
-const Q1_2026_TOTAL_ASSETS = 2819941;
-const Q1_2026_TOTAL_LIABILITIES = 555574;
-const Q1_2026_TOTAL_EQUITY = 2264367;
+
+const Q1_2025_RND = 55109;
+const Q1_2026_RND = 80513;
 
 const LAUNCH_REVENUE_Q1_2026 = 63663;
 const LAUNCH_GROSS_PROFIT_Q1_2026 = 28223;
@@ -222,10 +222,10 @@ export default async function Home() {
           marginText={pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}
         />
 
-        <RoeDebtCard
-          filingUrl={Q1_2026_FILING_URL}
-          roeText={pct(Q1_2026_NET_INCOME / Q1_2026_TOTAL_EQUITY)}
-          debtRatioText={pct(Q1_2026_TOTAL_LIABILITIES / Q1_2026_TOTAL_ASSETS)}
+        <RndExpenseCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_RND))}
+          rndText={money(Q1_2026_RND / 1000)}
+          growthText={growth(Q1_2026_RND, Q1_2025_RND)}
         />
       </section>
 
