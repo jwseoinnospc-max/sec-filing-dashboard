@@ -113,11 +113,12 @@ export default async function SpaceMarketPage() {
         <>
           <h2 className="space-group-title">오늘의 Top Mover</h2>
           <section className="top-mover-row">
-            {topMovers.map((m) => {
+            {topMovers.map((m, i) => {
               const isUp = (m.changePercent ?? 0) >= 0;
               const priceText = m.currency === "KRW" ? `₩${m.price!.toLocaleString()}` : `$${m.price!.toFixed(2)}`;
               return (
                 <div key={m.name} className="top-mover-card">
+                  <span className="top-mover-rank">{i + 1}</span>
                   {m.logo && <img src={m.logo} alt="" className="top-mover-logo" />}
                   <div className="top-mover-info">
                     <div className="top-mover-name">{m.name}</div>
