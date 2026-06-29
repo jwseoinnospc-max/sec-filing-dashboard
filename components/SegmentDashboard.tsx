@@ -410,7 +410,7 @@ function CompareCard({
         /* Below this container width there isn't room for [period][center][period] side by
            side without shrinking text/donuts past readability — stack them vertically instead
            so nothing ever needs to be clipped or scrolled. */
-        @container (max-width: 620px) {
+        @container (max-width: 900px) {
           .body {
             grid-template-columns: 1fr;
             row-gap: 18px;
