@@ -194,7 +194,9 @@ export default async function Home() {
                   100
                 ).toFixed(1)}%, #CFCFCF 0 100%)`
               }}
-            />
+            >
+              <div className="backlog-donut-hole" />
+            </div>
             <div className="backlog-legend">
               <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Launch</span>
               <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Space Systems</span>
