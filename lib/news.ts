@@ -3,7 +3,14 @@ export type NewsItem = {
   url: string;
   source: string;
   titleKo?: string;
+  publishedAt?: string;
 };
+
+function formatPublishedDate(pubDate: string): string | undefined {
+  const date = new Date(pubDate);
+  if (isNaN(date.getTime())) return undefined;
+  return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit" }).format(date);
+}
 
 // Unofficial Google Translate endpoint — no API key required, used only for the small amount
 // of English headline text on NASDAQ news cards (Korean-language news isn't translated).
@@ -60,12 +67,18 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
       const titleRaw = /<title>([\s\S]*?)<\/title>/.exec(block)?.[1] ?? "";
       const link = /<link>([\s\S]*?)<\/link>/.exec(block)?.[1] ?? "";
       const sourceRaw = /<source[^>]*>([\s\S]*?)<\/source>/.exec(block)?.[1] ?? "";
+      const pubDateRaw = /<pubDate>([\s\S]*?)<\/pubDate>/.exec(block)?.[1] ?? "";
 
       // Title is "Headline - Source"; the trailing source is redundant with the <source> tag.
       const title = decodeEntities(titleRaw).replace(/\s+-\s+[^-]*$/, "");
 
       if (title && link) {
-        items.push({ title, url: link.trim(), source: decodeEntities(sourceRaw) });
+        items.push({
+          title,
+          url: link.trim(),
+          source: decodeEntities(sourceRaw),
+          publishedAt: formatPublishedDate(pubDateRaw)
+        });
       }
     }
 
