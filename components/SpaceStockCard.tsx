@@ -91,25 +91,25 @@ export function SpaceStockCard({
         <div className="space-stock-valuation">
           {valuation.per != null && (
             <div>
-              <span className="space-stock-valuation-label">PER</span>
+              <span className="space-stock-valuation-label" title="주가수익비율(PER) = 주가 ÷ 주당순이익(EPS). 낮을수록 이익 대비 주가가 저평가된 것으로 해석됩니다.">PER</span>
               <span>{valuation.per.toFixed(1)}</span>
             </div>
           )}
           {valuation.pbr != null && (
             <div>
-              <span className="space-stock-valuation-label">PBR</span>
+              <span className="space-stock-valuation-label" title="주가자산비율(PBR) = 주가 ÷ 주당순자산(BPS). 1보다 낮으면 회사 청산가치보다 주가가 낮다는 의미입니다.">PBR</span>
               <span>{valuation.pbr.toFixed(2)}</span>
             </div>
           )}
           {valuation.eps != null && (
             <div>
-              <span className="space-stock-valuation-label">EPS</span>
+              <span className="space-stock-valuation-label" title="주당순이익(EPS) = 순이익 ÷ 발행주식수. 한 주가 벌어들인 이익을 나타냅니다.">EPS</span>
               <span>{valuation.eps.toLocaleString()}</span>
             </div>
           )}
           {valuation.bps != null && (
             <div>
-              <span className="space-stock-valuation-label">BPS</span>
+              <span className="space-stock-valuation-label" title="주당순자산(BPS) = 자기자본 ÷ 발행주식수. 한 주당 회사의 순자산 가치를 나타냅니다.">BPS</span>
               <span>{valuation.bps.toLocaleString()}</span>
             </div>
           )}

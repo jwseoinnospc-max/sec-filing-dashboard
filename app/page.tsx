@@ -202,10 +202,10 @@ export default async function Home() {
           </div>
         </BacklogCard>
 
-        <OperatingLossCard
-          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
-          lossText={money(Q1_2026_OPERATING_LOSS / 1000)}
-          ttmLossText={money(TTM_OPERATING_LOSS / 1000)}
+        <RndExpenseCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_RND))}
+          rndText={money(Q1_2026_RND / 1000)}
+          growthText={growth(Q1_2026_RND, Q1_2025_RND)}
         />
 
         <NetIncomeCard
@@ -220,10 +220,10 @@ export default async function Home() {
           marginText={pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}
         />
 
-        <RndExpenseCard
-          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_RND))}
-          rndText={money(Q1_2026_RND / 1000)}
-          growthText={growth(Q1_2026_RND, Q1_2025_RND)}
+        <OperatingLossCard
+          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
+          lossText={money(Q1_2026_OPERATING_LOSS / 1000)}
+          ttmLossText={money(TTM_OPERATING_LOSS / 1000)}
         />
       </section>
 

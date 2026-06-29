@@ -256,7 +256,7 @@ function CompareCard({
         }
 
         .period {
-          border: 2px solid #ffffff;
+          border: 1px solid #ffffff;
           border-radius: 8px;
           padding: 16px 12px;
         }

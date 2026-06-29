@@ -295,8 +295,8 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .space-stock-card { background: rgba(17, 24, 39, .78); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-height: 380px; }
 .space-stock-news-title { margin: 12px 0 6px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12px; font-weight: 700; color: var(--muted); }
 .space-stock-valuation { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
-.space-stock-valuation div { display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: 700; color: var(--text); }
-.space-stock-valuation-label { font-size: 10px; font-weight: 500; color: var(--muted); margin-bottom: 2px; }
+.space-stock-valuation div { display: flex; flex-direction: column; align-items: center; font-size: 15px; font-weight: 700; color: var(--text); }
+.space-stock-valuation-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 2px; cursor: help; border-bottom: 1px dotted var(--muted); }
 .space-stock-news { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .space-stock-news li { font-size: 12px; line-height: 1.4; }
 .space-stock-news a { color: var(--text); text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
