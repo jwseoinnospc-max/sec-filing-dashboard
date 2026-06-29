@@ -177,6 +177,10 @@ export type KisDomesticPrice = {
   currency: string;
   marketCapEok: number | null; // 시가총액, 단위: 억원 (KIS의 hts_avls 그대로)
   parValue: number | null; // 액면가, 단위: 원 (KIS의 stck_fcam)
+  per: number | null;
+  pbr: number | null;
+  eps: number | null;
+  bps: number | null;
 };
 
 async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | null> {
@@ -214,7 +218,11 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
       changePercent: direction * Math.abs(Number(output.prdy_ctrt ?? 0)),
       currency: "KRW",
       marketCapEok: output.hts_avls ? Number(output.hts_avls) : null,
-      parValue: output.stck_fcam ? Number(output.stck_fcam) : null
+      parValue: output.stck_fcam ? Number(output.stck_fcam) : null,
+      per: output.per ? Number(output.per) : null,
+      pbr: output.pbr ? Number(output.pbr) : null,
+      eps: output.eps ? Number(output.eps) : null,
+      bps: output.bps ? Number(output.bps) : null
     };
   } catch {
     return null;

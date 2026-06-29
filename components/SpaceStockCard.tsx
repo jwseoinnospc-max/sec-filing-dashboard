@@ -23,7 +23,8 @@ export function SpaceStockCard({
   // TradingView's free embed only supports US-listed symbols; KRX symbols render an error,
   // so those use `history` (fetched via KIS) with our own DomesticChart instead.
   supportsChart = true,
-  history
+  history,
+  valuation
 }: {
   name: string;
   symbol: string;
@@ -39,6 +40,7 @@ export function SpaceStockCard({
   logo?: string;
   supportsChart?: boolean;
   history?: KisDailyBar[] | null;
+  valuation?: { per: number | null; pbr: number | null; eps: number | null; bps: number | null };
 }) {
   const hasPrice = price !== undefined && price !== null;
   const isUp = (change ?? 0) >= 0;
@@ -83,6 +85,35 @@ export function SpaceStockCard({
         </>
       ) : (
         history && <DomesticChart code={symbol} data={history} />
+      )}
+
+      {valuation && (valuation.per || valuation.pbr || valuation.eps || valuation.bps) && (
+        <div className="space-stock-valuation">
+          {valuation.per != null && (
+            <div>
+              <span className="space-stock-valuation-label">PER</span>
+              <span>{valuation.per.toFixed(1)}</span>
+            </div>
+          )}
+          {valuation.pbr != null && (
+            <div>
+              <span className="space-stock-valuation-label">PBR</span>
+              <span>{valuation.pbr.toFixed(2)}</span>
+            </div>
+          )}
+          {valuation.eps != null && (
+            <div>
+              <span className="space-stock-valuation-label">EPS</span>
+              <span>{valuation.eps.toLocaleString()}</span>
+            </div>
+          )}
+          {valuation.bps != null && (
+            <div>
+              <span className="space-stock-valuation-label">BPS</span>
+              <span>{valuation.bps.toLocaleString()}</span>
+            </div>
+          )}
+        </div>
       )}
 
       {news && news.length > 0 && (

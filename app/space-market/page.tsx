@@ -71,6 +71,26 @@ export default async function SpaceMarketPage() {
 
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
+  const topMovers = [
+    ...NASDAQ_COMPANIES.map((c, i) => ({
+      name: c.name,
+      logo: nasdaqResults[i].profile?.logo || c.logo,
+      price: nasdaqResults[i].price?.last,
+      changePercent: nasdaqResults[i].price?.changePercent,
+      currency: "USD" as const
+    })),
+    ...DOMESTIC_COMPANIES.map((c, i) => ({
+      name: c.name,
+      logo: c.logo,
+      price: domesticPrices[i]?.last,
+      changePercent: domesticPrices[i]?.changePercent,
+      currency: "KRW" as const
+    }))
+  ]
+    .filter((m) => m.changePercent != null && m.price != null)
+    .sort((a, b) => Math.abs(b.changePercent!) - Math.abs(a.changePercent!))
+    .slice(0, 5);
+
   return (
     <main className="page space-market-page">
       <section className="header">
@@ -87,6 +107,31 @@ export default async function SpaceMarketPage() {
           </div>
         </div>
       </section>
+
+      {topMovers.length > 0 && (
+        <>
+          <h2 className="space-group-title">오늘의 Top Mover</h2>
+          <section className="top-mover-row">
+            {topMovers.map((m) => {
+              const isUp = (m.changePercent ?? 0) >= 0;
+              const priceText = m.currency === "KRW" ? `₩${m.price!.toLocaleString()}` : `$${m.price!.toFixed(2)}`;
+              return (
+                <div key={m.name} className="top-mover-card">
+                  {m.logo && <img src={m.logo} alt="" className="top-mover-logo" />}
+                  <div className="top-mover-info">
+                    <div className="top-mover-name">{m.name}</div>
+                    <div className="top-mover-price">{priceText}</div>
+                  </div>
+                  <div className={`top-mover-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+                    {isUp ? "+" : ""}
+                    {m.changePercent!.toFixed(2)}%
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+        </>
+      )}
 
       <h2 className="space-group-title">NASDAQ</h2>
       <section className="space-stock-grid">
@@ -130,6 +175,7 @@ export default async function SpaceMarketPage() {
               supportsChart={false}
               history={domesticHistory[i]}
               logo={company.logo}
+              valuation={price ? { per: price.per, pbr: price.pbr, eps: price.eps, bps: price.bps } : undefined}
             />
           );
         })}
