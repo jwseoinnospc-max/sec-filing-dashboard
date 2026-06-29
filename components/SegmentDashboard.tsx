@@ -224,7 +224,8 @@ function CompareCard({
           border: 1px solid var(--line);
           border-radius: 0 0 12px 12px;
           color: var(--text);
-          overflow: hidden;
+          overflow-x: auto;
+          overflow-y: hidden;
           min-height: 179px;
         }
 
@@ -249,9 +250,10 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 175px 1fr;
+          grid-template-columns: minmax(280px, 1fr) 150px minmax(280px, 1fr);
           align-items: center;
           gap: 12px;
+          min-width: 760px;
           padding: 22px 14px 18px;
         }
 
