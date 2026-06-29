@@ -39,7 +39,7 @@ export default function AssetsPage() {
 
       <br />
 
-      <Link href="/">← 대시보드로 돌아가기</Link>
+      <Link href="/rocketlab/dashboard">← 대시보드로 돌아가기</Link>
     </main>
   );
 }

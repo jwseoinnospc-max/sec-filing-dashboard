@@ -13,7 +13,7 @@ export default function FireflyFinancialStatementPage() {
       </section>
 
       <div className="footer">
-        <Link href="/">← 대시보드로 돌아가기</Link>
+        <Link href="/rocketlab/dashboard">← 대시보드로 돌아가기</Link>
       </div>
     </main>
   );
