@@ -149,10 +149,14 @@ async function fetchOverseasPriceOnce(symbol: string, excd: string): Promise<Kis
     const output = data?.output;
     if (!output || !output.last) return null;
 
+    // diff is an unsigned magnitude — direction comes from sign (2 = up, 5 = down), same
+    // convention as the domestic endpoint's prdy_vrss_sign.
+    const direction = Number(output.sign) === 5 ? -1 : 1;
+
     return {
       symbol,
       last: Number(output.last),
-      change: Number(output.diff ?? 0),
+      change: direction * Math.abs(Number(output.diff ?? 0)),
       changePercent: Number(output.rate ?? 0),
       currency: "USD"
     };
