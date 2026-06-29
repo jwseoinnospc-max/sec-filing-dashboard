@@ -72,6 +72,12 @@ export default async function SpaceMarketPage() {
 
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
+  const nasdaqChanges = nasdaqResults.map((r) => r.price?.changePercent).filter((v): v is number => v != null);
+  const domesticChanges = domesticPrices.map((p) => p?.changePercent).filter((v): v is number => v != null);
+  const avgNasdaq = nasdaqChanges.length > 0 ? nasdaqChanges.reduce((a, b) => a + b, 0) / nasdaqChanges.length : null;
+  const avgDomestic =
+    domesticChanges.length > 0 ? domesticChanges.reduce((a, b) => a + b, 0) / domesticChanges.length : null;
+
   const topMovers = [
     ...NASDAQ_COMPANIES.map((c, i) => ({
       name: c.name,
@@ -108,6 +114,29 @@ export default async function SpaceMarketPage() {
           </div>
         </div>
       </section>
+
+      {(avgNasdaq != null || avgDomestic != null) && (
+        <section className="sector-index-row">
+          {avgNasdaq != null && (
+            <div className="sector-index-card">
+              <div className="sector-index-label">NASDAQ 평균</div>
+              <div className={`sector-index-value ${avgNasdaq >= 0 ? "space-stock-up" : "space-stock-down"}`}>
+                {avgNasdaq >= 0 ? "+" : ""}
+                {avgNasdaq.toFixed(2)}%
+              </div>
+            </div>
+          )}
+          {avgDomestic != null && (
+            <div className="sector-index-card">
+              <div className="sector-index-label">국내 우주항공 평균</div>
+              <div className={`sector-index-value ${avgDomestic >= 0 ? "space-stock-up" : "space-stock-down"}`}>
+                {avgDomestic >= 0 ? "+" : ""}
+                {avgDomestic.toFixed(2)}%
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {topMovers.length > 0 && (
         <>
