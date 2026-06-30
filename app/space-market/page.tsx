@@ -1,4 +1,4 @@
-export const revalidate = 60; // ISR: 60초마다 재생성, 그 사이 모든 요청은 캐시 반환
+export const revalidate = 900; // KIS 15분 지연 기준 — 15분마다 1회만 재생성
 
 import Link from "next/link";
 import { readFileSync } from "fs";

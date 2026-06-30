@@ -24,7 +24,7 @@ async function kvGetToken(): Promise<TokenCache | null> {
   try {
     const res = await fetch(`${KV_URL}/get/${KV_KEY}`, {
       headers: { authorization: `Bearer ${KV_TOKEN}` },
-      cache: "no-store"
+      next: { revalidate: 900 }
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -42,7 +42,7 @@ async function kvSetToken(cache: TokenCache, ttlSeconds: number): Promise<void> 
   try {
     await fetch(`${KV_URL}/set/${KV_KEY}/${encodeURIComponent(JSON.stringify(cache))}?EX=${ttlSeconds}`, {
       headers: { authorization: `Bearer ${KV_TOKEN}` },
-      cache: "no-store"
+      next: { revalidate: 900 }
     });
   } catch {
     // Non-fatal: this instance still has the token in memory either way.
@@ -53,7 +53,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
   lastAttemptAt = Date.now();
 
   try {
-    // NOTE: cache: "no-store" here on purpose — Next.js's fetch cache would otherwise cache
+    
     // an error response (e.g. KIS's "1 token/minute" rate-limit reply) for the full revalidate
     // window, locking in a failure.
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
@@ -64,7 +64,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         appkey: appKey,
         appsecret: appSecret
       }),
-      cache: "no-store"
+      next: { revalidate: 900 }
     });
 
     const data = await res.json();
@@ -140,7 +140,7 @@ async function fetchOverseasPriceOnce(symbol: string, excd: string): Promise<Kis
         tr_id: "HHDFS00000300",
         custtype: "P"
       },
-      next: { revalidate: 60 }
+      next: { revalidate: 900 }
     });
 
     if (!res.ok) return null;
@@ -203,7 +203,7 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
         tr_id: "FHKST01010100",
         custtype: "P"
       },
-      next: { revalidate: 60 }
+      next: { revalidate: 900 }
     });
 
     if (!res.ok) return null;
@@ -328,7 +328,7 @@ async function fetchMinuteChunk(
           tr_id: "FHKST03010200",
           custtype: "P"
         },
-        cache: "no-store"
+        next: { revalidate: 900 }
       }
     );
 
@@ -414,7 +414,7 @@ export async function getDomesticIndex(iscd: string): Promise<KisIndexQuote | nu
         tr_id: "FHPUP02100000",
         custtype: "P"
       },
-      next: { revalidate: 60 }
+      next: { revalidate: 900 }
     });
     if (!res.ok) return null;
     const data = await res.json();
