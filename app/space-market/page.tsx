@@ -58,19 +58,19 @@ const NASDAQ_COMPANIES = [
 
 
 const DOMESTIC_COMPANIES = [
-  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: "/innospace-logo.png" },           // 고정 1위
-  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") }, // ~30조
-  { name: "한화시스템", code: "272210", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272210.png" }, // ~5조
-  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },                   // ~4조
-  { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },                 // ~3조
-  { name: "현대로템", code: "064350", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-064350.png" }, // ~2조
-  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },     // ~3000억
-  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" }, // ~1500억
-  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-478340.png" }, // ~1000억
-  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://apsi.co.kr/images/sns_link.png" }, // ~500억
-  { name: "두원중공업", code: "000100", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-000100.png" }, // ~300억
-  { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: favicon("contec.kr") },                     // ~200억
-  { name: "켄코아에어로스페이스", code: "274090", exchange: "KOSDAQ", logo: favicon("kencoa.com") },    // ~200억
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: "/innospace-logo.png" },                          // 고정 1위
+  { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") },            // 51조
+  { name: "현대로템", code: "064350", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-064350.png" }, // 19조
+  { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },                               // 15.9조
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },                                 // 14.6조
+  { name: "한화시스템", code: "272210", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272210.png" }, // 14조
+  { name: "두원중공업", code: "000100", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-000100.png" }, // 5.7조
+  { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: favicon("contec.kr") },                                   // 2.3조
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" }, // 9977억
+  { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },                   // 8472억
+  { name: "켄코아에어로스페이스", code: "274090", exchange: "KOSDAQ", logo: favicon("kencoa.com") },                  // 1691억
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-478340.png" }, // 1623억
+  { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://apsi.co.kr/images/sns_link.png" },             // 1412억
 ];
 
 async function loadOverseasStock(symbol: string) {
