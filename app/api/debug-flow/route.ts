@@ -8,42 +8,109 @@ function decodeEucKr(buf: Buffer): string {
   }
 }
 
-async function tryUrl(url: string): Promise<{ status: number; len: number; snippet: string; hasKorean: boolean }> {
-  try {
-    const r = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Referer": "https://finance.naver.com/" },
+// KRX investor trading data for KOSPI/KOSDAQ
+async function fetchKrxInvestorFlow(mktId: "STK" | "KSQ") {
+  const today = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const trdDd = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
+
+  // Step 1: Get OTP token
+  const otpBody = new URLSearchParams({
+    bld: "dbms/MDC/STAT/standard/MDCSTAT02301",
+    mktId,
+    invstTpCd: "0000",
+    strtDd: trdDd,
+    endDd: trdDd,
+    share: "1",
+    money: "1",
+    csvxls_isNo: "false",
+  });
+
+  const otpRes = await fetch(
+    "http://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Referer": "http://data.krx.co.kr/contents/MDC/MDI/mdiBoardDetail/MDCPBBRD0039.cmd",
+        "Origin": "http://data.krx.co.kr",
+      },
+      body: otpBody.toString(),
       cache: "no-store",
-    });
-    const buf = Buffer.from(await r.arrayBuffer());
-    const html = decodeEucKr(buf);
-    const hasKorean = /[가-힣]/.test(html);
-    return { status: r.status, len: html.length, snippet: html.slice(0, 500), hasKorean };
-  } catch (e) {
-    return { status: -1, len: 0, snippet: String(e), hasKorean: false };
+    }
+  );
+  const otp = await otpRes.text();
+  if (!otp || otp.length > 100) {
+    return { error: "OTP failed", otp: otp.slice(0, 200), otpStatus: otpRes.status };
   }
+
+  // Step 2: Download data using OTP
+  const dlBody = new URLSearchParams({ code: otp });
+  const dlRes = await fetch(
+    "http://data.krx.co.kr/comm/fileDn/DownloadBdd/download.cmd",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "http://data.krx.co.kr/",
+      },
+      body: dlBody.toString(),
+      cache: "no-store",
+    }
+  );
+  const buf = Buffer.from(await dlRes.arrayBuffer());
+  const text = decodeEucKr(buf);
+  return { otp: otp.slice(0, 50), dlStatus: dlRes.status, len: text.length, snippet: text.slice(0, 600) };
+}
+
+// Also try KRX JSON endpoint directly
+async function fetchKrxJson(mktId: "STK" | "KSQ") {
+  const today = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const trdDd = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
+
+  const body = new URLSearchParams({
+    bld: "dbms/MDC/STAT/standard/MDCSTAT02301",
+    mktId,
+    invstTpCd: "0000",
+    strtDd: trdDd,
+    endDd: trdDd,
+    share: "1",
+    money: "1",
+  });
+
+  const res = await fetch(
+    "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Referer": "http://data.krx.co.kr/",
+        "Origin": "http://data.krx.co.kr",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: body.toString(),
+      cache: "no-store",
+    }
+  );
+  const text = await res.text();
+  return { status: res.status, len: text.length, snippet: text.slice(0, 800) };
 }
 
 export async function GET() {
-  // Try various NAVER Finance URLs that might return KOSPI investor totals
-  const urls: Record<string, string> = {
-    sise_investor: "https://finance.naver.com/sise/sise_investor.naver?sosok=0",
-    sise_investor_1: "https://finance.naver.com/sise/sise_investor.naver?sosok=1",
-    invest_total: "https://finance.naver.com/sise/investorTotalTrade.nhn?sosok=0",
-    invest_total_naver: "https://finance.naver.com/sise/investorTotalTrade.naver?sosok=0",
-    investor_iframe: "https://finance.naver.com/sise/sise_investor_iframe.naver?sosok=0",
-    investor_iframe_1: "https://finance.naver.com/sise/sise_investor_iframe.naver?sosok=1",
-    index_investor: "https://finance.naver.com/sise/sise_index_investor.naver?code=KOSPI",
-    program: "https://finance.naver.com/sise/program.naver",
-    program_iframe: "https://finance.naver.com/sise/program_iframe.naver?sosok=0",
-    deal_rank_total: "https://finance.naver.com/sise/sise_deal_rank_iframe.naver?sosok=00&investor_gubun=1000&type=buy",
-  };
+  const [kospiOtp, kosdaqOtp, kospiJson, kosdaqJson] = await Promise.all([
+    fetchKrxInvestorFlow("STK").catch((e) => ({ error: String(e) })),
+    fetchKrxInvestorFlow("KSQ").catch((e) => ({ error: String(e) })),
+    fetchKrxJson("STK").catch((e) => ({ error: String(e) })),
+    fetchKrxJson("KSQ").catch((e) => ({ error: String(e) })),
+  ]);
 
-  const results: Record<string, unknown> = {};
-  await Promise.all(
-    Object.entries(urls).map(async ([key, url]) => {
-      results[key] = await tryUrl(url);
-    })
+  return NextResponse.json(
+    { kospi_otp: kospiOtp, kosdaq_otp: kosdaqOtp, kospi_json: kospiJson, kosdaq_json: kosdaqJson },
+    { headers: { "Cache-Control": "no-store" } }
   );
-
-  return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
 }
