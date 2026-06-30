@@ -41,19 +41,23 @@ const COMPANIES: Company[] = [
 
 async function fetchYahooPrice(yahooSymbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`;
+    // range=5d + interval=1d → 일봉 여러 개, 항상 마지막 완성된 거래일 종가 기준으로 변동률 계산
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=5d`;
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0" },
-      cache: "no-store",
+      next: { revalidate: 900 },
     });
     if (!res.ok) return null;
     const data = await res.json();
-    const meta = data?.chart?.result?.[0]?.meta;
-    if (!meta) return null;
-    const last: number = meta.regularMarketPrice;
-    const prevClose: number = meta.chartPreviousClose ?? meta.previousClose;
-    const change = last - prevClose;
-    const changePercent = (change / prevClose) * 100;
+    const result = data?.chart?.result?.[0];
+    if (!result) return null;
+    const closes: number[] = result.indicators?.quote?.[0]?.close ?? [];
+    const validCloses = closes.filter((v): v is number => v != null && !isNaN(v));
+    if (validCloses.length < 2) return null;
+    const last = validCloses[validCloses.length - 1];
+    const prev = validCloses[validCloses.length - 2];
+    const change = last - prev;
+    const changePercent = (change / prev) * 100;
     return { last, change, changePercent };
   } catch {
     return null;
