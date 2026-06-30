@@ -118,9 +118,19 @@ export default async function SpaceMarketPage() {
 
   const nasdaqChanges = nasdaqResults.map((r) => r.price?.changePercent).filter((v): v is number => v != null);
   const domesticChanges = domesticPrices.map((p) => p?.changePercent).filter((v): v is number => v != null);
+  // Weighted averages by market cap
+  const domesticWeightedItems = DOMESTIC_COMPANIES
+    .map((_, i) => ({ changePercent: domesticPrices[i]?.changePercent, marketCap: domesticPrices[i]?.marketCapEok ?? 0 }))
+    .filter((x): x is { changePercent: number; marketCap: number } => x.changePercent != null);
+  const domesticTotalCap = domesticWeightedItems.reduce((s, x) => s + x.marketCap, 0);
+  const avgDomestic = domesticTotalCap > 0
+    ? domesticWeightedItems.reduce((s, x) => s + x.changePercent * x.marketCap, 0) / domesticTotalCap
+    : domesticWeightedItems.length > 0
+      ? domesticWeightedItems.reduce((s, x) => s + x.changePercent, 0) / domesticWeightedItems.length
+      : null;
+
+  // avgNasdaq kept for Top Mover reference (simple avg)
   const avgNasdaq = nasdaqChanges.length > 0 ? nasdaqChanges.reduce((a, b) => a + b, 0) / nasdaqChanges.length : null;
-  const avgDomestic =
-    domesticChanges.length > 0 ? domesticChanges.reduce((a, b) => a + b, 0) / domesticChanges.length : null;
 
   const serverMovers: MoverItem[] = [
     ...NASDAQ_COMPANIES.map((c, i) => ({

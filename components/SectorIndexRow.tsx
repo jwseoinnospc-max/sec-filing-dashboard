@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 type IndexQuote = { last: number; change: number; changePercent: number };
+type InvestorFlow = { foreign: number; institution: number; individual: number };
 type PriceEntry = { symbol: string; price: { changePercent: number } | null };
 
 function avg(values: number[]): number | null {
@@ -170,7 +171,8 @@ export default function SectorIndexRow({
     nasdaq: IndexQuote | null;
     kodexSpace: IndexQuote | null;
     tigerSpace: IndexQuote | null;
-  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null });
+    kospiFlow: InvestorFlow | null;
+  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null, kospiFlow: null });
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [activeAvgModal, setActiveAvgModal] = useState<"global" | "domestic" | null>(null);
 
@@ -209,7 +211,40 @@ export default function SectorIndexRow({
   return (
     <>
       <section className="sector-index-row">
-        <IndexCard label="KOSPI" quote={indices.kospi} formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })} />
+        {indices.kospi && (() => {
+          const q = indices.kospi;
+          const isUp = q.changePercent >= 0;
+          const flow = indices.kospiFlow;
+          const fmt = (v: number) => {
+            const abs = Math.abs(v);
+            const s = abs >= 1000 ? `${(abs / 1000).toFixed(0)}천주` : `${abs.toFixed(0)}주`;
+            return (v >= 0 ? "+" : "−") + s;
+          };
+          return (
+            <div className="sector-index-card kospi-investor-card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                <div>
+                  <div className="sector-index-label">KOSPI</div>
+                  {flow && (
+                    <div className="kospi-investor-flow">
+                      <span>외국인 <b style={{ color: flow.foreign >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.foreign)}</b></span>
+                      <span>기관 <b style={{ color: flow.institution >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.institution)}</b></span>
+                      <span>개인 <b style={{ color: flow.individual >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.individual)}</b></span>
+                    </div>
+                  )}
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2 }}>
+                    {q.last.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
+                  </div>
+                  <div className={`sector-index-value ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+                    {isUp ? "+" : ""}{q.changePercent.toFixed(2)}%
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
         <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
         <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveModal("KODEX 미국우주항공")} />

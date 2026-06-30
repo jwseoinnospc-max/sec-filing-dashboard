@@ -396,6 +396,48 @@ export async function getDomesticIntradayHistory(code: string): Promise<KisMinut
 }
 
 export type KisIndexQuote = { last: number; change: number; changePercent: number };
+export type KisInvestorFlow = { foreign: number; institution: number; individual: number };
+
+// KOSPI 투자자별 순매수 (외국인/기관/개인) — tr_id: FHPST01710000
+export async function getKospiInvestorFlow(): Promise<KisInvestorFlow | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  try {
+    const query = new URLSearchParams({
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: "0001",
+      FID_DIV_CLS_CODE: "0",
+    });
+    const res = await fetch(
+      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${query.toString()}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          appkey: appKey,
+          appsecret: appSecret,
+          tr_id: "FHPST01710000",
+          custtype: "P",
+        },
+        next: { revalidate: 900 },
+      }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    // output2[0] is the latest day total
+    const row = data?.output2?.[0];
+    if (!row) return null;
+    return {
+      foreign: Number(row.frgn_ntby_qty ?? 0),       // 외국인 순매수 수량
+      institution: Number(row.orgn_ntby_qty ?? 0),    // 기관 순매수 수량
+      individual: Number(row.indv_ntby_qty ?? 0),     // 개인 순매수 수량
+    };
+  } catch {
+    return null;
+  }
+}
 
 // KIS 국내 지수 조회 (KOSPI: "0001", KOSDAQ: "1001")
 export async function getDomesticIndex(iscd: string): Promise<KisIndexQuote | null> {
