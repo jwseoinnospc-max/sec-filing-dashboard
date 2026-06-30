@@ -5,29 +5,39 @@ type Company =
   | { symbol: string; exchange: "NAS" | "NYS" | "TSE"; source: "kis" }
   | { symbol: string; yahooSymbol: string; source: "yahoo" };
 
+// Sorted by market cap (largest first)
 const COMPANIES: Company[] = [
+  { symbol: "RTX",    exchange: "NYS", source: "kis" },
+  { symbol: "LMT",    exchange: "NYS", source: "kis" },
+  { symbol: "BA",     exchange: "NYS", source: "kis" },
+  { symbol: "AIR.PA", yahooSymbol: "AIR.PA", source: "yahoo" },
+  { symbol: "NOC",    exchange: "NYS", source: "kis" },
+  { symbol: "SAF.PA", yahooSymbol: "SAF.PA", source: "yahoo" },
+  { symbol: "RHM.DE", yahooSymbol: "RHM.DE", source: "yahoo" },
+  { symbol: "LHX",    exchange: "NYS", source: "kis" },
+  { symbol: "HO.PA",  yahooSymbol: "HO.PA",  source: "yahoo" },
+  { symbol: "LDO.MI", yahooSymbol: "LDO.MI", source: "yahoo" },
+  { symbol: "7011",   exchange: "TSE", source: "kis" },
+  { symbol: "6701",   exchange: "TSE", source: "kis" },
   { symbol: "ASTS",   exchange: "NAS", source: "kis" },
+  { symbol: "7013",   exchange: "TSE", source: "kis" },
   { symbol: "KTOS",   exchange: "NAS", source: "kis" },
-  { symbol: "VSAT",   exchange: "NAS", source: "kis" },
-  { symbol: "ECHO",   exchange: "NAS", source: "kis" },
-  { symbol: "MNTS",   exchange: "NAS", source: "kis" },
-  { symbol: "CMTL",   exchange: "NAS", source: "kis" },
-  { symbol: "KVHI",   exchange: "NAS", source: "kis" },
-  { symbol: "ONDS",   exchange: "NAS", source: "kis" },
+  { symbol: "GSAT",   exchange: "NYS", source: "kis" },
   { symbol: "PL",     exchange: "NYS", source: "kis" },
+  { symbol: "VSAT",   exchange: "NAS", source: "kis" },
+  { symbol: "OHB.DE", yahooSymbol: "OHB.DE", source: "yahoo" },
   { symbol: "RDW",    exchange: "NYS", source: "kis" },
+  { symbol: "VOYG",   exchange: "NYS", source: "kis" },
   { symbol: "SPIR",   exchange: "NYS", source: "kis" },
   { symbol: "BKSY",   exchange: "NYS", source: "kis" },
-  { symbol: "VOYG",   exchange: "NYS", source: "kis" },
-  // Japan — KIS TSE
-  { symbol: "7011",   exchange: "TSE", source: "kis" },
-  { symbol: "7013",   exchange: "TSE", source: "kis" },
-  { symbol: "6701",   exchange: "TSE", source: "kis" },
   { symbol: "9348",   exchange: "TSE", source: "kis" },
-  // Europe — Yahoo Finance
-  { symbol: "AIR.PA", yahooSymbol: "AIR.PA", source: "yahoo" },
-  { symbol: "HO.PA",  yahooSymbol: "HO.PA",  source: "yahoo" },
-  { symbol: "OHB.DE", yahooSymbol: "OHB.DE", source: "yahoo" },
+  { symbol: "ECHO",   exchange: "NAS", source: "kis" },
+  { symbol: "MNTS",   exchange: "NAS", source: "kis" },
+  { symbol: "SIDU",   exchange: "NAS", source: "kis" },
+  { symbol: "ASTR",   exchange: "NAS", source: "kis" },
+  { symbol: "KVHI",   exchange: "NAS", source: "kis" },
+  { symbol: "ONDS",   exchange: "NAS", source: "kis" },
+  { symbol: "CMTL",   exchange: "NAS", source: "kis" },
 ];
 
 async function fetchYahooPrice(yahooSymbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
