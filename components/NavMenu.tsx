@@ -15,7 +15,7 @@ const GROUPS = [
   },
   {
     label: "Firefly Aerospace",
-    links: [{ href: "/firefly-financial-statement", label: "Firefly Aerospace Financial Statement" }]
+    links: [{ href: "/firefly/financial-statement", label: "Firefly Aerospace Financial Statement" }]
   }
 ];
 
