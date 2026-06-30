@@ -1,35 +1,55 @@
 import { getOverseasPrice } from "@/lib/kis";
-import { getQuote } from "@/lib/finnhub";
 import { NextResponse } from "next/server";
 
 type Company =
   | { symbol: string; exchange: "NAS" | "NYS" | "TSE"; source: "kis" }
-  | { symbol: string; source: "finnhub" };
+  | { symbol: string; yahooSymbol: string; source: "yahoo" };
 
 const COMPANIES: Company[] = [
-  { symbol: "ASTS",  exchange: "NAS", source: "kis" },
-  { symbol: "KTOS",  exchange: "NAS", source: "kis" },
-  { symbol: "VSAT",  exchange: "NAS", source: "kis" },
-  { symbol: "ECHO",  exchange: "NAS", source: "kis" },
-  { symbol: "MNTS",  exchange: "NAS", source: "kis" },
-  { symbol: "CMTL",  exchange: "NAS", source: "kis" },
-  { symbol: "KVHI",  exchange: "NAS", source: "kis" },
-  { symbol: "ONDS",  exchange: "NAS", source: "kis" },
-  { symbol: "PL",    exchange: "NYS", source: "kis" },
-  { symbol: "RDW",   exchange: "NYS", source: "kis" },
-  { symbol: "SPIR",  exchange: "NYS", source: "kis" },
-  { symbol: "BKSY",  exchange: "NYS", source: "kis" },
-  { symbol: "VOYG",  exchange: "NYS", source: "kis" },
+  { symbol: "ASTS",   exchange: "NAS", source: "kis" },
+  { symbol: "KTOS",   exchange: "NAS", source: "kis" },
+  { symbol: "VSAT",   exchange: "NAS", source: "kis" },
+  { symbol: "ECHO",   exchange: "NAS", source: "kis" },
+  { symbol: "MNTS",   exchange: "NAS", source: "kis" },
+  { symbol: "CMTL",   exchange: "NAS", source: "kis" },
+  { symbol: "KVHI",   exchange: "NAS", source: "kis" },
+  { symbol: "ONDS",   exchange: "NAS", source: "kis" },
+  { symbol: "PL",     exchange: "NYS", source: "kis" },
+  { symbol: "RDW",    exchange: "NYS", source: "kis" },
+  { symbol: "SPIR",   exchange: "NYS", source: "kis" },
+  { symbol: "BKSY",   exchange: "NYS", source: "kis" },
+  { symbol: "VOYG",   exchange: "NYS", source: "kis" },
   // Japan — KIS TSE
-  { symbol: "7011",  exchange: "TSE", source: "kis" },
-  { symbol: "7013",  exchange: "TSE", source: "kis" },
-  { symbol: "6701",  exchange: "TSE", source: "kis" },
-  { symbol: "9348",  exchange: "TSE", source: "kis" },
-  // Europe — Finnhub (requires exchange suffix for non-US tickers)
-  { symbol: "AIR.PA", source: "finnhub" },
-  { symbol: "HO.PA",  source: "finnhub" },
-  { symbol: "OHB.DE", source: "finnhub" },
+  { symbol: "7011",   exchange: "TSE", source: "kis" },
+  { symbol: "7013",   exchange: "TSE", source: "kis" },
+  { symbol: "6701",   exchange: "TSE", source: "kis" },
+  { symbol: "9348",   exchange: "TSE", source: "kis" },
+  // Europe — Yahoo Finance
+  { symbol: "AIR.PA", yahooSymbol: "AIR.PA", source: "yahoo" },
+  { symbol: "HO.PA",  yahooSymbol: "HO.PA",  source: "yahoo" },
+  { symbol: "OHB.DE", yahooSymbol: "OHB.DE", source: "yahoo" },
 ];
+
+async function fetchYahooPrice(yahooSymbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const meta = data?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+    const last: number = meta.regularMarketPrice;
+    const prevClose: number = meta.chartPreviousClose ?? meta.previousClose;
+    const change = last - prevClose;
+    const changePercent = (change / prevClose) * 100;
+    return { last, change, changePercent };
+  } catch {
+    return null;
+  }
+}
 
 async function fetchPrice(c: Company): Promise<{ last: number; change: number; changePercent: number } | null> {
   if (c.source === "kis") {
@@ -37,9 +57,7 @@ async function fetchPrice(c: Company): Promise<{ last: number; change: number; c
     if (!p) return null;
     return { last: p.last, change: p.change, changePercent: p.changePercent };
   } else {
-    const q = await getQuote(c.symbol);
-    if (!q) return null;
-    return { last: q.current, change: q.change, changePercent: q.changePercent };
+    return fetchYahooPrice(c.yahooSymbol);
   }
 }
 
