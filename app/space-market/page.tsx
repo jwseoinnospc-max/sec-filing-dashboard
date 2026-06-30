@@ -56,7 +56,7 @@ const DOMESTIC_COMPANIES = [
   { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" },
   { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },
   { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://apsi.co.kr/images/sns_link.png" },
-  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: favicon("naraspace.co.kr") }
+  { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-478340.png" }
 ];
 
 async function loadOverseasStock(symbol: string) {
