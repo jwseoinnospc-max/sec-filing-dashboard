@@ -234,6 +234,7 @@ export default async function SpaceMarketPage() {
                 symbol={company.symbol}
                 exchange={company.exchange}
                 chartSymbol={`NASDAQ:${company.symbol}`}
+                tag="장마감"
                 price={price?.last}
                 change={price?.change}
                 changePercent={price?.changePercent}
