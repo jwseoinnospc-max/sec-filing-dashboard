@@ -10,7 +10,6 @@ async function getToken(): Promise<string | null> {
   const appSecret = process.env.KIS_APP_SECRET;
   if (!appKey || !appSecret) return null;
 
-  // Try KV cache first
   if (KV_URL && KV_TOKEN) {
     try {
       const r = await fetch(`${KV_URL}/get/${KV_KEY}`, { headers: { authorization: `Bearer ${KV_TOKEN}` }, cache: "no-store" });
@@ -24,7 +23,6 @@ async function getToken(): Promise<string | null> {
     } catch { /* ignore */ }
   }
 
-  // Fetch new token
   const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -47,21 +45,14 @@ async function kisGet(path: string, tr_id: string, params: Record<string, string
     cache: "no-store",
   });
   const text = await res.text();
-  return { status: res.status, len: text.length, body: text.slice(0, 1000) };
+  return { status: res.status, len: text.length, body: text.slice(0, 2000) };
 }
 
 export async function GET() {
-  // Test /foreign-institution-total with various TR_IDs
-  const [
-    fit_kospi_1,
-    fit_kospi_2,
-    fit_kospi_3,
-    fit_kospi_4,
-    // Also test inquire-investor for market (using "0001" as iscd)
-    inv_0001,
-    inv_1001,
-  ] = await Promise.all([
-    // TR_ID candidates for foreign-institution-total
+  // FID_HOUR_CLS_CODE: "0"=장중, "1"=장마감후 (try both)
+  // FID_COND_MRKT_DIV_CODE: "J"=주식, try with KOSPI iscd "0001"
+  const [a, b, c, d, e] = await Promise.all([
+    // FID_HOUR_CLS_CODE "0" = 장중
     kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", {
       FID_COND_MRKT_DIV_CODE: "J",
       FID_INPUT_ISCD: "0001",
@@ -74,35 +65,10 @@ export async function GET() {
       FID_INPUT_PRICE_1: "",
       FID_INPUT_PRICE_2: "",
       FID_VOL_CNT: "",
+      FID_HOUR_CLS_CODE: "0",
     }),
+    // FID_HOUR_CLS_CODE "1" = 장마감후
     kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", {
-      FID_COND_MRKT_DIV_CODE: "U",
-      FID_INPUT_ISCD: "0001",
-      FID_DIV_CLS_CODE: "0",
-      FID_BLNG_CLS_CODE: "0",
-      FID_TRGT_CLS_CODE: "111111111",
-      FID_TRGT_EXLS_CLS_CODE: "0000000000",
-      FID_INPUT_DATE_1: "",
-      FID_INPUT_DATE_2: "",
-      FID_INPUT_PRICE_1: "",
-      FID_INPUT_PRICE_2: "",
-      FID_VOL_CNT: "",
-    }),
-    // Try with market code K for KOSPI
-    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", {
-      FID_COND_MRKT_DIV_CODE: "K",
-      FID_INPUT_ISCD: "0001",
-      FID_DIV_CLS_CODE: "0",
-      FID_BLNG_CLS_CODE: "0",
-      FID_TRGT_CLS_CODE: "111111111",
-      FID_TRGT_EXLS_CLS_CODE: "0000000000",
-      FID_INPUT_DATE_1: "",
-      FID_INPUT_DATE_2: "",
-      FID_INPUT_PRICE_1: "",
-      FID_VOL_CNT: "",
-    }),
-    // Different path variant
-    kisGet("/uapi/domestic-stock/v1/ranking/foreign-institution-total", "FHPST02310000", {
       FID_COND_MRKT_DIV_CODE: "J",
       FID_INPUT_ISCD: "0001",
       FID_DIV_CLS_CODE: "0",
@@ -114,20 +80,37 @@ export async function GET() {
       FID_INPUT_PRICE_1: "",
       FID_INPUT_PRICE_2: "",
       FID_VOL_CNT: "",
+      FID_HOUR_CLS_CODE: "1",
     }),
-    // inquire-investor — per-stock investor data for a single code (use index code)
+    // Try with empty iscd (market-wide)
+    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", {
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: "",
+      FID_DIV_CLS_CODE: "0",
+      FID_BLNG_CLS_CODE: "0",
+      FID_TRGT_CLS_CODE: "111111111",
+      FID_TRGT_EXLS_CLS_CODE: "0000000000",
+      FID_INPUT_DATE_1: "",
+      FID_INPUT_DATE_2: "",
+      FID_INPUT_PRICE_1: "",
+      FID_INPUT_PRICE_2: "",
+      FID_VOL_CNT: "",
+      FID_HOUR_CLS_CODE: "0",
+    }),
+    // inquire-investor with correct market code "J"
     kisGet("/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST01010900", {
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: "005930", // 삼성전자 — test if per-stock investor data works
+    }),
+    // Try market index investor with "U"
+    kisGet("/uapi/domestic-stock/v1/quotations/inquire-index-price", "FHPUP02100000", {
       FID_COND_MRKT_DIV_CODE: "U",
       FID_INPUT_ISCD: "0001",
-    }),
-    kisGet("/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST01010900", {
-      FID_COND_MRKT_DIV_CODE: "U",
-      FID_INPUT_ISCD: "1001",
     }),
   ]);
 
   return NextResponse.json(
-    { fit_kospi_1, fit_kospi_2, fit_kospi_3, fit_kospi_4, inv_0001, inv_1001 },
+    { "J+0001+hour0": a, "J+0001+hour1": b, "J+empty+hour0": c, "investor_005930": d, "index_price_0001": e },
     { headers: { "Cache-Control": "no-store" } }
   );
 }
