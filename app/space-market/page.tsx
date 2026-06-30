@@ -2,6 +2,7 @@ import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
+import TopMoverRow, { type MoverItem } from "@/components/TopMoverRow";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
@@ -93,7 +94,7 @@ export default async function SpaceMarketPage() {
   const avgDomestic =
     domesticChanges.length > 0 ? domesticChanges.reduce((a, b) => a + b, 0) / domesticChanges.length : null;
 
-  const topMovers = [
+  const serverMovers: MoverItem[] = [
     ...NASDAQ_COMPANIES.map((c, i) => ({
       name: c.name,
       logo: nasdaqResults[i].profile?.logo || c.logo,
@@ -108,10 +109,7 @@ export default async function SpaceMarketPage() {
       changePercent: domesticPrices[i]?.changePercent,
       currency: "KRW" as const
     }))
-  ]
-    .filter((m) => m.changePercent != null && m.price != null)
-    .sort((a, b) => Math.abs(b.changePercent!) - Math.abs(a.changePercent!))
-    .slice(0, 5);
+  ].filter((m): m is MoverItem => m.changePercent != null && m.price != null);
 
   return (
     <main className="page space-market-page">
@@ -132,31 +130,7 @@ export default async function SpaceMarketPage() {
 
       <SectorIndexRow globalChanges={nasdaqChanges} domesticAvg={avgDomestic} />
 
-      {topMovers.length > 0 && (
-        <>
-          <h2 className="space-group-title">오늘의 Top Mover</h2>
-          <section className="top-mover-row">
-            {topMovers.map((m, i) => {
-              const isUp = (m.changePercent ?? 0) >= 0;
-              const priceText = m.currency === "KRW" ? `₩${m.price!.toLocaleString()}` : `$${m.price!.toFixed(2)}`;
-              return (
-                <div key={m.name} className="top-mover-card">
-                  <span className="top-mover-rank">{i + 1}</span>
-                  {m.logo && <img src={m.logo} alt="" className="top-mover-logo" />}
-                  <div className="top-mover-info">
-                    <div className="top-mover-name">{m.name}</div>
-                    <div className="top-mover-price">{priceText}</div>
-                  </div>
-                  <div className={`top-mover-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
-                    {isUp ? "+" : ""}
-                    {m.changePercent!.toFixed(2)}%
-                  </div>
-                </div>
-              );
-            })}
-          </section>
-        </>
-      )}
+      <TopMoverRow serverMovers={serverMovers} otherCompanies={OTHER_SPACE_COMPANIES} />
 
       <h2 className="space-group-title">글로벌 우주항공 기업</h2>
       <section className="space-stock-grid">
