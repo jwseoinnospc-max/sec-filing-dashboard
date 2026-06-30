@@ -54,7 +54,6 @@ const OTHER_SPACE_COMPANIES = [
   { name: "EchoStar",               symbol: "ECHO",   exchange: "NAS", logo: favicon("echostar.com"),          url: "https://www.echostar.com" },
   { name: "Momentus",               symbol: "MNTS",   exchange: "NAS", logo: favicon("momentus.space"),        url: "https://momentus.space" },
   { name: "Sidus Space",            symbol: "SIDU",   exchange: "NAS", logo: favicon("sidusspace.com"),        url: "https://sidusspace.com" },
-  { name: "Astra Space",            symbol: "ASTR",   exchange: "NAS", logo: favicon("astra.com"),             url: "https://astra.com" },
   { name: "KVH Industries",         symbol: "KVHI",   exchange: "NAS", logo: favicon("kvh.com"),               url: "https://www.kvh.com" },
   { name: "Ondas Holdings",         symbol: "ONDS",   exchange: "NAS", logo: favicon("ondasholdings.com"),     url: "https://www.ondasholdings.com" },
   { name: "Comtech",                symbol: "CMTL",   exchange: "NAS", logo: favicon("comtech.com"),           url: "https://www.comtech.com" },
