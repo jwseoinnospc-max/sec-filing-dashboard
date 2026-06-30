@@ -3,13 +3,24 @@
   url: string;
   source: string;
   titleKo?: string;
-  publishedAt?: string;
+  publishedAt: string;
 };
 
-function formatPublishedDate(pubDate: string): string | undefined {
+function formatPublishedDate(pubDate: string): string {
   const date = new Date(pubDate);
-  if (isNaN(date.getTime())) return undefined;
-  return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" }).format(date);
+  if (!isNaN(date.getTime())) {
+    return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" }).format(date);
+  }
+  // 파싱 실패 시 원본에서 날짜 부분만 추출 (e.g. "Mon, 30 Jun 2026 12:00:00 GMT")
+  const m = pubDate.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (m) {
+    const months: Record<string, string> = {
+      Jan:"1월",Feb:"2월",Mar:"3월",Apr:"4월",May:"5월",Jun:"6월",
+      Jul:"7월",Aug:"8월",Sep:"9월",Oct:"10월",Nov:"11월",Dec:"12월"
+    };
+    return `${months[m[2]] ?? m[2]} ${m[1]}일`;
+  }
+  return pubDate.slice(0, 10);
 }
 
 // Company/brand names that should stay in English after translation.
