@@ -422,24 +422,25 @@ export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlo
           tr_id: "FHPST01710000",
           custtype: "P",
         },
-        next: { revalidate: 900 },
+        cache: "no-store",
       }
     );
     if (!res.ok) {
-      console.error("[KIS investor flow] HTTP", res.status, await res.text());
+      console.error("[KIS flow] HTTP", res.status, res.statusText);
       return null;
     }
     const data = await res.json();
-    console.error("[KIS investor flow] iscd=%s keys=%s output2[0]=%s", iscd, Object.keys(data).join(","), JSON.stringify(data?.output2?.[0] ?? data?.output?.[0]));
+    // Expose raw structure for debugging
+    (globalThis as Record<string, unknown>)[`__debugFlow_${iscd}`] = JSON.stringify({ rt_cd: data.rt_cd, msg1: data.msg1, keys: Object.keys(data), output0: data.output?.[0], output2_0: data.output2?.[0] });
     const row = data?.output2?.[0] ?? data?.output?.[0];
     if (!row) return null;
     return {
-      foreign: Number(row.frgn_ntby_tr_pbmn ?? 0),    // 외국인 순매수 거래대금 (억원)
-      institution: Number(row.orgn_ntby_tr_pbmn ?? 0), // 기관 순매수 거래대금 (억원)
-      individual: Number(row.indv_ntby_tr_pbmn ?? 0),  // 개인 순매수 거래대금 (억원)
+      foreign: Number(row.frgn_ntby_tr_pbmn ?? 0),
+      institution: Number(row.orgn_ntby_tr_pbmn ?? 0),
+      individual: Number(row.indv_ntby_tr_pbmn ?? 0),
     };
   } catch (e) {
-    console.error("[KIS investor flow] exception", e);
+    console.error("[KIS flow] exception", String(e));
     return null;
   }
 }
