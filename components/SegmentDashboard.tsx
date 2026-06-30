@@ -417,7 +417,7 @@ function CompareCard({
 
         .pill.gray {
           background: ${GRAY};
-          color: #111111;
+          color: #ffffff;
           margin-top: 8px;
         }
 
