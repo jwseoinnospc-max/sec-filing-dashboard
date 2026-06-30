@@ -23,19 +23,19 @@ function favicon(domain: string) {
 }
 
 const OTHER_SPACE_COMPANIES = [
-  { name: "AST SpaceMobile", symbol: "ASTS", exchange: "NAS", logo: favicon("ast-science.com") },
-  { name: "Kratos Defense", symbol: "KTOS", exchange: "NAS", logo: favicon("kratosdefense.com") },
-  { name: "Viasat", symbol: "VSAT", exchange: "NAS", logo: favicon("viasat.com") },
-  { name: "EchoStar", symbol: "ECHO", exchange: "NAS", logo: favicon("echostar.com") },
-  { name: "Momentus", symbol: "MNTS", exchange: "NAS", logo: favicon("momentus.space") },
-  { name: "Comtech", symbol: "CMTL", exchange: "NAS", logo: favicon("comtech.com") },
-  { name: "KVH Industries", symbol: "KVHI", exchange: "NAS", logo: favicon("kvh.com") },
-  { name: "Ondas Holdings", symbol: "ONDS", exchange: "NAS", logo: favicon("ondasholdings.com") },
-  { name: "Planet Labs", symbol: "PL", exchange: "NYS", logo: favicon("planet.com") },
-  { name: "Redwire", symbol: "RDW", exchange: "NYS", logo: favicon("redwirespace.com") },
-  { name: "Spire Global", symbol: "SPIR", exchange: "NYS", logo: favicon("spire.com") },
-  { name: "BlackSky", symbol: "BKSY", exchange: "NYS", logo: favicon("blacksky.com") },
-  { name: "Voyager Technologies", symbol: "VOYG", exchange: "NYS", logo: favicon("voyagertechnologies.com") },
+  { name: "AST SpaceMobile", symbol: "ASTS", exchange: "NAS", logo: favicon("ast-science.com"), url: "https://ast-science.com" },
+  { name: "Kratos Defense", symbol: "KTOS", exchange: "NAS", logo: favicon("kratosdefense.com"), url: "https://www.kratosdefense.com" },
+  { name: "Viasat", symbol: "VSAT", exchange: "NAS", logo: favicon("viasat.com"), url: "https://www.viasat.com" },
+  { name: "EchoStar", symbol: "ECHO", exchange: "NAS", logo: favicon("echostar.com"), url: "https://www.echostar.com" },
+  { name: "Momentus", symbol: "MNTS", exchange: "NAS", logo: favicon("momentus.space"), url: "https://momentus.space" },
+  { name: "Comtech", symbol: "CMTL", exchange: "NAS", logo: favicon("comtech.com"), url: "https://www.comtech.com" },
+  { name: "KVH Industries", symbol: "KVHI", exchange: "NAS", logo: favicon("kvh.com"), url: "https://www.kvh.com" },
+  { name: "Ondas Holdings", symbol: "ONDS", exchange: "NAS", logo: favicon("ondasholdings.com"), url: "https://www.ondasholdings.com" },
+  { name: "Planet Labs", symbol: "PL", exchange: "NYS", logo: favicon("planet.com"), url: "https://www.planet.com" },
+  { name: "Redwire", symbol: "RDW", exchange: "NYS", logo: favicon("redwirespace.com"), url: "https://redwirespace.com" },
+  { name: "Spire Global", symbol: "SPIR", exchange: "NYS", logo: favicon("spire.com"), url: "https://spire.com" },
+  { name: "BlackSky", symbol: "BKSY", exchange: "NYS", logo: favicon("blacksky.com"), url: "https://www.blacksky.com" },
+  { name: "Voyager Technologies", symbol: "VOYG", exchange: "NYS", logo: favicon("voyagertechnologies.com"), url: "https://www.voyagertechnologies.com" },
 ];
 
 const NASDAQ_COMPANIES = [
@@ -178,7 +178,7 @@ export default async function SpaceMarketPage() {
         </>
       )}
 
-      <h2 className="space-group-title">NASDAQ</h2>
+      <h2 className="space-group-title">글로벌 우주항공 기업</h2>
       <section className="space-stock-grid">
         {NASDAQ_COMPANIES.map((company, i) => {
           const { price, profile, valuation } = nasdaqResults[i];

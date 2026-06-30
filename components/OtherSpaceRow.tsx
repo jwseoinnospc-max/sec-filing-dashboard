@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Company = { name: string; symbol: string; exchange: string; logo: string };
+type Company = { name: string; symbol: string; exchange: string; logo: string; url: string };
 type PriceData = { last: number; change: number; changePercent: number };
 type PriceEntry = { symbol: string; price: PriceData | null };
 
@@ -31,7 +31,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
           const isUp = (p?.changePercent ?? 0) >= 0;
           const exLabel = company.exchange === "NYS" ? "NYSE" : "NASDAQ";
           return (
-            <div key={company.symbol} className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0 }}>
+            <a key={company.symbol} href={company.url} target="_blank" rel="noopener noreferrer" className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0, textDecoration: "none", cursor: "pointer" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>
                 <img src={company.logo} alt="" className="top-mover-logo" />
                 <div style={{ minWidth: 0 }}>
@@ -53,7 +53,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
                   <span style={{ color: "var(--muted)", fontSize: 13 }}>-</span>
                 )}
               </div>
-            </div>
+            </a>
           );
         })}
       </section>
