@@ -39,7 +39,8 @@ export default function SectorIndexRow({
     kosdaq: IndexQuote | null;
     nasdaq: IndexQuote | null;
     kodexSpace: IndexQuote | null;
-  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null });
+    tigerSpace: IndexQuote | null;
+  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null });
 
   useEffect(() => {
     fetch("/api/other-space-prices")
@@ -64,6 +65,7 @@ export default function SectorIndexRow({
       <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
       <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
       <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} />
+      <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} />
       {combinedGlobal != null && (
         <div className="sector-index-card">
           <div className="sector-index-label">글로벌 우주항공 평균</div>
