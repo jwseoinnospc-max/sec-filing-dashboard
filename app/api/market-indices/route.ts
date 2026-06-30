@@ -1,4 +1,4 @@
-import { getDomesticIndex } from "@/lib/kis";
+import { getDomesticIndex, getDomesticPrice } from "@/lib/kis";
 import { NextResponse } from "next/server";
 
 async function fetchYahooIndex(symbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
@@ -20,11 +20,16 @@ async function fetchYahooIndex(symbol: string): Promise<{ last: number; change: 
 }
 
 export async function GET() {
-  const [kospi, kosdaq, nasdaq] = await Promise.all([
+  const [kospi, kosdaq, nasdaq, kodexSpaceRaw] = await Promise.all([
     getDomesticIndex("0001"),
     getDomesticIndex("1001"),
     fetchYahooIndex("^IXIC"),
+    getDomesticPrice("0167Z0"),
   ]);
 
-  return NextResponse.json({ kospi, kosdaq, nasdaq }, { headers: { "Cache-Control": "no-store" } });
+  const kodexSpace = kodexSpaceRaw
+    ? { last: kodexSpaceRaw.last, change: kodexSpaceRaw.change, changePercent: kodexSpaceRaw.changePercent }
+    : null;
+
+  return NextResponse.json({ kospi, kosdaq, nasdaq, kodexSpace }, { headers: { "Cache-Control": "no-store" } });
 }

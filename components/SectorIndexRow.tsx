@@ -34,9 +34,12 @@ export default function SectorIndexRow({
   domesticAvg: number | null;
 }) {
   const [otherChanges, setOtherChanges] = useState<number[]>([]);
-  const [indices, setIndices] = useState<{ kospi: IndexQuote | null; kosdaq: IndexQuote | null; nasdaq: IndexQuote | null }>({
-    kospi: null, kosdaq: null, nasdaq: null,
-  });
+  const [indices, setIndices] = useState<{
+    kospi: IndexQuote | null;
+    kosdaq: IndexQuote | null;
+    nasdaq: IndexQuote | null;
+    kodexSpace: IndexQuote | null;
+  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null });
 
   useEffect(() => {
     fetch("/api/other-space-prices")
@@ -60,6 +63,7 @@ export default function SectorIndexRow({
       <IndexCard label="KOSPI" quote={indices.kospi} formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })} />
       <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
       <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
+      <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} />
       {combinedGlobal != null && (
         <div className="sector-index-card">
           <div className="sector-index-label">글로벌 우주항공 평균</div>
