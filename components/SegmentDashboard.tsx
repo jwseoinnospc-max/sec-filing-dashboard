@@ -339,6 +339,10 @@ function CompareCard({
           text-decoration: none;
         }
 
+        .side-label.left a {
+          color: var(--muted);
+        }
+
         .side-label a:hover,
         .pill:hover {
           text-decoration: underline;
