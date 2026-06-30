@@ -192,6 +192,9 @@ export default function SectorIndexRow({
       .catch(() => {});
   }, []);
 
+  // 국내 카드: 팝업과 동일한 weightedAvg(domesticBreakdown) 사용
+  const domesticWeightedAvg = weightedAvg(domesticBreakdown);
+
   // combinedGlobal: weighted average computed when otherPrices loaded, or simple fallback
   const combinedGlobal = (() => {
     const allItems = [
@@ -257,11 +260,11 @@ export default function SectorIndexRow({
             </div>
           </div>
         )}
-        {domesticAvg != null && (
+        {domesticWeightedAvg != null && (
           <div className="sector-index-card etf-clickable" onClick={() => setActiveAvgModal("domestic")} title="클릭하여 구성 기업 보기">
             <div className="sector-index-label">국내 우주항공 평균<span className="etf-info-icon"> ℹ</span></div>
-            <div className={`sector-index-value ${domesticAvg >= 0 ? "space-stock-up" : "space-stock-down"}`}>
-              {domesticAvg >= 0 ? "+" : ""}{domesticAvg.toFixed(2)}%
+            <div className={`sector-index-value ${domesticWeightedAvg >= 0 ? "space-stock-up" : "space-stock-down"}`}>
+              {domesticWeightedAvg >= 0 ? "+" : ""}{domesticWeightedAvg.toFixed(2)}%
             </div>
           </div>
         )}
