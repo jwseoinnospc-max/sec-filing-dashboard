@@ -56,35 +56,39 @@ function InvestorFlowRow({ flow }: { flow: InvestorFlow }) {
   );
 }
 
-function InvestorFlowModal({ label, flow, onClose }: { label: string; flow: InvestorFlow; onClose: () => void }) {
-  const rows = [
+function InvestorFlowModal({ label, flow, onClose }: { label: string; flow: InvestorFlow | null; onClose: () => void }) {
+  const rows = flow ? [
     { name: "외국인", value: flow.foreign },
     { name: "기관", value: flow.institution },
     { name: "개인", value: flow.individual },
-  ];
+  ] : [];
   return (
     <div className="etf-modal-overlay" onClick={onClose}>
-      <div className="etf-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="etf-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 340 }}>
         <div className="etf-modal-header">
           <span>{label} 투자자별 순매수</span>
           <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
         </div>
         <div className="etf-modal-note">※ 당일 거래대금 기준 순매수 · 단위: 억원</div>
-        <table className="etf-modal-table">
-          <thead>
-            <tr><th>구분</th><th style={{ textAlign: "right" }}>순매수 (억원)</th></tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.name}>
-                <td style={{ fontWeight: 700 }}>{r.name}</td>
-                <td style={{ textAlign: "right", fontWeight: 700, color: r.value >= 0 ? "#ef4444" : "#4488ff" }}>
-                  {r.value >= 0 ? "+" : ""}{r.value.toLocaleString("ko-KR")}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {!flow ? (
+          <div style={{ padding: "20px 0", textAlign: "center", color: "var(--muted)" }}>데이터 조회 중...</div>
+        ) : (
+          <table className="etf-modal-table">
+            <thead>
+              <tr><th>구분</th><th style={{ textAlign: "right" }}>순매수 (억원)</th></tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.name}>
+                  <td style={{ fontWeight: 700 }}>{r.name}</td>
+                  <td style={{ textAlign: "right", fontWeight: 700, color: r.value >= 0 ? "#ef4444" : "#4488ff" }}>
+                    {r.value >= 0 ? "+" : ""}{r.value.toLocaleString("ko-KR")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
@@ -250,26 +254,32 @@ function AvgModal({
             {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%
           </strong>
         </div>
-        <table className="etf-modal-table">
-          <thead>
-            <tr><th>#</th><th>종목</th><th>기업명</th><th>변동률</th></tr>
-          </thead>
-          <tbody>
-            {[...items].sort((a, b) => b.changePercent - a.changePercent).map((item, i) => {
+        {(() => {
+          const sorted = [...items].sort((a, b) => b.changePercent - a.changePercent);
+          const half = Math.ceil(sorted.length / 2);
+          const left = sorted.slice(0, half);
+          const right = sorted.slice(half);
+          const renderRows = (list: BreakdownItem[], offset: number) =>
+            list.map((item, i) => {
               const isUp = item.changePercent >= 0;
               return (
                 <tr key={item.symbol}>
-                  <td>{i + 1}</td>
-                  <td style={{ color: "var(--accent)", fontWeight: 700 }}>{item.symbol}</td>
-                  <td>{item.name}</td>
-                  <td style={{ textAlign: "right", fontWeight: 700, color: isUp ? "#ef4444" : "#4488ff" }}>
+                  <td style={{ color: "var(--muted)", fontSize: 11, paddingRight: 4 }}>{offset + i + 1}</td>
+                  <td style={{ color: "var(--accent)", fontWeight: 700, whiteSpace: "nowrap" }}>{item.symbol}</td>
+                  <td style={{ fontSize: 12, maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</td>
+                  <td style={{ textAlign: "right", fontWeight: 700, color: isUp ? "#ef4444" : "#4488ff", whiteSpace: "nowrap" }}>
                     {isUp ? "+" : ""}{item.changePercent.toFixed(2)}%
                   </td>
                 </tr>
               );
-            })}
-          </tbody>
-        </table>
+            });
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 12px" }}>
+              <table className="etf-modal-table" style={{ margin: 0 }}><tbody>{renderRows(left, 0)}</tbody></table>
+              <table className="etf-modal-table" style={{ margin: 0 }}><tbody>{renderRows(right, half)}</tbody></table>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -351,14 +361,14 @@ export default function SectorIndexRow({
           label="KOSPI"
           quote={indices.kospi}
           formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
-          onClick={indices.kospiFlow ? () => setActiveFlowModal("kospi") : undefined}
+          onClick={() => setActiveFlowModal("kospi")}
           clickTitle="투자자 현황 보기"
         />
         <IndexCard
           label="KOSDAQ"
           quote={indices.kosdaq}
           formatLast={(v) => v.toFixed(2)}
-          onClick={indices.kosdaqFlow ? () => setActiveFlowModal("kosdaq") : undefined}
+          onClick={() => setActiveFlowModal("kosdaq")}
           clickTitle="투자자 현황 보기"
         />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
@@ -386,10 +396,10 @@ export default function SectorIndexRow({
         return q ? <EtfLinkModal label={activeEtfLinkModal} quote={q} onClose={() => setActiveEtfLinkModal(null)} /> : null;
       })()}
       {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
-      {activeFlowModal === "kospi" && indices.kospiFlow && (
+      {activeFlowModal === "kospi" && indices.kospi && (
         <InvestorFlowModal label="KOSPI" flow={indices.kospiFlow} onClose={() => setActiveFlowModal(null)} />
       )}
-      {activeFlowModal === "kosdaq" && indices.kosdaqFlow && (
+      {activeFlowModal === "kosdaq" && indices.kosdaq && (
         <InvestorFlowModal label="KOSDAQ" flow={indices.kosdaqFlow} onClose={() => setActiveFlowModal(null)} />
       )}
       {activeAvgModal === "global" && (
