@@ -408,7 +408,7 @@ function CompareCard({
 
         .pill.blue {
           background: ${BLUE};
-          color: #ffffff;
+          color: #111111;
         }
 
         .pill.gray {
