@@ -135,7 +135,7 @@ function AvgModal({
         </div>
         <div className="etf-modal-note">
           ※ {items.length}개 기업 시가총액 가중 평균 변동률:&nbsp;
-          <strong style={{ color: avg >= 0 ? "#22c55e" : "#ef4444" }}>
+          <strong style={{ color: avg >= 0 ? "#ef4444" : "#4488ff" }}>
             {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%
           </strong>
         </div>
@@ -151,7 +151,7 @@ function AvgModal({
                   <td>{i + 1}</td>
                   <td style={{ color: "var(--accent)", fontWeight: 700 }}>{item.symbol}</td>
                   <td>{item.name}</td>
-                  <td style={{ textAlign: "right", fontWeight: 700, color: isUp ? "#22c55e" : "#ef4444" }}>
+                  <td style={{ textAlign: "right", fontWeight: 700, color: isUp ? "#ef4444" : "#4488ff" }}>
                     {isUp ? "+" : ""}{item.changePercent.toFixed(2)}%
                   </td>
                 </tr>
