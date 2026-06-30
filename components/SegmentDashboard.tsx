@@ -377,13 +377,14 @@ function CompareCard({
           width: 100%;
           transform: translateY(-50%);
           font-size: 13px;
-          color: #dc2626;
+          color: #ffffff;
           font-weight: 700;
           white-space: nowrap;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.6);
         }
 
         .growth-text strong {
-          color: #dc2626;
+          color: #ffffff;
           font-size: 20px;
           margin: 0 0 0 3px;
         }
