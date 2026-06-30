@@ -168,7 +168,7 @@ function CompareCard({
             <div className="growth-text">
               <span>전년 동기 대비</span>
               <strong>{pct(totalGrowth)}</strong>
-              <span>{totalGrowth >= 0 ? "↑" : "↓"}</span>
+              <span style={{ color: "#dc2626" }}>{totalGrowth >= 0 ? "↑" : "↓"}</span>
             </div>
           </div>
 
@@ -384,7 +384,7 @@ function CompareCard({
         }
 
         .growth-text strong {
-          color: #ffffff;
+          color: #dc2626;
           font-size: 20px;
           margin: 0 0 0 3px;
         }
