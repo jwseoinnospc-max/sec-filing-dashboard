@@ -390,7 +390,9 @@ function CompareCard({
         }
 
         .pill {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           width: max-content;
           max-width: 100%;
           white-space: nowrap;
