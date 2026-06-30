@@ -330,6 +330,7 @@ function CompareCard({
 
         .side-label span {
           display: block;
+          color: inherit;
         }
 
         .side-label a {
