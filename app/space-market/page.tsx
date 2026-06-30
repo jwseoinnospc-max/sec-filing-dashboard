@@ -79,7 +79,6 @@ const DOMESTIC_COMPANIES = [
   { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },                               // 15.9조
   { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },                                 // 14.6조
   { name: "한화시스템", code: "272210", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272210.png" }, // 14조
-  { name: "두원중공업", code: "000100", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-000100.png" }, // 5.7조
   { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: favicon("contec.kr") },                                   // 2.3조
   { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" }, // 9977억
   { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },                   // 8472억
