@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type IndexQuote = { last: number; change: number; changePercent: number };
 type InvestorFlow = { foreign: number; institution: number; individual: number };
@@ -70,26 +70,30 @@ function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; on
 }
 
 function IndexCard({
-  label, quote, formatLast, onClick, href,
+  label, quote, formatLast, onClick, href, extra,
 }: {
   label: string;
   quote: IndexQuote | null | undefined;
   formatLast?: (v: number) => string;
   onClick?: () => void;
   href?: string;
+  extra?: React.ReactNode;
 }) {
   if (!quote) return null;
   const isUp = quote.changePercent >= 0;
   const isClickable = !!(onClick || href);
   const inner = (
     <>
-      <div className="sector-index-label">{label}{isClickable && <span className="etf-info-icon"> ↗</span>}</div>
-      <div style={{ textAlign: "right" }}>
-        {formatLast && <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2 }}>{formatLast(quote.last)}</div>}
-        <div className={`sector-index-value ${isUp ? "space-stock-up" : "space-stock-down"}`}>
-          {isUp ? "+" : ""}{quote.changePercent.toFixed(2)}%
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+        <div className="sector-index-label">{label}{isClickable && <span className="etf-info-icon"> ↗</span>}</div>
+        <div style={{ textAlign: "right" }}>
+          {formatLast && <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2 }}>{formatLast(quote.last)}</div>}
+          <div className={`sector-index-value ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+            {isUp ? "+" : ""}{quote.changePercent.toFixed(2)}%
+          </div>
         </div>
       </div>
+      {extra}
     </>
   );
   if (href) {
@@ -233,40 +237,25 @@ export default function SectorIndexRow({
   return (
     <>
       <section className="sector-index-row">
-        {indices.kospi && (() => {
-          const q = indices.kospi;
-          const isUp = q.changePercent >= 0;
-          const flow = indices.kospiFlow;
-          const fmt = (v: number) => {
-            const abs = Math.abs(v);
-            const s = abs >= 1000 ? `${(abs / 1000).toFixed(0)}천주` : `${abs.toFixed(0)}주`;
-            return (v >= 0 ? "+" : "−") + s;
-          };
-          return (
-            <div className="sector-index-card kospi-investor-card">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                <div>
-                  <div className="sector-index-label">KOSPI</div>
-                  {flow && (
-                    <div className="kospi-investor-flow">
-                      <span>외국인 <b style={{ color: flow.foreign >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.foreign)}</b></span>
-                      <span>기관 <b style={{ color: flow.institution >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.institution)}</b></span>
-                      <span>개인 <b style={{ color: flow.individual >= 0 ? "#22c55e" : "#ef4444" }}>{fmt(flow.individual)}</b></span>
-                    </div>
-                  )}
-                </div>
-                <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2 }}>
-                    {q.last.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
-                  </div>
-                  <div className={`sector-index-value ${isUp ? "space-stock-up" : "space-stock-down"}`}>
-                    {isUp ? "+" : ""}{q.changePercent.toFixed(2)}%
-                  </div>
-                </div>
+        <IndexCard
+          label="KOSPI"
+          quote={indices.kospi}
+          formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
+          extra={indices.kospiFlow ? (() => {
+            const flow = indices.kospiFlow!;
+            const fmt = (v: number) => {
+              const abs = Math.abs(v);
+              return (v >= 0 ? "+" : "−") + (abs >= 1000 ? `${(abs / 1000).toFixed(0)}천주` : `${abs.toFixed(0)}주`);
+            };
+            return (
+              <div className="kospi-investor-flow">
+                <span>외국인 <b style={{ color: flow.foreign >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.foreign)}</b></span>
+                <span>기관 <b style={{ color: flow.institution >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.institution)}</b></span>
+                <span>개인 <b style={{ color: flow.individual >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.individual)}</b></span>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })() : undefined}
+        />
         <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
         <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} href="https://www.samsungfund.com/etf/product/view.do?id=2ETFU4" />
