@@ -24,6 +24,7 @@ const COMPANIES: Company[] = [
   { symbol: "7011",  exchange: "TSE", source: "kis" },
   { symbol: "7013",  exchange: "TSE", source: "kis" },
   { symbol: "6701",  exchange: "TSE", source: "kis" },
+  { symbol: "9348",  exchange: "TSE", source: "kis" },
   // Europe — Finnhub
   { symbol: "AIR",   source: "finnhub" },
   { symbol: "HO",    source: "finnhub" },

@@ -24,7 +24,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
 
   return (
     <>
-      <h2 className="space-group-title">기타 우주 관련 기업</h2>
+      <h2 className="space-group-title">기타 글로벌 우주항공 기업</h2>
       <section className="top-mover-row">
         {companies.map((company) => {
           const p = loaded ? prices[company.symbol] : undefined;
