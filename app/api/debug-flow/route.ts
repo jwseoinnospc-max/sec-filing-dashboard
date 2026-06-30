@@ -22,28 +22,36 @@ export async function GET() {
   if (!token) return NextResponse.json({ error: "no cached token" });
 
   const BASE = "https://openapi.koreainvestment.com:9443";
-  const results: Record<string, unknown>[] = [];
 
-  // Test FHKST01010300 (주식 현재가 투자자) with various iscd
-  for (const [trId, params] of [
-    ["FHKST01010300", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "0001" }],
-    ["FHKST01010300", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930" }], // Samsung for comparison
-    ["FHKST01010300", { FID_COND_MRKT_DIV_CODE: "U", FID_INPUT_ISCD: "0001" }],
-    ["FHPST01710000", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "0001", FID_DIV_CLS_CODE: "1" }],
-  ] as [string, Record<string, string>][]) {
+  async function tryPath(trId: string, path: string, params: Record<string, string>) {
     try {
       const q = new URLSearchParams(params);
-      const res = await fetch(`${BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${q}`, {
-        headers: { authorization: `Bearer ${token}`, appkey: appKey, appsecret: appSecret, tr_id: trId, custtype: "P" },
+      const res = await fetch(`${BASE}${path}?${q}`, {
+        headers: { authorization: `Bearer ${token}`, appkey: appKey!, appsecret: appSecret!, tr_id: trId, custtype: "P" },
         cache: "no-store",
       });
       const data = await res.json();
-      const row0 = data.output?.[0] ?? data.output2?.[0];
-      results.push({ trId, params, rt_cd: data.rt_cd, msg1: data.msg1?.slice(0, 60), row0_keys: row0 ? Object.keys(row0) : null, row0 });
+      const allOutputs: unknown[] = [];
+      for (const key of Object.keys(data)) {
+        if (Array.isArray(data[key]) && data[key].length > 0) {
+          allOutputs.push({ key, len: data[key].length, row0_keys: Object.keys(data[key][0]).slice(0, 12), row0: data[key][0] });
+        }
+      }
+      return { trId, path, params, status: res.status, rt_cd: data.rt_cd, msg1: data.msg1?.slice(0, 80), allOutputs };
     } catch (e) {
-      results.push({ trId, params, error: String(e) });
+      return { trId, path, error: String(e) };
     }
   }
+
+  // Try the real investor flow endpoint with correct path variations
+  const results = await Promise.all([
+    // Standard investor inquiry - different TR IDs
+    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-investor", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930" }),
+    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-member", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930" }),
+    // Try market investor with different paths
+    tryPath("FHPST01710000", "/uapi/domestic-stock/v1/quotations/inquire-investor", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "005930", FID_DIV_CLS_CODE: "0" }),
+    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-daily-trade-volume", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930", FID_PERIOD_DIV_CODE: "D", FID_ORG_ADJ_PRC: "0" }),
+  ]);
 
   return NextResponse.json({ results }, { headers: { "Cache-Control": "no-store" } });
 }
