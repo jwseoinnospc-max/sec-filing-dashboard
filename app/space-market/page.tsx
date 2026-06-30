@@ -68,8 +68,8 @@ const DOMESTIC_COMPANIES = [
   { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-478340.png" },
   { name: "한화시스템", code: "272210", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272210.png" },
   { name: "현대로템", code: "064350", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-064350.png" },
-  { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-139480.png" },
-  { name: "켄코아에어로스페이스", code: "272550", exchange: "KOSDAQ", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272550.png" },
+  { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: favicon("contec.kr") },
+  { name: "켄코아에어로스페이스", code: "274090", exchange: "KOSDAQ", logo: favicon("kencoa.com") },
   { name: "두원중공업", code: "000100", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-000100.png" }
 ];
 
