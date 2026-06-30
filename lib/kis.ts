@@ -399,49 +399,36 @@ export type KisIndexQuote = { last: number; change: number; changePercent: numbe
 // 단위: 억원
 export type KisInvestorFlow = { foreign: number; institution: number; individual: number };
 
-// 국내 지수 투자자별 순매수 거래대금 (억원) — KOSPI: "0001", KOSDAQ: "1001"
+// 국내 지수 투자자별 순매수 거래대금 (억원) — NAVER Finance 기반
+// sosok: "0"=KOSPI, "1"=KOSDAQ
 export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlow | null> {
-  const appKey = process.env.KIS_APP_KEY;
-  const appSecret = process.env.KIS_APP_SECRET;
-  const token = await getAccessToken();
-  if (!appKey || !appSecret || !token) return null;
-
+  // iscd "0001" → sosok "0" (KOSPI), "1001" → sosok "1" (KOSDAQ)
+  const sosok = iscd === "0001" ? "0" : "1";
   try {
-    const query = new URLSearchParams({
-      FID_COND_MRKT_DIV_CODE: "J",
-      FID_COND_SCR_DIV_CODE: "20171",
-      FID_INPUT_ISCD: iscd,
-      FID_DIV_CLS_CODE: "0",
+    const url = `https://finance.naver.com/sise/investorDailyTotalTrade.nhn?bizdate=&sosok=${sosok}`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/" },
+      cache: "no-store",
     });
-    const res = await fetch(
-      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${query.toString()}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-          appkey: appKey,
-          appsecret: appSecret,
-          tr_id: "FHPST01710000",
-          custtype: "P",
-        },
-        cache: "no-store",
+    if (!res.ok) return null;
+    const html = await res.text();
+    // 테이블에서 개인/외국인/기관 순매수 금액 파싱 (단위: 억원)
+    // 행 구조: 날짜 | 개인매수 | 개인매도 | 개인순매수 | 외국인매수 | 외국인매도 | 외국인순매수 | 기관매수 | 기관매도 | 기관순매수
+    const rows = html.match(/<tr[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/tr>/g) ?? [];
+    for (const row of rows) {
+      const cells = (row.match(/<td[^>]*>([\s\S]*?)<\/td>/g) ?? []).map((td) =>
+        td.replace(/<[^>]+>/g, "").replace(/,/g, "").trim()
+      );
+      if (cells.length < 10) continue;
+      const individual = Number(cells[3]);
+      const foreign = Number(cells[6]);
+      const institution = Number(cells[9]);
+      if (!isNaN(individual) && !isNaN(foreign) && !isNaN(institution)) {
+        return { foreign, institution, individual };
       }
-    );
-    if (!res.ok) {
-      console.error("[KIS flow] HTTP", res.status, res.statusText);
-      return null;
     }
-    const data = await res.json();
-    // Expose raw structure for debugging
-    (globalThis as Record<string, unknown>)[`__debugFlow_${iscd}`] = JSON.stringify({ rt_cd: data.rt_cd, msg1: data.msg1, keys: Object.keys(data), output0: data.output?.[0], output2_0: data.output2?.[0] });
-    const row = data?.output2?.[0] ?? data?.output?.[0];
-    if (!row) return null;
-    return {
-      foreign: Number(row.frgn_ntby_tr_pbmn ?? 0),
-      institution: Number(row.orgn_ntby_tr_pbmn ?? 0),
-      individual: Number(row.indv_ntby_tr_pbmn ?? 0),
-    };
-  } catch (e) {
-    console.error("[KIS flow] exception", String(e));
+    return null;
+  } catch {
     return null;
   }
 }
