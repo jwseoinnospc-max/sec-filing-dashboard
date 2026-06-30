@@ -394,3 +394,40 @@ export async function getDomesticIntradayHistory(code: string): Promise<KisMinut
   if (all.length === 0) return null;
   return all.sort((a, b) => (a.time < b.time ? -1 : 1));
 }
+
+export type KisIndexQuote = { last: number; change: number; changePercent: number };
+
+// KIS 국내 지수 조회 (KOSPI: "0001", KOSDAQ: "1001")
+export async function getDomesticIndex(iscd: string): Promise<KisIndexQuote | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  try {
+    const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "U", FID_INPUT_ISCD: iscd });
+    const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-index-price?${query.toString()}`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+        appkey: appKey,
+        appsecret: appSecret,
+        tr_id: "FHPUP02100000",
+        custtype: "P"
+      },
+      next: { revalidate: 60 }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const o = data?.output;
+    if (!o || !o.bstp_nmix_prpr) return null;
+    const sign = Number(o.prdy_vrss_sign);
+    const direction = sign === 5 ? -1 : 1;
+    return {
+      last: Number(o.bstp_nmix_prpr),
+      change: direction * Math.abs(Number(o.bstp_nmix_prdy_vrss ?? 0)),
+      changePercent: direction * Math.abs(Number(o.bstp_nmix_prdy_ctrt ?? 0)),
+    };
+  } catch {
+    return null;
+  }
+}
