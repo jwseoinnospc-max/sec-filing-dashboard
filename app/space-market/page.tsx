@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { readFileSync } from "fs";
+import { join } from "path";
 import NavMenu from "@/components/NavMenu";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
@@ -135,6 +137,10 @@ export default async function SpaceMarketPage() {
     }))
   ].filter((m): m is MoverItem => m.changePercent != null && m.price != null);
 
+  const etfRaw = JSON.parse(readFileSync(join(process.cwd(), "data/etf-holdings.json"), "utf8"));
+  const etfHoldings = etfRaw.etfs as Record<string, { name: string; holdings: { symbol: string; name: string; weight: string }[] }>;
+  const etfDataAsOf = etfRaw.dataAsOf as string;
+
   const updatedAt = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
     year: "numeric", month: "long", day: "numeric",
@@ -159,7 +165,7 @@ export default async function SpaceMarketPage() {
         </div>
       </section>
 
-      <SectorIndexRow globalChanges={nasdaqChanges} domesticAvg={avgDomestic} />
+      <SectorIndexRow globalChanges={nasdaqChanges} domesticAvg={avgDomestic} etfHoldings={etfHoldings} dataAsOf={etfDataAsOf} />
 
       <TopMoverRow serverMovers={serverMovers} otherCompanies={OTHER_SPACE_COMPANIES} />
 

@@ -10,41 +10,12 @@ function avg(values: number[]): number | null {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-const ETF_HOLDINGS: Record<string, { name: string; holdings: { symbol: string; name: string; weight: string }[] }> = {
-  "KODEX 미국우주항공": {
-    name: "KODEX 미국우주항공 (0167Z0) — iSelect 미국우주항공 지수",
-    holdings: [
-      { symbol: "RKLB", name: "Rocket Lab USA", weight: "17.0%" },
-      { symbol: "ASTS", name: "AST SpaceMobile", weight: "16.0%" },
-      { symbol: "LUNR", name: "Intuitive Machines", weight: "10.0%" },
-      { symbol: "KTOS", name: "Kratos Defense", weight: "6.5%" },
-      { symbol: "LMT",  name: "Lockheed Martin", weight: "5.0%" },
-      { symbol: "BA",   name: "Boeing", weight: "3.0%" },
-      { symbol: "RTX",  name: "RTX Corporation", weight: "2.8%" },
-      { symbol: "NOC",  name: "Northrop Grumman", weight: "2.5%" },
-      { symbol: "RDW",  name: "Redwire", weight: "2.2%" },
-      { symbol: "PL",   name: "Planet Labs", weight: "1.8%" },
-    ],
-  },
-  "TIGER 미국우주테크": {
-    name: "TIGER 미국우주테크TOP10 (0183J0) — Akros U.S. Space Tech 지수",
-    holdings: [
-      { symbol: "RKLB", name: "Rocket Lab USA", weight: "27.07%" },
-      { symbol: "LUNR", name: "Intuitive Machines", weight: "20.74%" },
-      { symbol: "RDW",  name: "Redwire", weight: "14.55%" },
-      { symbol: "ASTS", name: "AST SpaceMobile", weight: "9.74%" },
-      { symbol: "FLY",  name: "Firefly Aerospace", weight: "7.0%" },
-      { symbol: "KTOS", name: "Kratos Defense", weight: "5.5%" },
-      { symbol: "PL",   name: "Planet Labs", weight: "4.8%" },
-      { symbol: "SPIR", name: "Spire Global", weight: "4.2%" },
-      { symbol: "BKSY", name: "BlackSky", weight: "3.6%" },
-      { symbol: "MNTS", name: "Momentus", weight: "2.8%" },
-    ],
-  },
-};
 
-function EtfModal({ label, onClose }: { label: string; onClose: () => void }) {
-  const etf = ETF_HOLDINGS[label];
+type EtfHolding = { symbol: string; name: string; weight: string };
+type EtfHoldingsData = Record<string, { name: string; holdings: EtfHolding[] }>;
+
+function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; onClose: () => void; etfHoldings: EtfHoldingsData; dataAsOf: string }) {
+  const etf = etfHoldings[label];
   if (!etf) return null;
   return (
     <div className="etf-modal-overlay" onClick={onClose}>
@@ -53,7 +24,7 @@ function EtfModal({ label, onClose }: { label: string; onClose: () => void }) {
           <span>{etf.name} 구성 종목</span>
           <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
         </div>
-        <div className="etf-modal-note">※ 구성 비중은 최근 공시 기준이며 변동될 수 있습니다.</div>
+        <div className="etf-modal-note">※ 구성 비중 기준일: {dataAsOf} · 변동될 수 있습니다.</div>
         <table className="etf-modal-table">
           <thead>
             <tr><th>#</th><th>종목</th><th>이름</th><th>비중</th></tr>
@@ -104,9 +75,13 @@ function IndexCard({
 export default function SectorIndexRow({
   globalChanges,
   domesticAvg,
+  etfHoldings,
+  dataAsOf,
 }: {
   globalChanges: number[];
   domesticAvg: number | null;
+  etfHoldings: EtfHoldingsData;
+  dataAsOf: string;
 }) {
   const [otherChanges, setOtherChanges] = useState<number[]>([]);
   const [indices, setIndices] = useState<{
@@ -160,7 +135,7 @@ export default function SectorIndexRow({
           </div>
         )}
       </section>
-      {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} />}
+      {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
     </>
   );
 }
