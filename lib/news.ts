@@ -95,8 +95,9 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
 
     const itemRegex = /<item>([\s\S]*?)<\/item>/g;
     let match: RegExpExecArray | null;
+    const candidates: { item: NewsItem; ts: number }[] = [];
 
-    while ((match = itemRegex.exec(xml)) && items.length < count) {
+    while ((match = itemRegex.exec(xml))) {
       const block = match[1];
       const titleRaw = /<title>([\s\S]*?)<\/title>/.exec(block)?.[1] ?? "";
       const link = /<link>([\s\S]*?)<\/link>/.exec(block)?.[1] ?? "";
@@ -108,14 +109,17 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
 
       if (title && link) {
         if (titleFilter && !titleFilter.some((kw) => title.toLowerCase().includes(kw.toLowerCase()))) continue;
-        items.push({
-          title,
-          url: link.trim(),
-          source: decodeEntities(sourceRaw),
-          publishedAt: formatPublishedDate(pubDateRaw)
+        const ts = pubDateRaw ? new Date(pubDateRaw).getTime() : 0;
+        candidates.push({
+          item: { title, url: link.trim(), source: decodeEntities(sourceRaw), publishedAt: formatPublishedDate(pubDateRaw) },
+          ts,
         });
       }
     }
+
+    // Sort newest first, then take requested count
+    candidates.sort((a, b) => b.ts - a.ts);
+    items.push(...candidates.slice(0, count).map((c) => c.item));
 
     if (locale === "en") {
       for (const item of items) {
