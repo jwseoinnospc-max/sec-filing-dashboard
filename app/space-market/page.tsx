@@ -51,7 +51,7 @@ const DOMESTIC_COMPANIES = [
   { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
   { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") },
   { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },
-  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: favicon("satreci.com") },
+  { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" },
   { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },
   { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: favicon("apsi.co.kr") },
   { name: "나라스페이스테크놀로지", code: "478340", exchange: "KOSDAQ", logo: favicon("naraspace.co.kr") }
