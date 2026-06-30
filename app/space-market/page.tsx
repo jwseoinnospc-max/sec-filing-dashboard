@@ -47,10 +47,10 @@ const NASDAQ_COMPANIES = [
 
 
 const DOMESTIC_COMPANIES = [
-  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: favicon("innospace.kr") },
+  { name: "이노스페이스", code: "462350", exchange: "KOSDAQ", logo: "/innospace-logo.png" },
   { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },
   { name: "한화에어로스페이스", code: "012450", exchange: "KOSPI", logo: favicon("hanwhaaerospace.com") },
-  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: favicon("koreaaero.com") },
+  { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },
   { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: favicon("satreci.com") },
   { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },
   { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: favicon("apsi.co.kr") },
