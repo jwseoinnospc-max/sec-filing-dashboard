@@ -137,6 +137,19 @@ export default async function SpaceMarketPage() {
     }))
   ].filter((m): m is MoverItem => m.changePercent != null && m.price != null);
 
+  // Build breakdown arrays for average card modals
+  const globalBreakdown = NASDAQ_COMPANIES.map((c, i) => ({
+    name: c.name,
+    symbol: c.symbol,
+    changePercent: nasdaqResults[i].price?.changePercent ?? 0,
+  })).filter((_, i) => nasdaqResults[i].price?.changePercent != null);
+
+  const domesticBreakdown = DOMESTIC_COMPANIES.map((c, i) => ({
+    name: c.name,
+    symbol: c.code,
+    changePercent: domesticPrices[i]?.changePercent ?? 0,
+  })).filter((_, i) => domesticPrices[i]?.changePercent != null);
+
   const etfRaw = JSON.parse(readFileSync(join(process.cwd(), "data/etf-holdings.json"), "utf8"));
   const etfHoldings = etfRaw.etfs as Record<string, { name: string; holdings: { symbol: string; name: string; weight: string }[] }>;
   const etfDataAsOf = etfRaw.dataAsOf as string;
@@ -165,7 +178,15 @@ export default async function SpaceMarketPage() {
         </div>
       </section>
 
-      <SectorIndexRow globalChanges={nasdaqChanges} domesticAvg={avgDomestic} etfHoldings={etfHoldings} dataAsOf={etfDataAsOf} />
+      <SectorIndexRow
+          globalChanges={nasdaqChanges}
+          domesticAvg={avgDomestic}
+          etfHoldings={etfHoldings}
+          dataAsOf={etfDataAsOf}
+          globalBreakdown={globalBreakdown}
+          domesticBreakdown={domesticBreakdown}
+          otherCompanies={OTHER_SPACE_COMPANIES}
+        />
 
       <TopMoverRow serverMovers={serverMovers} otherCompanies={OTHER_SPACE_COMPANIES} />
 

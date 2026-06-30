@@ -13,6 +13,8 @@ function avg(values: number[]): number | null {
 
 type EtfHolding = { symbol: string; name: string; weight: string };
 type EtfHoldingsData = Record<string, { name: string; holdings: EtfHolding[] }>;
+type BreakdownItem = { name: string; symbol: string; changePercent: number };
+type OtherCompany = { name: string; symbol: string; exchange: string; logo: string; url: string };
 
 function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; onClose: () => void; etfHoldings: EtfHoldingsData; dataAsOf: string }) {
   const etf = etfHoldings[label];
@@ -72,18 +74,74 @@ function IndexCard({
   );
 }
 
+
+function AvgModal({
+  title,
+  items,
+  onClose,
+}: {
+  title: string;
+  items: BreakdownItem[];
+  onClose: () => void;
+}) {
+  const avg = items.reduce((s, i) => s + i.changePercent, 0) / items.length;
+  return (
+    <div className="etf-modal-overlay" onClick={onClose}>
+      <div className="etf-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="etf-modal-header">
+          <span>{title} 구성 기업</span>
+          <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
+        </div>
+        <div className="etf-modal-note">
+          ※ {items.length}개 기업 단순 평균 변동률:&nbsp;
+          <strong style={{ color: avg >= 0 ? "#22c55e" : "#ef4444" }}>
+            {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%
+          </strong>
+        </div>
+        <table className="etf-modal-table">
+          <thead>
+            <tr><th>#</th><th>종목</th><th>기업명</th><th>변동률</th></tr>
+          </thead>
+          <tbody>
+            {[...items].sort((a, b) => b.changePercent - a.changePercent).map((item, i) => {
+              const isUp = item.changePercent >= 0;
+              return (
+                <tr key={item.symbol}>
+                  <td>{i + 1}</td>
+                  <td style={{ color: "var(--accent)", fontWeight: 700 }}>{item.symbol}</td>
+                  <td>{item.name}</td>
+                  <td style={{ textAlign: "right", fontWeight: 700, color: isUp ? "#22c55e" : "#ef4444" }}>
+                    {isUp ? "+" : ""}{item.changePercent.toFixed(2)}%
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export default function SectorIndexRow({
   globalChanges,
   domesticAvg,
   etfHoldings,
   dataAsOf,
+  globalBreakdown,
+  domesticBreakdown,
+  otherCompanies,
 }: {
   globalChanges: number[];
   domesticAvg: number | null;
   etfHoldings: EtfHoldingsData;
   dataAsOf: string;
+  globalBreakdown: BreakdownItem[];
+  domesticBreakdown: BreakdownItem[];
+  otherCompanies: OtherCompany[];
 }) {
   const [otherChanges, setOtherChanges] = useState<number[]>([]);
+  const [otherPrices, setOtherPrices] = useState<PriceEntry[]>([]);
   const [indices, setIndices] = useState<{
     kospi: IndexQuote | null;
     kosdaq: IndexQuote | null;
@@ -92,6 +150,7 @@ export default function SectorIndexRow({
     tigerSpace: IndexQuote | null;
   }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null });
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [activeAvgModal, setActiveAvgModal] = useState<"global" | "domestic" | null>(null);
 
   useEffect(() => {
     fetch("/api/other-space-prices")
@@ -99,6 +158,7 @@ export default function SectorIndexRow({
       .then((data: PriceEntry[]) => {
         const changes = data.map((e) => e.price?.changePercent).filter((v): v is number => v != null);
         setOtherChanges(changes);
+        setOtherPrices(data);
       })
       .catch(() => {});
 
@@ -119,16 +179,16 @@ export default function SectorIndexRow({
         <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveModal("KODEX 미국우주항공")} />
         <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveModal("TIGER 미국우주테크")} />
         {combinedGlobal != null && (
-          <div className="sector-index-card">
-            <div className="sector-index-label">글로벌 우주항공 평균</div>
+          <div className="sector-index-card etf-clickable" onClick={() => setActiveAvgModal("global")} title="클릭하여 구성 기업 보기">
+            <div className="sector-index-label">글로벌 우주항공 평균<span className="etf-info-icon"> ℹ</span></div>
             <div className={`sector-index-value ${combinedGlobal >= 0 ? "space-stock-up" : "space-stock-down"}`}>
               {combinedGlobal >= 0 ? "+" : ""}{combinedGlobal.toFixed(2)}%
             </div>
           </div>
         )}
         {domesticAvg != null && (
-          <div className="sector-index-card">
-            <div className="sector-index-label">국내 우주항공 평균</div>
+          <div className="sector-index-card etf-clickable" onClick={() => setActiveAvgModal("domestic")} title="클릭하여 구성 기업 보기">
+            <div className="sector-index-label">국내 우주항공 평균<span className="etf-info-icon"> ℹ</span></div>
             <div className={`sector-index-value ${domesticAvg >= 0 ? "space-stock-up" : "space-stock-down"}`}>
               {domesticAvg >= 0 ? "+" : ""}{domesticAvg.toFixed(2)}%
             </div>
@@ -136,6 +196,18 @@ export default function SectorIndexRow({
         )}
       </section>
       {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
+      {activeAvgModal === "global" && (() => {
+        const otherItems: BreakdownItem[] = otherPrices
+          .filter((e) => e.price?.changePercent != null)
+          .map((e) => {
+            const co = otherCompanies.find((c) => c.symbol === e.symbol);
+            return { name: co?.name ?? e.symbol, symbol: e.symbol, changePercent: e.price!.changePercent };
+          });
+        return <AvgModal title="글로벌 우주항공 평균" items={[...globalBreakdown, ...otherItems]} onClose={() => setActiveAvgModal(null)} />;
+      })()}
+      {activeAvgModal === "domestic" && (
+        <AvgModal title="국내 우주항공 평균" items={domesticBreakdown} onClose={() => setActiveAvgModal(null)} />
+      )}
     </>
   );
 }
