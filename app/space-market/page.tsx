@@ -1,6 +1,7 @@
 import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
+import SectorIndexRow from "@/components/SectorIndexRow";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
@@ -129,28 +130,7 @@ export default async function SpaceMarketPage() {
         </div>
       </section>
 
-      {(avgNasdaq != null || avgDomestic != null) && (
-        <section className="sector-index-row">
-          {avgNasdaq != null && (
-            <div className="sector-index-card">
-              <div className="sector-index-label">글로벌 우주항공 평균</div>
-              <div className={`sector-index-value ${avgNasdaq >= 0 ? "space-stock-up" : "space-stock-down"}`}>
-                {avgNasdaq >= 0 ? "+" : ""}
-                {avgNasdaq.toFixed(2)}%
-              </div>
-            </div>
-          )}
-          {avgDomestic != null && (
-            <div className="sector-index-card">
-              <div className="sector-index-label">국내 우주항공 평균</div>
-              <div className={`sector-index-value ${avgDomestic >= 0 ? "space-stock-up" : "space-stock-down"}`}>
-                {avgDomestic >= 0 ? "+" : ""}
-                {avgDomestic.toFixed(2)}%
-              </div>
-            </div>
-          )}
-        </section>
-      )}
+      <SectorIndexRow globalChanges={nasdaqChanges} domesticAvg={avgDomestic} />
 
       {topMovers.length > 0 && (
         <>
