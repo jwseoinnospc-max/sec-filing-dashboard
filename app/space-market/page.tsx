@@ -136,6 +136,12 @@ export default async function SpaceMarketPage() {
     }))
   ].filter((m): m is MoverItem => m.changePercent != null && m.price != null);
 
+  const updatedAt = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric", month: "long", day: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  }).format(new Date());
+
   return (
     <main className="page space-market-page">
       <section className="header">
@@ -148,6 +154,7 @@ export default async function SpaceMarketPage() {
         <div className="header-side">
           <div className="header-side-top">
             <p className="data-source">Data source: 한국투자증권 OpenAPI (KIS) · Finnhub · Google News RSS</p>
+            <p className="data-source" style={{ marginTop: 4 }}>최근 업데이트: {updatedAt} KST</p>
             <p className="made-by">Made by 이노스페이스 투자전략실</p>
           </div>
         </div>
