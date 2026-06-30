@@ -29,7 +29,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
         {companies.map((company) => {
           const p = loaded ? prices[company.symbol] : undefined;
           const isUp = (p?.changePercent ?? 0) >= 0;
-          const exLabel = company.exchange === "NYS" ? "NYSE" : "NASDAQ";
+          const exLabel = company.exchange === "NYS" ? "NYSE" : company.exchange === "TSE" ? "TSE" : company.exchange === "EPA" ? "Euronext" : company.exchange === "ETR" ? "Xetra" : "NASDAQ";
           return (
             <a key={company.symbol} href={company.url} target="_blank" rel="noopener noreferrer" className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0, textDecoration: "none", cursor: "pointer" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>

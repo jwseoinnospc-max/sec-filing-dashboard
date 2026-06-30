@@ -44,9 +44,9 @@ const OTHER_SPACE_COMPANIES = [
   { name: "NEC Corporation", symbol: "6701", exchange: "TSE", logo: favicon("nec.com"), url: "https://www.nec.com" },
   { name: "ispace", symbol: "9348", exchange: "TSE", logo: favicon("ispace-inc.com"), url: "https://ispace-inc.com" },
   // Europe (Finnhub)
-  { name: "Airbus", symbol: "AIR", exchange: "EPA", logo: favicon("airbus.com"), url: "https://www.airbus.com" },
-  { name: "Thales", symbol: "HO", exchange: "EPA", logo: favicon("thalesgroup.com"), url: "https://www.thalesgroup.com" },
-  { name: "OHB SE", symbol: "OHB", exchange: "ETR", logo: favicon("ohb.de"), url: "https://www.ohb.de" },
+  { name: "Airbus", symbol: "AIR.PA", exchange: "EPA", logo: favicon("airbus.com"), url: "https://www.airbus.com" },
+  { name: "Thales", symbol: "HO.PA", exchange: "EPA", logo: favicon("thalesgroup.com"), url: "https://www.thalesgroup.com" },
+  { name: "OHB SE", symbol: "OHB.DE", exchange: "ETR", logo: favicon("ohb.de"), url: "https://www.ohb.de" },
 ];
 
 const NASDAQ_COMPANIES = [

@@ -25,10 +25,10 @@ const COMPANIES: Company[] = [
   { symbol: "7013",  exchange: "TSE", source: "kis" },
   { symbol: "6701",  exchange: "TSE", source: "kis" },
   { symbol: "9348",  exchange: "TSE", source: "kis" },
-  // Europe — Finnhub
-  { symbol: "AIR",   source: "finnhub" },
-  { symbol: "HO",    source: "finnhub" },
-  { symbol: "OHB",   source: "finnhub" },
+  // Europe — Finnhub (requires exchange suffix for non-US tickers)
+  { symbol: "AIR.PA", source: "finnhub" },
+  { symbol: "HO.PA",  source: "finnhub" },
+  { symbol: "OHB.DE", source: "finnhub" },
 ];
 
 async function fetchPrice(c: Company): Promise<{ last: number; change: number; changePercent: number } | null> {
