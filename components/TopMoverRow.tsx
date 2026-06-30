@@ -36,7 +36,7 @@ export default function TopMoverRow({
 
         const combined = [...serverMovers, ...otherMovers]
           .filter((m) => m.price != null && m.changePercent != null)
-          .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+          .sort((a, b) => b.changePercent - a.changePercent)
           .slice(0, 10);
 
         setAllMovers(combined);

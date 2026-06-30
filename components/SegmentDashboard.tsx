@@ -3,8 +3,8 @@
 import { rklbQuarterData, growth, formatNumber } from "@/lib/rklbData";
 import StockWidget from "./StockWidget";
 
-const BLUE = "#244A9B";
-const GRAY = "#CFCFCF";
+const BLUE = "#CFCFCF";
+const GRAY = "#244A9B";
 const LIGHT_BLUE = "#EAF4FF";
 
 const IR_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
