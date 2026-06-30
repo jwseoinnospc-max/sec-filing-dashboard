@@ -33,11 +33,11 @@ async function getToken(): Promise<string | null> {
   return d.access_token ?? null;
 }
 
-async function kisGet(path: string, tr_id: string, params: Record<string, string>) {
+async function kisGet(label: string, path: string, tr_id: string, params: Record<string, string>) {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getToken();
-  if (!token || !appKey || !appSecret) return { error: "no token" };
+  if (!token || !appKey || !appSecret) return { label, error: "no token" };
 
   const q = new URLSearchParams(params);
   const res = await fetch(`${KIS_BASE}${path}?${q}`, {
@@ -45,34 +45,48 @@ async function kisGet(path: string, tr_id: string, params: Record<string, string
     cache: "no-store",
   });
   const text = await res.text();
-  return { status: res.status, body: text.slice(0, 3000) };
+  return { label, status: res.status, body: text.slice(0, 800) };
 }
 
 export async function GET() {
-  const base = {
-    FID_COND_MRKT_DIV_CODE: "J",
-    FID_INPUT_ISCD: "0001",
-    FID_DIV_CLS_CODE: "0",
-    FID_BLNG_CLS_CODE: "0",
-    FID_TRGT_CLS_CODE: "111111111",
-    FID_TRGT_EXLS_CLS_CODE: "0000000000",
-    FID_INPUT_DATE_1: "",
-    FID_INPUT_DATE_2: "",
-    FID_INPUT_PRICE_1: "",
-    FID_INPUT_PRICE_2: "",
-    FID_VOL_CNT: "",
-    FID_HOUR_CLS_CODE: "0",
-  };
-
-  const [hour0, hour1, blng1, blng2] = await Promise.all([
-    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", { ...base, FID_HOUR_CLS_CODE: "0" }),
-    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", { ...base, FID_HOUR_CLS_CODE: "1" }),
-    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", { ...base, FID_BLNG_CLS_CODE: "1", FID_HOUR_CLS_CODE: "0" }),
-    kisGet("/uapi/domestic-stock/v1/quotations/foreign-institution-total", "FHPST02310000", { ...base, FID_BLNG_CLS_CODE: "2", FID_HOUR_CLS_CODE: "0" }),
+  const calls = await Promise.all([
+    // Try inquire-investor with U market (index) + KOSPI code
+    kisGet("inv_U_0001", "/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST01010900", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+    }),
+    // Try with different TR_IDs for index investor
+    kisGet("idx_inv_FHPUP02300000", "/uapi/domestic-stock/v1/quotations/inquire-index-price", "FHPUP02300000", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+    }),
+    // inquire-index-investor (hypothetical path)
+    kisGet("index_investor_path", "/uapi/domestic-stock/v1/quotations/inquire-index-investor", "FHKST01010900", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+    }),
+    kisGet("index_investor_tr2", "/uapi/domestic-stock/v1/quotations/inquire-index-investor", "FHPUP02300000", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+    }),
+    // KOSPI sector (업종) investor flow — sector code for KOSPI composite
+    kisGet("sector_inv_0001", "/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST03010200", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+    }),
+    kisGet("sector_inv_J", "/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST03010200", {
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: "0001",
+    }),
+    // Daily investor trading by market (시장별 투자자별 매매동향)
+    kisGet("market_investor_FHPST02310000_U", "/uapi/domestic-stock/v1/quotations/inquire-daily-trade-volume", "FHPST02310000", {
+      FID_COND_MRKT_DIV_CODE: "U",
+      FID_INPUT_ISCD: "0001",
+      FID_HOUR_CLS_CODE: "0",
+    }),
   ]);
 
-  return NextResponse.json(
-    { "blng0_hour0": hour0, "blng0_hour1": hour1, "blng1_KOSPI_hour0": blng1, "blng2_KOSDAQ_hour0": blng2 },
-    { headers: { "Cache-Control": "no-store" } }
-  );
+  const result: Record<string, unknown> = {};
+  for (const c of calls) result[c.label] = c;
+  return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
 }
