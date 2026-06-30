@@ -39,10 +39,10 @@ const OTHER_SPACE_COMPANIES = [
 ];
 
 const NASDAQ_COMPANIES = [
-  { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ", logo: favicon("spacex.com") },
-  { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ", logo: favicon("rocketlabcorp.com") },
-  { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ", logo: favicon("fireflyspace.com") },
-  { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ", logo: favicon("intuitivemachines.com") }
+  { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ", logo: favicon("spacex.com"), titleFilter: ["SpaceX", "SPCX"] },
+  { name: "Rocket Lab", symbol: "RKLB", exchange: "NASDAQ", logo: favicon("rocketlabcorp.com"), titleFilter: ["Rocket Lab", "RKLB"] },
+  { name: "Firefly Aerospace", symbol: "FLY", exchange: "NASDAQ", logo: favicon("fireflyspace.com"), titleFilter: ["Firefly", "FLY"] },
+  { name: "Intuitive Machines", symbol: "LUNR", exchange: "NASDAQ", logo: favicon("intuitivemachines.com"), titleFilter: ["Intuitive Machines", "LUNR"] }
 ];
 
 
@@ -80,7 +80,7 @@ export default async function SpaceMarketPage() {
   }
 
   const [nasdaqNews, domesticNews] = await Promise.all([
-    Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en"))),
+    Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
     Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
   ]);
 

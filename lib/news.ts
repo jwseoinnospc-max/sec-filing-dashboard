@@ -39,7 +39,8 @@ function decodeEntities(text: string) {
 }
 
 // Google News RSS search — no API key required, covers both US and Korean listings.
-export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", count = 3): Promise<NewsItem[]> {
+// titleFilter: if provided, only articles whose title contains at least one of the keywords are kept.
+export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", count = 3, titleFilter?: string[]): Promise<NewsItem[]> {
   const params =
     locale === "ko"
       ? { hl: "ko", gl: "KR", ceid: "KR:ko" }
@@ -73,6 +74,7 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
       const title = decodeEntities(titleRaw).replace(/\s+-\s+[^-]*$/, "");
 
       if (title && link) {
+        if (titleFilter && !titleFilter.some((kw) => title.toLowerCase().includes(kw.toLowerCase()))) continue;
         items.push({
           title,
           url: link.trim(),
