@@ -1,49 +1,44 @@
 import { NextResponse } from "next/server";
 
-async function getCachedToken(): Promise<string | null> {
-  const KV_URL = process.env.KV_REST_API_URL;
-  const KV_TOKEN = process.env.KV_REST_API_TOKEN;
-  if (!KV_URL || !KV_TOKEN) return null;
-  try {
-    const r = await fetch(`${KV_URL}/get/kis_access_token`, { headers: { Authorization: `Bearer ${KV_TOKEN}` } });
-    const d = await r.json();
-    const cached = d?.result ? JSON.parse(d.result) : null;
-    if (cached?.accessToken && cached.expiresAt > Date.now()) return cached.accessToken;
-  } catch {}
-  return null;
-}
-
+// Test KRX investor flow API
 export async function GET() {
-  const appKey = process.env.KIS_APP_KEY;
-  const appSecret = process.env.KIS_APP_SECRET;
-  if (!appKey || !appSecret) return NextResponse.json({ error: "no credentials" });
+  const today = new Date();
+  // If weekend, go back to Friday
+  const day = today.getDay();
+  const offset = day === 0 ? 2 : day === 6 ? 1 : 0;
+  const d = new Date(today);
+  d.setDate(d.getDate() - offset);
+  const trdDd = d.toISOString().slice(0, 10).replace(/-/g, "");
 
-  const token = await getCachedToken();
-  if (!token) return NextResponse.json({ error: "no cached token" });
+  const results: Record<string, unknown> = {};
 
-  const BASE = "https://openapi.koreainvestment.com:9443";
+  // Try KRX market investor flow API (시장별 투자자 매매동향)
+  for (const [mktId, label] of [["STK", "KOSPI"], ["KSQ", "KOSDAQ"]] as [string, string][]) {
+    try {
+      const body = new URLSearchParams({
+        bld: "dbms/MDC/STAT/standard/MDCSTAT02203",
+        mktId,
+        trdDd,
+        money: "1",
+        csvxls_isNo: "false",
+      });
+      const res = await fetch("http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          "Referer": "http://data.krx.co.kr/",
+          "Origin": "http://data.krx.co.kr",
+        },
+        body: body.toString(),
+        cache: "no-store",
+      });
+      const data = await res.json();
+      results[label] = { status: res.status, keys: Object.keys(data), row0: data.OutBlock_1?.[0] ?? data.output?.[0] ?? data[Object.keys(data)[0]]?.[0] };
+    } catch (e) {
+      results[label] = { error: String(e) };
+    }
+  }
 
-  // FID_INPUT_ISCD "0" returned success but empty output0 - check full response
-  const q = new URLSearchParams({
-    FID_COND_MRKT_DIV_CODE: "J",
-    FID_COND_SCR_DIV_CODE: "20171",
-    FID_INPUT_ISCD: "0",
-    FID_DIV_CLS_CODE: "0",
-  });
-  const res = await fetch(`${BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${q}`, {
-    headers: { authorization: `Bearer ${token}`, appkey: appKey, appsecret: appSecret, tr_id: "FHPST01710000", custtype: "P" },
-    cache: "no-store",
-  });
-  const data = await res.json();
-
-  return NextResponse.json({
-    status: res.status,
-    rt_cd: data.rt_cd,
-    msg1: data.msg1,
-    keys: Object.keys(data),
-    output_length: data.output?.length,
-    output_slice: data.output?.slice(0, 3),
-    output2_length: data.output2?.length,
-    output2_slice: data.output2?.slice(0, 3),
-  }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
 }
