@@ -262,7 +262,7 @@ export default async function Home() {
         </div>
 
         <div className="card">
-          <div className="section-title"><h2>분석 코멘트</h2></div>
+          <div className="section-title"><h2>Rocket Lab 26Y1Q 분석 코멘트</h2></div>
           <p className="notice">
             📈 2026년 1분기 매출은 전년 동기 대비 <strong>+38.0%</strong> 증가했으며,
             매출총이익은 전년 동기 대비 <strong>+117.0%</strong> 증가했습니다.

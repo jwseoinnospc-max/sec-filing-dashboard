@@ -201,7 +201,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 }
 .card h3 { margin: 0 0 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .metric { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
-.krw-equiv { font-size: 13px; font-weight: 600; color: var(--muted); }
+.krw-equiv { font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
 .delta { margin-top: 8px; color: var(--good); font-size: 13px; }
 .metric-sub { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
 .metric-sub strong { color: var(--text); font-size: 16px; font-weight: 800; margin-left: 4px; }
@@ -289,6 +289,15 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .top-mover-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-mover-price { font-size: 12px; color: var(--muted); }
 .top-mover-change { font-size: 14px; font-weight: 800; flex-shrink: 0; }
+.other-space-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.other-space-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: rgba(17, 24, 39, .6); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.other-space-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.other-space-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.other-space-symbol { font-size: 11px; color: var(--muted); }
+.other-space-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.other-space-price { font-size: 13px; font-weight: 700; }
+.other-space-change { font-size: 12px; font-weight: 700; }
+.other-space-na { font-size: 13px; color: var(--muted); }
 .space-stock-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .full-chart { margin-top: 8px; min-height: 220px; }
 .space-stock-chart-legend { margin-top: 6px; font-size: 10px; line-height: 1.5; color: var(--muted); }
@@ -305,10 +314,10 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .space-stock-valuation div { display: flex; flex-direction: column; align-items: center; font-size: 15px; font-weight: 700; color: var(--text); }
 .space-stock-valuation-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 2px; cursor: help; border-bottom: 1px dotted var(--muted); }
 .space-stock-news { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.space-stock-news li { font-size: 12px; line-height: 1.4; }
+.space-stock-news li { font-size: 15px; line-height: 1.4; }
 .space-stock-news a { color: var(--text); text-decoration: none; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space-stock-news a:hover { color: var(--accent); text-decoration: underline; }
-.space-stock-news-source { color: var(--muted); font-size: 11px; }
+.space-stock-news-source { color: var(--muted); font-size: 14px; }
 .space-stock-news-date { color: var(--muted); font-weight: 500; }
 .space-stock-news-source-badge {
   display: inline-block;
@@ -320,7 +329,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
   border-radius: 999px;
   padding: 1px 8px;
 }
-.space-stock-news-ko { color: var(--muted); font-size: 11px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space-stock-news-ko { color: var(--muted); font-size: 14px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .space-stock-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .space-stock-name { font-weight: 800; font-size: 19px; display: inline-flex; align-items: center; gap: 8px; }
 .space-stock-logo { width: 30px; height: 30px; border-radius: 50%; object-fit: contain; background: #fff; }

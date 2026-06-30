@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
+import OtherSpaceRow from "@/components/OtherSpaceRow";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
@@ -20,6 +21,22 @@ function formatDomesticMeta(marketCapEok: number | null | undefined) {
 function favicon(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 }
+
+const OTHER_SPACE_COMPANIES = [
+  { name: "AST SpaceMobile", symbol: "ASTS", exchange: "NAS", logo: favicon("ast-science.com") },
+  { name: "Kratos Defense", symbol: "KTOS", exchange: "NAS", logo: favicon("kratosdefense.com") },
+  { name: "Viasat", symbol: "VSAT", exchange: "NAS", logo: favicon("viasat.com") },
+  { name: "EchoStar", symbol: "ECHO", exchange: "NAS", logo: favicon("echostar.com") },
+  { name: "Momentus", symbol: "MNTS", exchange: "NAS", logo: favicon("momentus.space") },
+  { name: "Comtech", symbol: "CMTL", exchange: "NAS", logo: favicon("comtech.com") },
+  { name: "KVH Industries", symbol: "KVHI", exchange: "NAS", logo: favicon("kvh.com") },
+  { name: "Ondas Holdings", symbol: "ONDS", exchange: "NAS", logo: favicon("ondasholdings.com") },
+  { name: "Planet Labs", symbol: "PL", exchange: "NYS", logo: favicon("planet.com") },
+  { name: "Redwire", symbol: "RDW", exchange: "NYS", logo: favicon("redwirespace.com") },
+  { name: "Spire Global", symbol: "SPIR", exchange: "NYS", logo: favicon("spire.com") },
+  { name: "BlackSky", symbol: "BKSY", exchange: "NYS", logo: favicon("blacksky.com") },
+  { name: "Voyager Technologies", symbol: "VOYG", exchange: "NYS", logo: favicon("voyagertechnologies.com") },
+];
 
 const NASDAQ_COMPANIES = [
   { name: "SpaceX", symbol: "SPCX", exchange: "NASDAQ", logo: favicon("spacex.com") },
@@ -67,7 +84,7 @@ export default async function SpaceMarketPage() {
 
   const [nasdaqNews, domesticNews] = await Promise.all([
     Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en"))),
-    Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko")))
+    Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
   ]);
 
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
@@ -186,6 +203,8 @@ export default async function SpaceMarketPage() {
           );
         })}
       </section>
+
+      <OtherSpaceRow companies={OTHER_SPACE_COMPANIES} />
 
       <h2 className="space-group-title">국내 우주항공 기업</h2>
       <section className="space-stock-grid">

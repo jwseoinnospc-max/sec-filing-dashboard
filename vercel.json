@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "app/space-market/page.tsx": {
+      "maxDuration": 60
+    },
+    "app/api/other-space-prices/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
