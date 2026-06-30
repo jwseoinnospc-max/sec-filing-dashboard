@@ -47,7 +47,7 @@ async function translateToKorean(text: string): Promise<string | undefined> {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodeURIComponent(
       protected_text
     )}`;
-    const res = await fetch(url, { next: { revalidate: 1800 } });
+    const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) return undefined;
     const data = await res.json();
     let translated: string = data?.[0]?.map((chunk: unknown[]) => chunk[0]).join("") || "";
@@ -86,7 +86,7 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
   try {
     const res = await fetch(url, {
       headers: { "user-agent": "Mozilla/5.0" },
-      next: { revalidate: 1800 }
+      next: { revalidate: 3600 }
     });
     if (!res.ok) return [];
 
