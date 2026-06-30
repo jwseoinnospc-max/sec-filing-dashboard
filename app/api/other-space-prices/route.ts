@@ -1,42 +1,40 @@
-import { getOverseasPrice } from "@/lib/kis";
 import { NextResponse } from "next/server";
 
-type Company =
-  | { symbol: string; exchange: "NAS" | "NYS" | "TSE"; source: "kis" }
-  | { symbol: string; yahooSymbol: string; source: "yahoo" };
+type Company = { symbol: string; yahooSymbol: string };
 
 // Sorted by market cap (largest first)
+// 모든 종목 Yahoo Finance range=5d&interval=1d 일봉 기준 → 장 마감 후에도 정확한 전일 대비 변동률
 const COMPANIES: Company[] = [
-  { symbol: "RTX",    exchange: "NYS", source: "kis" },
-  { symbol: "LMT",    exchange: "NYS", source: "kis" },
-  { symbol: "BA",     exchange: "NYS", source: "kis" },
-  { symbol: "AIR.PA", yahooSymbol: "AIR.PA", source: "yahoo" },
-  { symbol: "NOC",    exchange: "NYS", source: "kis" },
-  { symbol: "SAF.PA", yahooSymbol: "SAF.PA", source: "yahoo" },
-  { symbol: "RHM.DE", yahooSymbol: "RHM.DE", source: "yahoo" },
-  { symbol: "LHX",    exchange: "NYS", source: "kis" },
-  { symbol: "HO.PA",  yahooSymbol: "HO.PA",  source: "yahoo" },
-  { symbol: "LDO.MI", yahooSymbol: "LDO.MI", source: "yahoo" },
-  { symbol: "7011",   exchange: "TSE", source: "kis" },
-  { symbol: "6701",   exchange: "TSE", source: "kis" },
-  { symbol: "ASTS",   exchange: "NAS", source: "kis" },
-  { symbol: "7013",   exchange: "TSE", source: "kis" },
-  { symbol: "KTOS",   exchange: "NAS", source: "kis" },
-  { symbol: "GSAT",   yahooSymbol: "GSAT",   source: "yahoo" },
-  { symbol: "PL",     exchange: "NYS", source: "kis" },
-  { symbol: "VSAT",   exchange: "NAS", source: "kis" },
-  { symbol: "OHB.DE", yahooSymbol: "OHB.DE", source: "yahoo" },
-  { symbol: "RDW",    exchange: "NYS", source: "kis" },
-  { symbol: "VOYG",   exchange: "NYS", source: "kis" },
-  { symbol: "SPIR",   exchange: "NYS", source: "kis" },
-  { symbol: "BKSY",   exchange: "NYS", source: "kis" },
-  { symbol: "9348",   exchange: "TSE", source: "kis" },
-  { symbol: "ECHO",   exchange: "NAS", source: "kis" },
-  { symbol: "MNTS",   exchange: "NAS", source: "kis" },
-  { symbol: "SIDU",   exchange: "NAS", source: "kis" },
-  { symbol: "KVHI",   exchange: "NAS", source: "kis" },
-  { symbol: "ONDS",   exchange: "NAS", source: "kis" },
-  { symbol: "CMTL",   exchange: "NAS", source: "kis" },
+  { symbol: "RTX",    yahooSymbol: "RTX" },
+  { symbol: "LMT",    yahooSymbol: "LMT" },
+  { symbol: "BA",     yahooSymbol: "BA" },
+  { symbol: "AIR.PA", yahooSymbol: "AIR.PA" },
+  { symbol: "NOC",    yahooSymbol: "NOC" },
+  { symbol: "SAF.PA", yahooSymbol: "SAF.PA" },
+  { symbol: "RHM.DE", yahooSymbol: "RHM.DE" },
+  { symbol: "LHX",    yahooSymbol: "LHX" },
+  { symbol: "HO.PA",  yahooSymbol: "HO.PA" },
+  { symbol: "LDO.MI", yahooSymbol: "LDO.MI" },
+  { symbol: "7011",   yahooSymbol: "7011.T" },
+  { symbol: "6701",   yahooSymbol: "6701.T" },
+  { symbol: "ASTS",   yahooSymbol: "ASTS" },
+  { symbol: "7013",   yahooSymbol: "7013.T" },
+  { symbol: "KTOS",   yahooSymbol: "KTOS" },
+  { symbol: "GSAT",   yahooSymbol: "GSAT" },
+  { symbol: "PL",     yahooSymbol: "PL" },
+  { symbol: "VSAT",   yahooSymbol: "VSAT" },
+  { symbol: "OHB.DE", yahooSymbol: "OHB.DE" },
+  { symbol: "RDW",    yahooSymbol: "RDW" },
+  { symbol: "VOYG",   yahooSymbol: "VOYG" },
+  { symbol: "SPIR",   yahooSymbol: "SPIR" },
+  { symbol: "BKSY",   yahooSymbol: "BKSY" },
+  { symbol: "9348",   yahooSymbol: "9348.T" },
+  { symbol: "ECHO",   yahooSymbol: "ECHO" },
+  { symbol: "MNTS",   yahooSymbol: "MNTS" },
+  { symbol: "SIDU",   yahooSymbol: "SIDU" },
+  { symbol: "KVHI",   yahooSymbol: "KVHI" },
+  { symbol: "ONDS",   yahooSymbol: "ONDS" },
+  { symbol: "CMTL",   yahooSymbol: "CMTL" },
 ];
 
 async function fetchYahooPrice(yahooSymbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
@@ -65,13 +63,7 @@ async function fetchYahooPrice(yahooSymbol: string): Promise<{ last: number; cha
 }
 
 async function fetchPrice(c: Company): Promise<{ last: number; change: number; changePercent: number } | null> {
-  if (c.source === "kis") {
-    const p = await getOverseasPrice(c.symbol, c.exchange);
-    if (!p) return null;
-    return { last: p.last, change: p.change, changePercent: p.changePercent };
-  } else {
-    return fetchYahooPrice(c.yahooSymbol);
-  }
+  return fetchYahooPrice(c.yahooSymbol);
 }
 
 export async function GET() {
