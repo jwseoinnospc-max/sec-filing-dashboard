@@ -70,28 +70,46 @@ function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; on
 }
 
 function IndexCard({
-  label, quote, formatLast, onClick,
+  label, quote, formatLast, onClick, href,
 }: {
   label: string;
   quote: IndexQuote | null | undefined;
   formatLast?: (v: number) => string;
   onClick?: () => void;
+  href?: string;
 }) {
   if (!quote) return null;
   const isUp = quote.changePercent >= 0;
-  return (
-    <div
-      className={`sector-index-card ${onClick ? "etf-clickable" : ""}`}
-      onClick={onClick}
-      title={onClick ? "클릭하여 구성 종목 보기" : undefined}
-    >
-      <div className="sector-index-label">{label}{onClick && <span className="etf-info-icon"> ℹ</span>}</div>
+  const isClickable = !!(onClick || href);
+  const inner = (
+    <>
+      <div className="sector-index-label">{label}{isClickable && <span className="etf-info-icon"> ↗</span>}</div>
       <div style={{ textAlign: "right" }}>
         {formatLast && <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 2 }}>{formatLast(quote.last)}</div>}
         <div className={`sector-index-value ${isUp ? "space-stock-up" : "space-stock-down"}`}>
           {isUp ? "+" : ""}{quote.changePercent.toFixed(2)}%
         </div>
       </div>
+    </>
+  );
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer"
+        className="sector-index-card etf-clickable"
+        style={{ textDecoration: "none", color: "inherit" }}
+        title="ETF 상품 페이지로 이동"
+      >
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <div
+      className={`sector-index-card ${isClickable ? "etf-clickable" : ""}`}
+      onClick={onClick}
+      title={onClick ? "클릭하여 구성 종목 보기" : undefined}
+    >
+      {inner}
     </div>
   );
 }
@@ -250,8 +268,8 @@ export default function SectorIndexRow({
         })()}
         <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
-        <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveModal("KODEX 미국우주항공")} />
-        <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveModal("TIGER 미국우주테크")} />
+        <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} href="https://www.samsungfund.com/etf/product/view.do?id=2ETFU4" />
+        <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} href="https://investments.miraeasset.com/tigeretf/ko/product/search/detail/index.do?ksdFund=KR70183J0002" />
         {combinedGlobal != null && (
           <div className="sector-index-card etf-clickable" onClick={() => setActiveAvgModal("global")} title="클릭하여 구성 기업 보기">
             <div className="sector-index-label">글로벌 우주항공 평균<span className="etf-info-icon"> ℹ</span></div>
