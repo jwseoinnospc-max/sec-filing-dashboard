@@ -11,6 +11,7 @@ import SpaceMarketTabToggle from "@/components/SpaceMarketTabs";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
+import { fetchYahooPrice } from "@/lib/yahoo";
 import { getCompanyNews } from "@/lib/news";
 
 function formatMarketCap(value: number | null | undefined) {
@@ -87,26 +88,8 @@ const DOMESTIC_COMPANIES = [
   { name: "AP위성", code: "211270", exchange: "KOSDAQ", logo: "https://apsi.co.kr/images/sns_link.png" },             // 1412억
 ];
 
-async function fetchYahooClose(symbol: string): Promise<{ last: number; change: number; changePercent: number } | null> {
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
-    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" }, next: { revalidate: 900 } });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const closes: number[] = data?.chart?.result?.[0]?.indicators?.quote?.[0]?.close ?? [];
-    const valid = closes.filter((v): v is number => v != null && !isNaN(v));
-    if (valid.length < 2) return null;
-    const last = valid[valid.length - 1];
-    const prev = valid[valid.length - 2];
-    const change = last - prev;
-    return { last, change, changePercent: (change / prev) * 100 };
-  } catch {
-    return null;
-  }
-}
-
 async function loadOverseasStock(symbol: string) {
-  const price = await fetchYahooClose(symbol);
+  const price = await fetchYahooPrice(symbol);
   const profile = await getProfile(symbol);
   const valuation = await getValuation(symbol);
   return { price, profile, valuation };
@@ -227,6 +210,7 @@ export default async function SpaceMarketPage() {
         <section className="space-stock-grid">
           {NASDAQ_COMPANIES.map((company, i) => {
             const { price, profile, valuation } = nasdaqResults[i];
+            const isLive = price?.marketState === "REGULAR";
             return (
               <SpaceStockCard
                 key={company.symbol}
@@ -234,7 +218,7 @@ export default async function SpaceMarketPage() {
                 symbol={company.symbol}
                 exchange={company.exchange}
                 chartSymbol={`NASDAQ:${company.symbol}`}
-                tag="장마감"
+                tag={isLive ? "실시간" : "장마감"}
                 price={price?.last}
                 change={price?.change}
                 changePercent={price?.changePercent}
