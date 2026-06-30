@@ -23,22 +23,27 @@ export async function GET() {
 
   const BASE = "https://openapi.koreainvestment.com:9443";
 
-  async function tryApi(trId: string, params: Record<string, string>) {
-    const q = new URLSearchParams(params);
-    const res = await fetch(`${BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${q}`, {
-      headers: { authorization: `Bearer ${token}`, appkey: appKey!, appsecret: appSecret!, tr_id: trId, custtype: "P" },
-      cache: "no-store",
-    });
-    const data = await res.json();
-    return { trId, params, status: res.status, rt_cd: data.rt_cd, msg1: data.msg1, keys: Object.keys(data), output0: data.output?.[0], output2_0: data.output2?.[0] };
-  }
+  // FID_INPUT_ISCD "0" returned success but empty output0 - check full response
+  const q = new URLSearchParams({
+    FID_COND_MRKT_DIV_CODE: "J",
+    FID_COND_SCR_DIV_CODE: "20171",
+    FID_INPUT_ISCD: "0",
+    FID_DIV_CLS_CODE: "0",
+  });
+  const res = await fetch(`${BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${q}`, {
+    headers: { authorization: `Bearer ${token}`, appkey: appKey, appsecret: appSecret, tr_id: "FHPST01710000", custtype: "P" },
+    cache: "no-store",
+  });
+  const data = await res.json();
 
-  const results = await Promise.all([
-    tryApi("FHPST01710000", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "0001", FID_DIV_CLS_CODE: "0" }),
-    tryApi("FHPST01710000", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "0",    FID_DIV_CLS_CODE: "0" }),
-    tryApi("FHKST01710000", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "0001", FID_DIV_CLS_CODE: "0" }),
-    tryApi("FHPST01710000", { FID_COND_MRKT_DIV_CODE: "U", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "0001", FID_DIV_CLS_CODE: "0" }),
-  ]);
-
-  return NextResponse.json({ results }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({
+    status: res.status,
+    rt_cd: data.rt_cd,
+    msg1: data.msg1,
+    keys: Object.keys(data),
+    output_length: data.output?.length,
+    output_slice: data.output?.slice(0, 3),
+    output2_length: data.output2?.length,
+    output2_slice: data.output2?.slice(0, 3),
+  }, { headers: { "Cache-Control": "no-store" } });
 }
