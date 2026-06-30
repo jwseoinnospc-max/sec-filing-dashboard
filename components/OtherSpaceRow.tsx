@@ -31,24 +31,26 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
           const isUp = (p?.changePercent ?? 0) >= 0;
           const exLabel = company.exchange === "NYS" ? "NYSE" : "NASDAQ";
           return (
-            <div key={company.symbol} className="top-mover-card">
-              <img src={company.logo} alt="" className="top-mover-logo" />
-              <div className="top-mover-info">
-                <div className="top-mover-name">{company.name}</div>
-                <div className="top-mover-price" style={{ fontSize: 11 }}>{company.symbol} · {exLabel}</div>
+            <div key={company.symbol} className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>
+                <img src={company.logo} alt="" className="top-mover-logo" />
+                <div style={{ minWidth: 0 }}>
+                  <div className="top-mover-name" style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{company.name}</div>
+                  <div className="top-mover-price" style={{ fontSize: 11 }}>{company.symbol} · {exLabel}</div>
+                </div>
               </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
+              <div style={{ width: "100%" }}>
                 {!loaded ? (
-                  <div className="top-mover-change" style={{ color: "var(--muted)" }}>…</div>
+                  <span style={{ color: "var(--muted)", fontSize: 13 }}>…</span>
                 ) : p ? (
-                  <>
-                    <div style={{ fontSize: 15, fontWeight: 800 }}>${p.last.toFixed(2)}</div>
-                    <div className={`top-mover-change ${isUp ? "space-stock-up" : "space-stock-down"}`} style={{ fontSize: 13 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                    <span style={{ fontSize: 15, fontWeight: 800 }}>${p.last.toFixed(2)}</span>
+                    <span className={isUp ? "space-stock-up" : "space-stock-down"} style={{ fontSize: 12, fontWeight: 700 }}>
                       {isUp ? "+" : ""}{p.change.toFixed(2)} ({isUp ? "+" : ""}{p.changePercent.toFixed(2)}%)
-                    </div>
-                  </>
+                    </span>
+                  </div>
                 ) : (
-                  <div style={{ color: "var(--muted)", fontSize: 13 }}>-</div>
+                  <span style={{ color: "var(--muted)", fontSize: 13 }}>-</span>
                 )}
               </div>
             </div>
