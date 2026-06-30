@@ -69,7 +69,7 @@ function InvestorFlowModal({ label, flow, onClose }: { label: string; flow: Inve
           <span>{label} 투자자별 순매수</span>
           <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
         </div>
-        <div className="etf-modal-note">※ 시총 상위 10개 종목 합산 기준 · 단위: 억원</div>
+        <div className="etf-modal-note">※ 시총 상위 30개 종목 합산 기준 · 단위: 억원</div>
         {!flow ? (
           <div style={{ padding: "20px 0", textAlign: "center", color: "var(--muted)" }}>데이터 조회 중...</div>
         ) : (
