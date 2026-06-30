@@ -20,7 +20,8 @@ export async function GET() {
     ? { last: kodexSpaceRaw.last, change: kodexSpaceRaw.change, changePercent: kodexSpaceRaw.changePercent }
     : null;
 
-  const debugKospi = (globalThis as Record<string, unknown>)[`__debugFlow_0001`];
-  const debugKosdaq = (globalThis as Record<string, unknown>)[`__debugFlow_1001`];
-  return NextResponse.json({ kospi, kosdaq, nasdaq, kodexSpace, tigerSpace, kospiFlow, kosdaqFlow, _debug: { kospi: debugKospi, kosdaq: debugKosdaq } }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(
+    { kospi, kosdaq, nasdaq, kodexSpace, tigerSpace, kospiFlow, kosdaqFlow },
+    { headers: { "Cache-Control": "no-store" } }
+  );
 }

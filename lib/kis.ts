@@ -399,40 +399,28 @@ export type KisIndexQuote = { last: number; change: number; changePercent: numbe
 // 단위: 억원
 export type KisInvestorFlow = { foreign: number; institution: number; individual: number };
 
-// 국내 지수 투자자별 순매수 거래대금 (억원) — KIS foreign-institution-total 기반
-// iscd: "0001"=KOSPI, "1001"=KOSDAQ
-export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlow | null> {
-  const appKey = process.env.KIS_APP_KEY;
-  const appSecret = process.env.KIS_APP_SECRET;
-  const token = await getAccessToken();
-  if (!appKey || !appSecret || !token) return null;
+// 시가총액 상위 종목 investor flow 합산으로 KOSPI/KOSDAQ 투자자별 순매수 근사치 산출
+// KIS 무료 API는 시장 전체 집계 엔드포인트 미제공 → 상위 종목 합산으로 대체
+// 단위: 백만원 → 억원 변환 (÷100)
+const KOSPI_TOP = ["005930","000660","373220","207940","005380","105560","068270","000270","055550","035420"];
+const KOSDAQ_TOP = ["247540","086520","196170","091990","357780","263750","112040","036810","041510","095340"];
 
-  // FID_BLNG_CLS_CODE: "0"=전체, "1"=KOSPI, "2"=KOSDAQ
-  const blngCls = iscd === "0001" ? "1" : "2";
-
+async function fetchStockInvestorToday(
+  code: string,
+  token: string,
+  appKey: string,
+  appSecret: string
+): Promise<{ foreign: number; institution: number; individual: number } | null> {
   try {
-    const query = new URLSearchParams({
-      FID_COND_MRKT_DIV_CODE: "J",
-      FID_INPUT_ISCD: "0001",
-      FID_DIV_CLS_CODE: "0",
-      FID_BLNG_CLS_CODE: blngCls,
-      FID_TRGT_CLS_CODE: "111111111",
-      FID_TRGT_EXLS_CLS_CODE: "0000000000",
-      FID_INPUT_DATE_1: "",
-      FID_INPUT_DATE_2: "",
-      FID_INPUT_PRICE_1: "",
-      FID_INPUT_PRICE_2: "",
-      FID_VOL_CNT: "",
-      FID_HOUR_CLS_CODE: "0",
-    });
+    const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
     const res = await fetch(
-      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/foreign-institution-total?${query}`,
+      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-investor?${query}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
           appkey: appKey,
           appsecret: appSecret,
-          tr_id: "FHPST02310000",
+          tr_id: "FHKST01010900",
           custtype: "P",
         },
         cache: "no-store",
@@ -441,20 +429,51 @@ export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlo
     if (!res.ok) return null;
     const data = await res.json();
     if (data.rt_cd !== "0") return null;
-
-    // output 배열에서 투자자별 순매수 합산
     const rows: Record<string, string>[] = data.output ?? [];
+    if (rows.length === 0) return null;
+    // 첫 번째 행이 당일 데이터 (prsn/frgn/orgn_ntby_tr_pbmn: 백만원)
+    const today = rows[0];
+    return {
+      foreign: Number(today.frgn_ntby_tr_pbmn ?? 0),
+      institution: Number(today.orgn_ntby_tr_pbmn ?? 0),
+      individual: Number(today.prsn_ntby_tr_pbmn ?? 0),
+    };
+  } catch {
+    return null;
+  }
+}
+
+// iscd: "0001"=KOSPI, "1001"=KOSDAQ
+export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlow | null> {
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  const codes = iscd === "0001" ? KOSPI_TOP : KOSDAQ_TOP;
+
+  try {
+    // 병렬로 상위 종목 investor flow 조회
+    const results = await Promise.all(
+      codes.map((c) => fetchStockInvestorToday(c, token, appKey, appSecret))
+    );
+
     let foreign = 0, institution = 0, individual = 0;
-    for (const row of rows) {
-      // 외국인: frgn_seln_qty/frgn_shnu_qty 또는 frgn_ntby_qty
-      if (row.frgn_ntby_qty !== undefined) foreign += Number(row.frgn_ntby_qty);
-      // 기관: orgn_ntby_qty
-      if (row.orgn_ntby_qty !== undefined) institution += Number(row.orgn_ntby_qty);
-      // 개인: indv_ntby_qty
-      if (row.indv_ntby_qty !== undefined) individual += Number(row.indv_ntby_qty);
+    let count = 0;
+    for (const r of results) {
+      if (!r) continue;
+      foreign += r.foreign;
+      institution += r.institution;
+      individual += r.individual;
+      count++;
     }
-    if (foreign === 0 && institution === 0 && individual === 0) return null;
-    return { foreign, institution, individual };
+    if (count === 0) return null;
+    // 단위: 백만원 → 억원 (÷100)
+    return {
+      foreign: Math.round(foreign / 100),
+      institution: Math.round(institution / 100),
+      individual: Math.round(individual / 100),
+    };
   } catch {
     return null;
   }
