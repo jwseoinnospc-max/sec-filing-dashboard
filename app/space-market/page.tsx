@@ -150,7 +150,6 @@ export default async function SpaceMarketPage() {
       <SpaceMarketTabs
         globalContent={
           <>
-            <h2 className="space-group-title">글로벌 우주항공 기업</h2>
             <section className="space-stock-grid">
               {NASDAQ_COMPANIES.map((company, i) => {
                 const { price, profile, valuation } = nasdaqResults[i];
@@ -177,7 +176,6 @@ export default async function SpaceMarketPage() {
         }
         domesticContent={
           <>
-            <h2 className="space-group-title">국내 우주항공 기업</h2>
             <section className="space-stock-grid">
               {DOMESTIC_COMPANIES.map((company, i) => {
                 const price = domesticPrices[i];
