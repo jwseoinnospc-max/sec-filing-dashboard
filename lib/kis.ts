@@ -425,16 +425,21 @@ export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlo
         next: { revalidate: 900 },
       }
     );
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error("[KIS investor flow] HTTP", res.status, await res.text());
+      return null;
+    }
     const data = await res.json();
-    const row = data?.output2?.[0];
+    console.error("[KIS investor flow] iscd=%s keys=%s output2[0]=%s", iscd, Object.keys(data).join(","), JSON.stringify(data?.output2?.[0] ?? data?.output?.[0]));
+    const row = data?.output2?.[0] ?? data?.output?.[0];
     if (!row) return null;
     return {
       foreign: Number(row.frgn_ntby_tr_pbmn ?? 0),    // 외국인 순매수 거래대금 (억원)
       institution: Number(row.orgn_ntby_tr_pbmn ?? 0), // 기관 순매수 거래대금 (억원)
       individual: Number(row.indv_ntby_tr_pbmn ?? 0),  // 개인 순매수 거래대금 (억원)
     };
-  } catch {
+  } catch (e) {
+    console.error("[KIS investor flow] exception", e);
     return null;
   }
 }
