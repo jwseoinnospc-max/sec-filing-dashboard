@@ -55,14 +55,18 @@ export default function TopMoverRow({
           const priceText = m.currency === "KRW" ? `₩${m.price.toLocaleString()}` : `$${m.price.toFixed(2)}`;
           return (
             <div key={m.name} className="top-mover-card">
-              <span className="top-mover-rank">{i + 1}</span>
-              {m.logo && <img src={m.logo} alt="" className="top-mover-logo" />}
-              <div className="top-mover-info">
-                <div className="top-mover-name">{m.name}</div>
-                <div className="top-mover-price">{priceText}</div>
+              <div className="top-mover-top">
+                <span className="top-mover-rank">{i + 1}</span>
+                {m.logo && <img src={m.logo} alt="" className="top-mover-logo" />}
+                <div className="top-mover-info">
+                  <div className="top-mover-name">{m.name}</div>
+                </div>
               </div>
-              <div className={`top-mover-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
-                {isUp ? "+" : ""}{m.changePercent.toFixed(2)}%
+              <div className="top-mover-bottom">
+                <span className="top-mover-price">{priceText}</span>
+                <span className={`top-mover-change ${isUp ? "space-stock-up" : "space-stock-down"}`}>
+                  {isUp ? "+" : ""}{m.changePercent.toFixed(2)}%
+                </span>
               </div>
             </div>
           );
