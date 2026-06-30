@@ -38,6 +38,14 @@ const OTHER_SPACE_COMPANIES = [
   { name: "Spire Global", symbol: "SPIR", exchange: "NYS", logo: favicon("spire.com"), url: "https://spire.com" },
   { name: "BlackSky", symbol: "BKSY", exchange: "NYS", logo: favicon("blacksky.com"), url: "https://www.blacksky.com" },
   { name: "Voyager Technologies", symbol: "VOYG", exchange: "NYS", logo: favicon("voyagertechnologies.com"), url: "https://www.voyagertechnologies.com" },
+  // Japan (TSE)
+  { name: "Mitsubishi Heavy", symbol: "7011", exchange: "TSE", logo: favicon("mhi.com"), url: "https://www.mhi.com" },
+  { name: "IHI Corporation", symbol: "7013", exchange: "TSE", logo: favicon("ihi.co.jp"), url: "https://www.ihi.co.jp" },
+  { name: "NEC Corporation", symbol: "6701", exchange: "TSE", logo: favicon("nec.com"), url: "https://www.nec.com" },
+  // Europe (Finnhub)
+  { name: "Airbus", symbol: "AIR", exchange: "EPA", logo: favicon("airbus.com"), url: "https://www.airbus.com" },
+  { name: "Thales", symbol: "HO", exchange: "EPA", logo: favicon("thalesgroup.com"), url: "https://www.thalesgroup.com" },
+  { name: "OHB SE", symbol: "OHB", exchange: "ETR", logo: favicon("ohb.de"), url: "https://www.ohb.de" },
 ];
 
 const NASDAQ_COMPANIES = [

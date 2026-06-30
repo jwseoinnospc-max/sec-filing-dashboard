@@ -44,7 +44,9 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
                   <span style={{ color: "var(--muted)", fontSize: 13 }}>…</span>
                 ) : p ? (
                   <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                    <span style={{ fontSize: 15, fontWeight: 800 }}>${p.last.toFixed(2)}</span>
+                    <span style={{ fontSize: 15, fontWeight: 800 }}>
+                      {company.exchange === "TSE" ? `¥${p.last.toLocaleString()}` : `$${p.last.toFixed(2)}`}
+                    </span>
                     <span className={isUp ? "space-stock-up" : "space-stock-down"} style={{ fontSize: 12, fontWeight: 700 }}>
                       {isUp ? "+" : ""}{p.change.toFixed(2)} ({isUp ? "+" : ""}{p.changePercent.toFixed(2)}%)
                     </span>
