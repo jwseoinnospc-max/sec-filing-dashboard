@@ -14,23 +14,21 @@ export default function SpaceMarketTabToggle() {
 
   return (
     <div className="space-market-tab-header">
-      <h2 className="space-group-title" style={{ margin: 0 }}>
-        {active === "domestic" ? "국내 우주항공 기업" : "글로벌 우주항공 기업"}
-      </h2>
-      <div className="space-market-tabs">
+      <div className="space-market-tab-titles">
         <button
           type="button"
-          className={`space-market-tab ${active === "domestic" ? "active" : ""}`}
+          className={`space-market-title-tab ${active === "domestic" ? "active" : ""}`}
           onClick={() => setActive("domestic")}
         >
-          🇰🇷 국내
+          🇰🇷 국내 우주항공 기업
         </button>
+        <span className="space-market-title-divider">·</span>
         <button
           type="button"
-          className={`space-market-tab ${active === "global" ? "active" : ""}`}
+          className={`space-market-title-tab ${active === "global" ? "active" : ""}`}
           onClick={() => setActive("global")}
         >
-          🌍 글로벌
+          🌍 글로벌 우주항공 기업
         </button>
       </div>
     </div>
