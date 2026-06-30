@@ -31,7 +31,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
           const isUp = (p?.changePercent ?? 0) >= 0;
           const exLabel = company.exchange === "NYS" ? "NYSE" : "NASDAQ";
           return (
-            <div key={company.symbol} className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
+            <div key={company.symbol} className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>
                 <img src={company.logo} alt="" className="top-mover-logo" />
                 <div style={{ minWidth: 0 }}>
@@ -39,7 +39,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
                   <div className="top-mover-price" style={{ fontSize: 11 }}>{company.symbol} · {exLabel}</div>
                 </div>
               </div>
-              <div style={{ width: "100%" }}>
+              <div style={{ width: "100%", marginTop: 10 }}>
                 {!loaded ? (
                   <span style={{ color: "var(--muted)", fontSize: 13 }}>…</span>
                 ) : p ? (
