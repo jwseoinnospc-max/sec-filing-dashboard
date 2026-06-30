@@ -399,35 +399,62 @@ export type KisIndexQuote = { last: number; change: number; changePercent: numbe
 // 단위: 억원
 export type KisInvestorFlow = { foreign: number; institution: number; individual: number };
 
-// 국내 지수 투자자별 순매수 거래대금 (억원) — NAVER Finance 기반
-// sosok: "0"=KOSPI, "1"=KOSDAQ
+// 국내 지수 투자자별 순매수 거래대금 (억원) — KIS foreign-institution-total 기반
+// iscd: "0001"=KOSPI, "1001"=KOSDAQ
 export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlow | null> {
-  // iscd "0001" → sosok "0" (KOSPI), "1001" → sosok "1" (KOSDAQ)
-  const sosok = iscd === "0001" ? "0" : "1";
+  const appKey = process.env.KIS_APP_KEY;
+  const appSecret = process.env.KIS_APP_SECRET;
+  const token = await getAccessToken();
+  if (!appKey || !appSecret || !token) return null;
+
+  // FID_BLNG_CLS_CODE: "0"=전체, "1"=KOSPI, "2"=KOSDAQ
+  const blngCls = iscd === "0001" ? "1" : "2";
+
   try {
-    const url = `https://finance.naver.com/sise/investorDailyTotalTrade.nhn?bizdate=&sosok=${sosok}`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/" },
-      cache: "no-store",
+    const query = new URLSearchParams({
+      FID_COND_MRKT_DIV_CODE: "J",
+      FID_INPUT_ISCD: "0001",
+      FID_DIV_CLS_CODE: "0",
+      FID_BLNG_CLS_CODE: blngCls,
+      FID_TRGT_CLS_CODE: "111111111",
+      FID_TRGT_EXLS_CLS_CODE: "0000000000",
+      FID_INPUT_DATE_1: "",
+      FID_INPUT_DATE_2: "",
+      FID_INPUT_PRICE_1: "",
+      FID_INPUT_PRICE_2: "",
+      FID_VOL_CNT: "",
+      FID_HOUR_CLS_CODE: "0",
     });
-    if (!res.ok) return null;
-    const html = await res.text();
-    // 테이블에서 개인/외국인/기관 순매수 금액 파싱 (단위: 억원)
-    // 행 구조: 날짜 | 개인매수 | 개인매도 | 개인순매수 | 외국인매수 | 외국인매도 | 외국인순매수 | 기관매수 | 기관매도 | 기관순매수
-    const rows = html.match(/<tr[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/tr>/g) ?? [];
-    for (const row of rows) {
-      const cells = (row.match(/<td[^>]*>([\s\S]*?)<\/td>/g) ?? []).map((td) =>
-        td.replace(/<[^>]+>/g, "").replace(/,/g, "").trim()
-      );
-      if (cells.length < 10) continue;
-      const individual = Number(cells[3]);
-      const foreign = Number(cells[6]);
-      const institution = Number(cells[9]);
-      if (!isNaN(individual) && !isNaN(foreign) && !isNaN(institution)) {
-        return { foreign, institution, individual };
+    const res = await fetch(
+      `${KIS_BASE}/uapi/domestic-stock/v1/quotations/foreign-institution-total?${query}`,
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+          appkey: appKey,
+          appsecret: appSecret,
+          tr_id: "FHPST02310000",
+          custtype: "P",
+        },
+        cache: "no-store",
       }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.rt_cd !== "0") return null;
+
+    // output 배열에서 투자자별 순매수 합산
+    const rows: Record<string, string>[] = data.output ?? [];
+    let foreign = 0, institution = 0, individual = 0;
+    for (const row of rows) {
+      // 외국인: frgn_seln_qty/frgn_shnu_qty 또는 frgn_ntby_qty
+      if (row.frgn_ntby_qty !== undefined) foreign += Number(row.frgn_ntby_qty);
+      // 기관: orgn_ntby_qty
+      if (row.orgn_ntby_qty !== undefined) institution += Number(row.orgn_ntby_qty);
+      // 개인: indv_ntby_qty
+      if (row.indv_ntby_qty !== undefined) individual += Number(row.indv_ntby_qty);
     }
-    return null;
+    if (foreign === 0 && institution === 0 && individual === 0) return null;
+    return { foreign, institution, individual };
   } catch {
     return null;
   }
