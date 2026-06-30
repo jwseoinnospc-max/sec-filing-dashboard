@@ -12,18 +12,51 @@ function formatPublishedDate(pubDate: string): string | undefined {
   return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" }).format(date);
 }
 
+// Company/brand names that should stay in English after translation.
+// Sorted longest-first so longer names are matched before shorter sub-strings.
+const PROTECTED_NAMES = [
+  "Rocket Lab USA", "Rocket Lab", "SpaceX", "Firefly Aerospace", "Firefly",
+  "Intuitive Machines", "AST SpaceMobile", "AST", "BlackSky", "Kratos Defense",
+  "Planet Labs", "Redwire", "Spire Global", "Momentus", "Voyager Technologies",
+  "Viasat", "EchoStar", "KVH Industries", "Ondas Holdings", "Lockheed Martin",
+  "Boeing", "Northrop Grumman", "Airbus", "Thales", "OHB", "ispace",
+  "Mitsubishi Heavy", "IHI Corporation", "NEC Corporation",
+  "Blue Origin", "Virgin Galactic", "Virgin Orbit", "Maxar", "Telesat",
+  "SES", "Intelsat", "Hughes", "ViaSat", "Iridium",
+  "NASA", "ESA", "JAXA", "SpaceX", "DARPA", "DoD", "FAA",
+  "SEC", "NYSE", "Nasdaq", "KOSPI", "KOSDAQ",
+  "Yahoo Finance", "The Motley Fool", "TradingView", "Reuters", "Bloomberg",
+].sort((a, b) => b.length - a.length);
+
 // Unofficial Google Translate endpoint — no API key required, used only for the small amount
 // of English headline text on NASDAQ news cards (Korean-language news isn't translated).
 async function translateToKorean(text: string): Promise<string | undefined> {
   try {
+    // Protect company/brand names from being translated
+    const captured: string[] = [];
+    let protected_text = text;
+    for (const name of PROTECTED_NAMES) {
+      const regex = new RegExp(name.replace(/[.*+?^${}()|[\]\]/g, "\$&"), "gi");
+      protected_text = protected_text.replace(regex, (match) => {
+        const idx = captured.length;
+        captured.push(match);
+        return `P${idx}X`;
+      });
+    }
+
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodeURIComponent(
-      text
+      protected_text
     )}`;
     const res = await fetch(url, { next: { revalidate: 1800 } });
     if (!res.ok) return undefined;
     const data = await res.json();
-    const translated = data?.[0]?.map((chunk: unknown[]) => chunk[0]).join("");
-    return translated || undefined;
+    let translated: string = data?.[0]?.map((chunk: unknown[]) => chunk[0]).join("") || "";
+    if (!translated) return undefined;
+
+    // Restore protected names
+    translated = translated.replace(/P(\d+)X/g, (_, i) => captured[parseInt(i)] ?? "");
+
+    return translated;
   } catch {
     return undefined;
   }

@@ -150,7 +150,7 @@ export default async function SpaceMarketPage() {
 
       <SpaceMarketTabToggle />
 
-      <div id="tab-global">
+      <div id="tab-global" style={{ display: "none" }}>
         <section className="space-stock-grid">
           {NASDAQ_COMPANIES.map((company, i) => {
             const { price, profile, valuation } = nasdaqResults[i];
@@ -175,7 +175,7 @@ export default async function SpaceMarketPage() {
         <OtherSpaceRow companies={OTHER_SPACE_COMPANIES} />
       </div>
 
-      <div id="tab-domestic" style={{ display: "none" }}>
+      <div id="tab-domestic">
         <section className="space-stock-grid">
           {DOMESTIC_COMPANIES.map((company, i) => {
             const price = domesticPrices[i];
