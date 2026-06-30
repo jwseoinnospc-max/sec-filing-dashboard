@@ -1,3 +1,5 @@
+export const revalidate = 60; // ISR: 60초마다 재생성, 그 사이 모든 요청은 캐시 반환
+
 import Link from "next/link";
 import { readFileSync } from "fs";
 import { join } from "path";

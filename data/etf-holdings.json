@@ -4,31 +4,34 @@
     "KODEX 미국우주항공": {
       "name": "KODEX 미국우주항공 (0167Z0) — iSelect 미국우주항공 지수",
       "holdings": [
-        { "symbol": "RKLB", "name": "Rocket Lab USA",     "weight": "17.0%" },
-        { "symbol": "ASTS", "name": "AST SpaceMobile",    "weight": "16.0%" },
-        { "symbol": "LUNR", "name": "Intuitive Machines", "weight": "10.0%" },
-        { "symbol": "KTOS", "name": "Kratos Defense",     "weight": "6.5%"  },
-        { "symbol": "LMT",  "name": "Lockheed Martin",    "weight": "5.0%"  },
-        { "symbol": "BA",   "name": "Boeing",             "weight": "3.0%"  },
-        { "symbol": "RTX",  "name": "RTX Corporation",    "weight": "2.8%"  },
-        { "symbol": "NOC",  "name": "Northrop Grumman",   "weight": "2.5%"  },
-        { "symbol": "RDW",  "name": "Redwire",            "weight": "2.2%"  },
-        { "symbol": "PL",   "name": "Planet Labs",        "weight": "1.8%"  }
+        { "symbol": "RKLB", "name": "Rocket Lab USA",       "weight": "17.20%" },
+        { "symbol": "ASTS", "name": "AST SpaceMobile",      "weight": "15.83%" },
+        { "symbol": "LUNR", "name": "Intuitive Machines",   "weight": "9.94%"  },
+        { "symbol": "KTOS", "name": "Kratos Defense",       "weight": "6.48%"  },
+        { "symbol": "LMT",  "name": "Lockheed Martin",      "weight": "5.12%"  },
+        { "symbol": "RTX",  "name": "RTX Corporation",      "weight": "4.87%"  },
+        { "symbol": "NOC",  "name": "Northrop Grumman",     "weight": "4.21%"  },
+        { "symbol": "BA",   "name": "Boeing",               "weight": "3.54%"  },
+        { "symbol": "RDW",  "name": "Redwire",              "weight": "2.31%"  },
+        { "symbol": "PL",   "name": "Planet Labs",          "weight": "1.97%"  },
+        { "symbol": "BKSY", "name": "BlackSky Technology",  "weight": "1.43%"  },
+        { "symbol": "SPIR", "name": "Spire Global",         "weight": "1.22%"  },
+        { "symbol": "VOYG", "name": "Voyager Technologies", "weight": "0.98%"  }
       ]
     },
     "TIGER 미국우주테크": {
       "name": "TIGER 미국우주테크TOP10 (0183J0) — Akros U.S. Space Tech 지수",
       "holdings": [
-        { "symbol": "RKLB", "name": "Rocket Lab USA",     "weight": "27.07%" },
-        { "symbol": "LUNR", "name": "Intuitive Machines", "weight": "20.74%" },
-        { "symbol": "RDW",  "name": "Redwire",            "weight": "14.55%" },
-        { "symbol": "ASTS", "name": "AST SpaceMobile",    "weight": "9.74%"  },
-        { "symbol": "FLY",  "name": "Firefly Aerospace",  "weight": "7.0%"   },
-        { "symbol": "KTOS", "name": "Kratos Defense",     "weight": "5.5%"   },
-        { "symbol": "PL",   "name": "Planet Labs",        "weight": "4.8%"   },
-        { "symbol": "SPIR", "name": "Spire Global",       "weight": "4.2%"   },
-        { "symbol": "BKSY", "name": "BlackSky",           "weight": "3.6%"   },
-        { "symbol": "MNTS", "name": "Momentus",           "weight": "2.8%"   }
+        { "symbol": "RKLB", "name": "Rocket Lab USA",       "weight": "26.54%" },
+        { "symbol": "LUNR", "name": "Intuitive Machines",   "weight": "21.03%" },
+        { "symbol": "RDW",  "name": "Redwire",              "weight": "14.87%" },
+        { "symbol": "ASTS", "name": "AST SpaceMobile",      "weight": "10.12%" },
+        { "symbol": "KTOS", "name": "Kratos Defense",       "weight": "6.34%"  },
+        { "symbol": "PL",   "name": "Planet Labs",          "weight": "5.21%"  },
+        { "symbol": "SPIR", "name": "Spire Global",         "weight": "4.67%"  },
+        { "symbol": "BKSY", "name": "BlackSky Technology",  "weight": "3.89%"  },
+        { "symbol": "VOYG", "name": "Voyager Technologies", "weight": "3.12%"  },
+        { "symbol": "MNTS", "name": "Momentus",             "weight": "2.41%"  }
       ]
     }
   }
