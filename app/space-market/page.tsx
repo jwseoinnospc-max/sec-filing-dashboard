@@ -133,7 +133,7 @@ export default async function SpaceMarketPage() {
         <section className="sector-index-row">
           {avgNasdaq != null && (
             <div className="sector-index-card">
-              <div className="sector-index-label">NASDAQ 평균</div>
+              <div className="sector-index-label">글로벌 우주항공 평균</div>
               <div className={`sector-index-value ${avgNasdaq >= 0 ? "space-stock-up" : "space-stock-down"}`}>
                 {avgNasdaq >= 0 ? "+" : ""}
                 {avgNasdaq.toFixed(2)}%
