@@ -230,7 +230,7 @@ function CompareCard({
 
         .title-bar {
           background: var(--bg);
-          border: 1px solid #ffffff;
+          border: 1px solid #1e293b;
           color: #ffffff;
           text-align: center;
           font-size: 16px;
