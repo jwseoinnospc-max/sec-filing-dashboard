@@ -1,57 +1,39 @@
 import { NextResponse } from "next/server";
 
-async function getCachedToken(): Promise<string | null> {
-  const KV_URL = process.env.KV_REST_API_URL;
-  const KV_TOKEN = process.env.KV_REST_API_TOKEN;
-  if (!KV_URL || !KV_TOKEN) return null;
-  try {
-    const r = await fetch(`${KV_URL}/get/kis_access_token`, { headers: { Authorization: `Bearer ${KV_TOKEN}` } });
-    const d = await r.json();
-    const cached = d?.result ? JSON.parse(d.result) : null;
-    if (cached?.accessToken && cached.expiresAt > Date.now()) return cached.accessToken;
-  } catch {}
-  return null;
-}
-
 export async function GET() {
-  const appKey = process.env.KIS_APP_KEY;
-  const appSecret = process.env.KIS_APP_SECRET;
-  if (!appKey || !appSecret) return NextResponse.json({ error: "no credentials" });
+  const results: Record<string, unknown> = {};
 
-  const token = await getCachedToken();
-  if (!token) return NextResponse.json({ error: "no cached token" });
-
-  const BASE = "https://openapi.koreainvestment.com:9443";
-
-  async function tryPath(trId: string, path: string, params: Record<string, string>) {
+  // Try NAVER Finance deal rank iframe (외국인 순매수 TOP 종목 합산)
+  for (const [gubun, label] of [["1000", "foreign_kospi"], ["2000", "inst_kospi"]] as [string, string][]) {
     try {
-      const q = new URLSearchParams(params);
-      const res = await fetch(`${BASE}${path}?${q}`, {
-        headers: { authorization: `Bearer ${token}`, appkey: appKey!, appsecret: appSecret!, tr_id: trId, custtype: "P" },
-        cache: "no-store",
-      });
-      const data = await res.json();
-      const allOutputs: unknown[] = [];
-      for (const key of Object.keys(data)) {
-        if (Array.isArray(data[key]) && data[key].length > 0) {
-          allOutputs.push({ key, len: data[key].length, row0_keys: Object.keys(data[key][0]).slice(0, 12), row0: data[key][0] });
-        }
-      }
-      return { trId, path, params, status: res.status, rt_cd: data.rt_cd, msg1: data.msg1?.slice(0, 80), allOutputs };
+      const buyRes = await fetch(
+        `https://finance.naver.com/sise/sise_deal_rank_iframe.naver?sosok=01&investor_gubun=${gubun}&type=buy`,
+        { headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/sise/" }, cache: "no-store" }
+      );
+      const html = await buyRes.text();
+      results[label] = {
+        status: buyRes.status,
+        len: html.length,
+        snippet: html.slice(0, 300),
+        hasChinese: /[一-鿿]/.test(html),
+      };
     } catch (e) {
-      return { trId, path, error: String(e) };
+      results[label] = { error: String(e) };
     }
   }
 
-  // Try the real investor flow endpoint with correct path variations
-  const results = await Promise.all([
-    // Standard investor inquiry - different TR IDs
-    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-investor", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930" }),
-    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-member", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930" }),
-    // Try market investor with different paths
-    tryPath("FHPST01710000", "/uapi/domestic-stock/v1/quotations/inquire-investor", { FID_COND_MRKT_DIV_CODE: "J", FID_COND_SCR_DIV_CODE: "20171", FID_INPUT_ISCD: "005930", FID_DIV_CLS_CODE: "0" }),
-    tryPath("FHKST01010300", "/uapi/domestic-stock/v1/quotations/inquire-daily-trade-volume", { FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: "005930", FID_PERIOD_DIV_CODE: "D", FID_ORG_ADJ_PRC: "0" }),
-  ]);
+  // Also try the Naver finance sise main page which works
+  try {
+    const r = await fetch("https://finance.naver.com/sise/", {
+      headers: { "User-Agent": "Mozilla/5.0", "Accept-Charset": "euc-kr" },
+      cache: "no-store",
+    });
+    const buf = await r.arrayBuffer();
+    const text = Buffer.from(buf).toString("latin1"); // raw bytes as latin1
+    results["sise_main"] = { status: r.status, len: buf.byteLength, snippet: text.slice(0, 200) };
+  } catch (e) {
+    results["sise_main"] = { error: String(e) };
+  }
 
-  return NextResponse.json({ results }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
 }
