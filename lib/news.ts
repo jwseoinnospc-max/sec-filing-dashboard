@@ -9,7 +9,7 @@ export type NewsItem = {
 function formatPublishedDate(pubDate: string): string | undefined {
   const date = new Date(pubDate);
   if (isNaN(date.getTime())) return undefined;
-  return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit" }).format(date);
+  return new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" }).format(date);
 }
 
 // Unofficial Google Translate endpoint — no API key required, used only for the small amount
