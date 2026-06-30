@@ -1,39 +1,49 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  const results: Record<string, unknown> = {};
-
-  // Try NAVER Finance deal rank iframe (외국인 순매수 TOP 종목 합산)
-  for (const [gubun, label] of [["1000", "foreign_kospi"], ["2000", "inst_kospi"]] as [string, string][]) {
-    try {
-      const buyRes = await fetch(
-        `https://finance.naver.com/sise/sise_deal_rank_iframe.naver?sosok=01&investor_gubun=${gubun}&type=buy`,
-        { headers: { "User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/sise/" }, cache: "no-store" }
-      );
-      const html = await buyRes.text();
-      results[label] = {
-        status: buyRes.status,
-        len: html.length,
-        snippet: html.slice(0, 300),
-        hasChinese: /[一-鿿]/.test(html),
-      };
-    } catch (e) {
-      results[label] = { error: String(e) };
-    }
-  }
-
-  // Also try the Naver finance sise main page which works
+function decodeEucKr(buf: Buffer): string {
   try {
-    const r = await fetch("https://finance.naver.com/sise/", {
-      headers: { "User-Agent": "Mozilla/5.0", "Accept-Charset": "euc-kr" },
+    return new TextDecoder("euc-kr").decode(buf);
+  } catch {
+    return buf.toString("latin1");
+  }
+}
+
+async function tryUrl(url: string): Promise<{ status: number; len: number; snippet: string; hasKorean: boolean }> {
+  try {
+    const r = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Referer": "https://finance.naver.com/" },
       cache: "no-store",
     });
-    const buf = await r.arrayBuffer();
-    const text = Buffer.from(buf).toString("latin1"); // raw bytes as latin1
-    results["sise_main"] = { status: r.status, len: buf.byteLength, snippet: text.slice(0, 200) };
+    const buf = Buffer.from(await r.arrayBuffer());
+    const html = decodeEucKr(buf);
+    const hasKorean = /[가-힣]/.test(html);
+    return { status: r.status, len: html.length, snippet: html.slice(0, 500), hasKorean };
   } catch (e) {
-    results["sise_main"] = { error: String(e) };
+    return { status: -1, len: 0, snippet: String(e), hasKorean: false };
   }
+}
+
+export async function GET() {
+  // Try various NAVER Finance URLs that might return KOSPI investor totals
+  const urls: Record<string, string> = {
+    sise_investor: "https://finance.naver.com/sise/sise_investor.naver?sosok=0",
+    sise_investor_1: "https://finance.naver.com/sise/sise_investor.naver?sosok=1",
+    invest_total: "https://finance.naver.com/sise/investorTotalTrade.nhn?sosok=0",
+    invest_total_naver: "https://finance.naver.com/sise/investorTotalTrade.naver?sosok=0",
+    investor_iframe: "https://finance.naver.com/sise/sise_investor_iframe.naver?sosok=0",
+    investor_iframe_1: "https://finance.naver.com/sise/sise_investor_iframe.naver?sosok=1",
+    index_investor: "https://finance.naver.com/sise/sise_index_investor.naver?code=KOSPI",
+    program: "https://finance.naver.com/sise/program.naver",
+    program_iframe: "https://finance.naver.com/sise/program_iframe.naver?sosok=0",
+    deal_rank_total: "https://finance.naver.com/sise/sise_deal_rank_iframe.naver?sosok=00&investor_gubun=1000&type=buy",
+  };
+
+  const results: Record<string, unknown> = {};
+  await Promise.all(
+    Object.entries(urls).map(async ([key, url]) => {
+      results[key] = await tryUrl(url);
+    })
+  );
 
   return NextResponse.json(results, { headers: { "Cache-Control": "no-store" } });
 }
