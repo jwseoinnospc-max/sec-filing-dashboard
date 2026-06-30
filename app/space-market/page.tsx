@@ -144,12 +144,14 @@ export default async function SpaceMarketPage() {
     name: c.name,
     symbol: c.symbol,
     changePercent: nasdaqResults[i].price?.changePercent ?? 0,
+    marketCap: (nasdaqResults[i].profile?.marketCapitalization ?? 0) / 1000, // billions USD
   })).filter((_, i) => nasdaqResults[i].price?.changePercent != null);
 
   const domesticBreakdown = DOMESTIC_COMPANIES.map((c, i) => ({
     name: c.name,
     symbol: c.code,
     changePercent: domesticPrices[i]?.changePercent ?? 0,
+    marketCap: (domesticPrices[i]?.marketCapEok ?? 0) / 10000, // 억원 → 조원
   })).filter((_, i) => domesticPrices[i]?.changePercent != null);
 
   const etfRaw = JSON.parse(readFileSync(join(process.cwd(), "data/etf-holdings.json"), "utf8"));

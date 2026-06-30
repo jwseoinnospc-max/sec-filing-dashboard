@@ -13,8 +13,29 @@ function avg(values: number[]): number | null {
 
 type EtfHolding = { symbol: string; name: string; weight: string };
 type EtfHoldingsData = Record<string, { name: string; holdings: EtfHolding[] }>;
-type BreakdownItem = { name: string; symbol: string; changePercent: number };
+type BreakdownItem = { name: string; symbol: string; changePercent: number; marketCap?: number };
 type OtherCompany = { name: string; symbol: string; exchange: string; logo: string; url: string };
+
+// Approximate market caps in USD billions (for other global companies weighting)
+const APPROX_MARKET_CAP_B: Record<string, number> = {
+  RTX: 174, LMT: 112, BA: 98, "AIR.PA": 85, NOC: 64,
+  "SAF.PA": 60, "RHM.DE": 55, LHX: 34, "HO.PA": 25, "LDO.MI": 20,
+  7011: 18, 6701: 15, ASTS: 10, 7013: 4, KTOS: 4,
+  GSAT: 3, PL: 1.5, "OHB.DE": 0.8, RDW: 0.8, VOYG: 0.5,
+  SPIR: 0.5, BKSY: 0.3, 9348: 0.3, ECHO: 0.2, MNTS: 0.1,
+  SIDU: 0.05, KVHI: 0.1, ONDS: 0.05, CMTL: 0.05, VSAT: 1.2,
+};
+
+function weightedAvg(items: { changePercent: number; marketCap?: number }[]): number | null {
+  if (items.length === 0) return null;
+  const totalCap = items.reduce((s, i) => s + (i.marketCap ?? 0), 0);
+  if (totalCap === 0) {
+    // fallback to simple average if no market cap data
+    return items.reduce((s, i) => s + i.changePercent, 0) / items.length;
+  }
+  return items.reduce((s, i) => s + i.changePercent * (i.marketCap ?? 0), 0) / totalCap;
+}
+
 
 function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; onClose: () => void; etfHoldings: EtfHoldingsData; dataAsOf: string }) {
   const etf = etfHoldings[label];
@@ -84,7 +105,8 @@ function AvgModal({
   items: BreakdownItem[];
   onClose: () => void;
 }) {
-  const avg = items.reduce((s, i) => s + i.changePercent, 0) / items.length;
+  const rawAvg = weightedAvg(items);
+  const avg = rawAvg ?? 0;
   return (
     <div className="etf-modal-overlay" onClick={onClose}>
       <div className="etf-modal" onClick={(e) => e.stopPropagation()}>
@@ -93,7 +115,7 @@ function AvgModal({
           <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
         </div>
         <div className="etf-modal-note">
-          ※ {items.length}개 기업 단순 평균 변동률:&nbsp;
+          ※ {items.length}개 기업 시가총액 가중 평균 변동률:&nbsp;
           <strong style={{ color: avg >= 0 ? "#22c55e" : "#ef4444" }}>
             {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%
           </strong>
@@ -168,7 +190,21 @@ export default function SectorIndexRow({
       .catch(() => {});
   }, []);
 
-  const combinedGlobal = avg([...globalChanges, ...otherChanges]);
+  // combinedGlobal: weighted average computed when otherPrices loaded, or simple fallback
+  const combinedGlobal = (() => {
+    const allItems = [
+      ...globalBreakdown,
+      ...otherPrices
+        .filter((e) => e.price?.changePercent != null)
+        .map((e) => ({
+          changePercent: e.price!.changePercent,
+          marketCap: otherCompanies.find((c) => c.symbol === e.symbol)
+            ? (APPROX_MARKET_CAP_B[e.symbol] ?? 0)
+            : 0,
+        })),
+    ];
+    return allItems.length > 0 ? weightedAvg(allItems) : null;
+  })();
 
   return (
     <>
