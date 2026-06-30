@@ -124,12 +124,14 @@ export function SpaceStockCard({
           <ul className="space-stock-news">
           {news.map((item, i) => (
             <li key={i}>
+              <div className="space-stock-news-meta">
+                {item.source && <span className="space-stock-news-source-badge">{item.source}</span>}
+                {item.publishedAt && <span className="space-stock-news-date">{item.publishedAt}</span>}
+              </div>
               <a href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
                 {item.title}
-                {item.publishedAt && <span className="space-stock-news-date"> · {item.publishedAt}</span>}
               </a>
               {item.titleKo && <div className="space-stock-news-ko">{item.titleKo}</div>}
-              {item.source && <span className="space-stock-news-source-badge">{item.source}</span>}
             </li>
           ))}
           </ul>

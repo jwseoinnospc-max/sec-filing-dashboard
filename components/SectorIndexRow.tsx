@@ -38,6 +38,112 @@ function weightedAvg(items: { changePercent: number; marketCap?: number }[]): nu
 }
 
 
+function fmtFlow(v: number): string {
+  const abs = Math.abs(v);
+  const sign = v >= 0 ? "+" : "−";
+  if (abs >= 10000) return `${sign}${(abs / 10000).toFixed(1)}조`;
+  if (abs >= 1000) return `${sign}${(abs / 1000).toFixed(0)}천억`;
+  return `${sign}${abs.toFixed(0)}억`;
+}
+
+function InvestorFlowRow({ flow }: { flow: InvestorFlow }) {
+  return (
+    <div className="kospi-investor-flow">
+      <span>외국인 <b style={{ color: flow.foreign >= 0 ? "#ef4444" : "#4488ff" }}>{fmtFlow(flow.foreign)}</b></span>
+      <span>기관 <b style={{ color: flow.institution >= 0 ? "#ef4444" : "#4488ff" }}>{fmtFlow(flow.institution)}</b></span>
+      <span>개인 <b style={{ color: flow.individual >= 0 ? "#ef4444" : "#4488ff" }}>{fmtFlow(flow.individual)}</b></span>
+    </div>
+  );
+}
+
+function InvestorFlowModal({ label, flow, onClose }: { label: string; flow: InvestorFlow; onClose: () => void }) {
+  const rows = [
+    { name: "외국인", value: flow.foreign },
+    { name: "기관", value: flow.institution },
+    { name: "개인", value: flow.individual },
+  ];
+  return (
+    <div className="etf-modal-overlay" onClick={onClose}>
+      <div className="etf-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="etf-modal-header">
+          <span>{label} 투자자별 순매수</span>
+          <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
+        </div>
+        <div className="etf-modal-note">※ 당일 거래대금 기준 순매수 · 단위: 억원</div>
+        <table className="etf-modal-table">
+          <thead>
+            <tr><th>구분</th><th style={{ textAlign: "right" }}>순매수 (억원)</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.name}>
+                <td style={{ fontWeight: 700 }}>{r.name}</td>
+                <td style={{ textAlign: "right", fontWeight: 700, color: r.value >= 0 ? "#ef4444" : "#4488ff" }}>
+                  {r.value >= 0 ? "+" : ""}{r.value.toLocaleString("ko-KR")}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+const ETF_LINKS: Record<string, { name: string; desc: string; href: string }> = {
+  "KODEX 미국우주항공": {
+    name: "KODEX 미국우주항공",
+    desc: "삼성자산운용 · 미국 우주항공 테마 ETF",
+    href: "https://www.samsungfund.com/etf/product/view.do?id=2ETFU4",
+  },
+  "TIGER 미국우주테크": {
+    name: "TIGER 미국우주테크",
+    desc: "미래에셋자산운용 · 미국 우주기술 테마 ETF",
+    href: "https://investments.miraeasset.com/tigeretf/ko/product/search/detail/index.do?ksdFund=KR70183J0002",
+  },
+};
+
+function EtfLinkModal({ label, quote, onClose }: { label: string; quote: IndexQuote; onClose: () => void }) {
+  const etf = ETF_LINKS[label];
+  if (!etf) return null;
+  const isUp = quote.changePercent >= 0;
+  return (
+    <div className="etf-modal-overlay" onClick={onClose}>
+      <div className="etf-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
+        <div className="etf-modal-header">
+          <span>{etf.name}</span>
+          <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
+        </div>
+        <div className="etf-modal-note">{etf.desc}</div>
+        <div style={{ padding: "16px 0 8px", display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "var(--muted)", fontSize: 13 }}>현재가</span>
+            <span style={{ fontWeight: 700, fontSize: 16 }}>₩{quote.last.toLocaleString()}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ color: "var(--muted)", fontSize: 13 }}>등락률</span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: isUp ? "#ef4444" : "#4488ff" }}>
+              {isUp ? "+" : ""}{quote.changePercent.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+        <a
+          href={etf.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "block", marginTop: 12, padding: "10px 0", textAlign: "center",
+            background: "var(--accent)", color: "#fff", borderRadius: 8,
+            fontWeight: 700, fontSize: 14, textDecoration: "none",
+          }}
+        >
+          상품 상세 페이지 →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; onClose: () => void; etfHoldings: EtfHoldingsData; dataAsOf: string }) {
   const etf = etfHoldings[label];
   if (!etf) return null;
@@ -70,7 +176,7 @@ function EtfModal({ label, onClose, etfHoldings, dataAsOf }: { label: string; on
 }
 
 function IndexCard({
-  label, quote, formatLast, onClick, href, extra,
+  label, quote, formatLast, onClick, href, extra, clickTitle,
 }: {
   label: string;
   quote: IndexQuote | null | undefined;
@@ -78,6 +184,7 @@ function IndexCard({
   onClick?: () => void;
   href?: string;
   extra?: React.ReactNode;
+  clickTitle?: string;
 }) {
   if (!quote) return null;
   const isUp = quote.changePercent >= 0;
@@ -111,7 +218,7 @@ function IndexCard({
     <div
       className={`sector-index-card ${isClickable ? "etf-clickable" : ""}`}
       onClick={onClick}
-      title={onClick ? "클릭하여 구성 종목 보기" : undefined}
+      title={onClick ? (clickTitle ?? "클릭하여 구성 종목 보기") : undefined}
     >
       {inner}
     </div>
@@ -194,9 +301,12 @@ export default function SectorIndexRow({
     kodexSpace: IndexQuote | null;
     tigerSpace: IndexQuote | null;
     kospiFlow: InvestorFlow | null;
-  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null, kospiFlow: null });
+    kosdaqFlow: InvestorFlow | null;
+  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null, kospiFlow: null, kosdaqFlow: null });
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [activeAvgModal, setActiveAvgModal] = useState<"global" | "domestic" | null>(null);
+  const [activeFlowModal, setActiveFlowModal] = useState<"kospi" | "kosdaq" | null>(null);
+  const [activeEtfLinkModal, setActiveEtfLinkModal] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/other-space-prices")
@@ -241,25 +351,19 @@ export default function SectorIndexRow({
           label="KOSPI"
           quote={indices.kospi}
           formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
-          extra={indices.kospiFlow ? (() => {
-            const flow = indices.kospiFlow!;
-            const fmt = (v: number) => {
-              const abs = Math.abs(v);
-              return (v >= 0 ? "+" : "−") + (abs >= 1000 ? `${(abs / 1000).toFixed(0)}천주` : `${abs.toFixed(0)}주`);
-            };
-            return (
-              <div className="kospi-investor-flow">
-                <span>외국인 <b style={{ color: flow.foreign >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.foreign)}</b></span>
-                <span>기관 <b style={{ color: flow.institution >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.institution)}</b></span>
-                <span>개인 <b style={{ color: flow.individual >= 0 ? "#ef4444" : "#4488ff" }}>{fmt(flow.individual)}</b></span>
-              </div>
-            );
-          })() : undefined}
+          onClick={indices.kospiFlow ? () => setActiveFlowModal("kospi") : undefined}
+          clickTitle="투자자 현황 보기"
         />
-        <IndexCard label="KOSDAQ" quote={indices.kosdaq} formatLast={(v) => v.toFixed(2)} />
+        <IndexCard
+          label="KOSDAQ"
+          quote={indices.kosdaq}
+          formatLast={(v) => v.toFixed(2)}
+          onClick={indices.kosdaqFlow ? () => setActiveFlowModal("kosdaq") : undefined}
+          clickTitle="투자자 현황 보기"
+        />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
-        <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} href="https://www.samsungfund.com/etf/product/view.do?id=2ETFU4" />
-        <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} href="https://investments.miraeasset.com/tigeretf/ko/product/search/detail/index.do?ksdFund=KR70183J0002" />
+        <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveEtfLinkModal("KODEX 미국우주항공")} clickTitle="ETF 상세 보기" />
+        <IndexCard label="TIGER 미국우주테크" quote={indices.tigerSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveEtfLinkModal("TIGER 미국우주테크")} clickTitle="ETF 상세 보기" />
         {combinedGlobal != null && (
           <div className="sector-index-card etf-clickable" onClick={() => setActiveAvgModal("global")} title="클릭하여 구성 기업 보기">
             <div className="sector-index-label">글로벌 우주항공 평균<span className="etf-info-icon"> ℹ</span></div>
@@ -277,7 +381,17 @@ export default function SectorIndexRow({
           </div>
         )}
       </section>
+      {activeEtfLinkModal && (() => {
+        const q = activeEtfLinkModal === "KODEX 미국우주항공" ? indices.kodexSpace : indices.tigerSpace;
+        return q ? <EtfLinkModal label={activeEtfLinkModal} quote={q} onClose={() => setActiveEtfLinkModal(null)} /> : null;
+      })()}
       {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
+      {activeFlowModal === "kospi" && indices.kospiFlow && (
+        <InvestorFlowModal label="KOSPI" flow={indices.kospiFlow} onClose={() => setActiveFlowModal(null)} />
+      )}
+      {activeFlowModal === "kosdaq" && indices.kosdaqFlow && (
+        <InvestorFlowModal label="KOSDAQ" flow={indices.kosdaqFlow} onClose={() => setActiveFlowModal(null)} />
+      )}
       {activeAvgModal === "global" && (
         <AvgModal title="글로벌 우주항공 평균" items={allGlobalItems} onClose={() => setActiveAvgModal(null)} />
       )}

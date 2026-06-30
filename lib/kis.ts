@@ -396,10 +396,11 @@ export async function getDomesticIntradayHistory(code: string): Promise<KisMinut
 }
 
 export type KisIndexQuote = { last: number; change: number; changePercent: number };
+// 단위: 억원
 export type KisInvestorFlow = { foreign: number; institution: number; individual: number };
 
-// KOSPI 투자자별 순매수 (외국인/기관/개인) — tr_id: FHPST01710000
-export async function getKospiInvestorFlow(): Promise<KisInvestorFlow | null> {
+// 국내 지수 투자자별 순매수 거래대금 (억원) — KOSPI: "0001", KOSDAQ: "1001"
+export async function getIndexInvestorFlow(iscd: string): Promise<KisInvestorFlow | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken();
@@ -408,7 +409,7 @@ export async function getKospiInvestorFlow(): Promise<KisInvestorFlow | null> {
   try {
     const query = new URLSearchParams({
       FID_COND_MRKT_DIV_CODE: "J",
-      FID_INPUT_ISCD: "0001",
+      FID_INPUT_ISCD: iscd,
       FID_DIV_CLS_CODE: "0",
     });
     const res = await fetch(
@@ -426,18 +427,20 @@ export async function getKospiInvestorFlow(): Promise<KisInvestorFlow | null> {
     );
     if (!res.ok) return null;
     const data = await res.json();
-    // output2[0] is the latest day total
     const row = data?.output2?.[0];
     if (!row) return null;
     return {
-      foreign: Number(row.frgn_ntby_qty ?? 0),       // 외국인 순매수 수량
-      institution: Number(row.orgn_ntby_qty ?? 0),    // 기관 순매수 수량
-      individual: Number(row.indv_ntby_qty ?? 0),     // 개인 순매수 수량
+      foreign: Number(row.frgn_ntby_tr_pbmn ?? 0),    // 외국인 순매수 거래대금 (억원)
+      institution: Number(row.orgn_ntby_tr_pbmn ?? 0), // 기관 순매수 거래대금 (억원)
+      individual: Number(row.indv_ntby_tr_pbmn ?? 0),  // 개인 순매수 거래대금 (억원)
     };
   } catch {
     return null;
   }
 }
+
+// 하위 호환용 alias
+export const getKospiInvestorFlow = () => getIndexInvestorFlow("0001");
 
 // KIS 국내 지수 조회 (KOSPI: "0001", KOSDAQ: "1001")
 export async function getDomesticIndex(iscd: string): Promise<KisIndexQuote | null> {
