@@ -213,21 +213,22 @@ export default function SectorIndexRow({
   // 국내 카드: 팝업과 동일한 weightedAvg(domesticBreakdown) 사용
   const domesticWeightedAvg = weightedAvg(domesticBreakdown);
 
-  // combinedGlobal: weighted average computed when otherPrices loaded, or simple fallback
-  const combinedGlobal = (() => {
-    const allItems = [
-      ...globalBreakdown,
-      ...otherPrices
-        .filter((e) => e.price?.changePercent != null)
-        .map((e) => ({
+  // 카드와 팝업이 동일한 항목/가중치로 계산되도록 allGlobalItems를 공유
+  const allGlobalItems: BreakdownItem[] = [
+    ...globalBreakdown,
+    ...otherPrices
+      .filter((e) => e.price?.changePercent != null)
+      .map((e) => {
+        const co = otherCompanies.find((c) => c.symbol === e.symbol);
+        return {
+          name: co?.name ?? e.symbol,
+          symbol: e.symbol,
           changePercent: e.price!.changePercent,
-          marketCap: otherCompanies.find((c) => c.symbol === e.symbol)
-            ? (APPROX_MARKET_CAP_B[e.symbol] ?? 0)
-            : 0,
-        })),
-    ];
-    return allItems.length > 0 ? weightedAvg(allItems) : null;
-  })();
+          marketCap: APPROX_MARKET_CAP_B[e.symbol] ?? 0,
+        };
+      }),
+  ];
+  const combinedGlobal = allGlobalItems.length > 0 ? weightedAvg(allGlobalItems) : null;
 
   return (
     <>
@@ -288,15 +289,9 @@ export default function SectorIndexRow({
         )}
       </section>
       {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
-      {activeAvgModal === "global" && (() => {
-        const otherItems: BreakdownItem[] = otherPrices
-          .filter((e) => e.price?.changePercent != null)
-          .map((e) => {
-            const co = otherCompanies.find((c) => c.symbol === e.symbol);
-            return { name: co?.name ?? e.symbol, symbol: e.symbol, changePercent: e.price!.changePercent };
-          });
-        return <AvgModal title="글로벌 우주항공 평균" items={[...globalBreakdown, ...otherItems]} onClose={() => setActiveAvgModal(null)} />;
-      })()}
+      {activeAvgModal === "global" && (
+        <AvgModal title="글로벌 우주항공 평균" items={allGlobalItems} onClose={() => setActiveAvgModal(null)} />
+      )}
       {activeAvgModal === "domestic" && (
         <AvgModal title="국내 우주항공 평균" items={domesticBreakdown} onClose={() => setActiveAvgModal(null)} />
       )}
