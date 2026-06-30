@@ -39,7 +39,7 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
                   <div className="top-mover-price" style={{ fontSize: 11 }}>{company.symbol} · {exLabel}</div>
                 </div>
               </div>
-              <div style={{ width: "100%", marginTop: 10 }}>
+              <div style={{ width: "100%", marginTop: 20 }}>
                 {!loaded ? (
                   <span style={{ color: "var(--muted)", fontSize: 13 }}>…</span>
                 ) : p ? (
