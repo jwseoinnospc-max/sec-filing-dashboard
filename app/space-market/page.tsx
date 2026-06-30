@@ -3,6 +3,7 @@ import NavMenu from "@/components/NavMenu";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
 import TopMoverRow, { type MoverItem } from "@/components/TopMoverRow";
+import SpaceMarketTabs from "@/components/SpaceMarketTabs";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getOverseasPrice, getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
@@ -146,57 +147,64 @@ export default async function SpaceMarketPage() {
 
       <TopMoverRow serverMovers={serverMovers} otherCompanies={OTHER_SPACE_COMPANIES} />
 
-      <h2 className="space-group-title">글로벌 우주항공 기업</h2>
-      <section className="space-stock-grid">
-        {NASDAQ_COMPANIES.map((company, i) => {
-          const { price, profile, valuation } = nasdaqResults[i];
-          return (
-            <SpaceStockCard
-              key={company.symbol}
-              name={company.name}
-              symbol={company.symbol}
-              exchange={company.exchange}
-              chartSymbol={`NASDAQ:${company.symbol}`}
-              price={price?.last}
-              change={price?.change}
-              changePercent={price?.changePercent}
-              meta={formatMarketCap(profile?.marketCapitalization)}
-              news={nasdaqNews[i]}
-              logo={profile?.logo || company.logo}
-              valuation={valuation ?? undefined}
-            />
-          );
-        })}
-      </section>
-
-      <OtherSpaceRow companies={OTHER_SPACE_COMPANIES} />
-
-      <h2 className="space-group-title">국내 우주항공 기업</h2>
-      <section className="space-stock-grid">
-        {DOMESTIC_COMPANIES.map((company, i) => {
-          const price = domesticPrices[i];
-          return (
-            <SpaceStockCard
-              key={company.code}
-              name={company.name}
-              symbol={company.code}
-              exchange={company.exchange}
-              chartSymbol={`KRX:${company.code}`}
-              price={price?.last}
-              change={price?.change}
-              changePercent={price?.changePercent}
-              currency="KRW"
-              meta={formatDomesticMeta(price?.marketCapEok)}
-              news={domesticNews[i]}
-              supportsChart={false}
-              history={domesticHistory[i]}
-              logo={company.logo}
-              valuation={price ? { per: price.per, pbr: price.pbr, eps: price.eps, bps: price.bps } : undefined}
-            />
-          );
-        })}
-      </section>
-
+      <SpaceMarketTabs
+        globalContent={
+          <>
+            <h2 className="space-group-title">글로벌 우주항공 기업</h2>
+            <section className="space-stock-grid">
+              {NASDAQ_COMPANIES.map((company, i) => {
+                const { price, profile, valuation } = nasdaqResults[i];
+                return (
+                  <SpaceStockCard
+                    key={company.symbol}
+                    name={company.name}
+                    symbol={company.symbol}
+                    exchange={company.exchange}
+                    chartSymbol={`NASDAQ:${company.symbol}`}
+                    price={price?.last}
+                    change={price?.change}
+                    changePercent={price?.changePercent}
+                    meta={formatMarketCap(profile?.marketCapitalization)}
+                    news={nasdaqNews[i]}
+                    logo={profile?.logo || company.logo}
+                    valuation={valuation ?? undefined}
+                  />
+                );
+              })}
+            </section>
+            <OtherSpaceRow companies={OTHER_SPACE_COMPANIES} />
+          </>
+        }
+        domesticContent={
+          <>
+            <h2 className="space-group-title">국내 우주항공 기업</h2>
+            <section className="space-stock-grid">
+              {DOMESTIC_COMPANIES.map((company, i) => {
+                const price = domesticPrices[i];
+                return (
+                  <SpaceStockCard
+                    key={company.code}
+                    name={company.name}
+                    symbol={company.code}
+                    exchange={company.exchange}
+                    chartSymbol={`KRX:${company.code}`}
+                    price={price?.last}
+                    change={price?.change}
+                    changePercent={price?.changePercent}
+                    currency="KRW"
+                    meta={formatDomesticMeta(price?.marketCapEok)}
+                    news={domesticNews[i]}
+                    supportsChart={false}
+                    history={domesticHistory[i]}
+                    logo={company.logo}
+                    valuation={price ? { per: price.per, pbr: price.pbr, eps: price.eps, bps: price.bps } : undefined}
+                  />
+                );
+              })}
+            </section>
+          </>
+        }
+      />
       {anyKisMissing && (
         <p className="space-market-note">
           ※ KIS_APP_KEY / KIS_APP_SECRET이 설정되지 않아 실시간 가격을 불러오지 못했습니다.
