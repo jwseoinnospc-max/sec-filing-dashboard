@@ -10,7 +10,7 @@ const GROUPS = [
     links: [
       { href: "/rocketlab/dashboard", label: "Rocket Lab Dashboard" },
       { href: "/financial-statement", label: "Rocket Lab Financial Statement" },
-      { href: "/rocket-lab-presentation", label: "Rocket Lab Presentation" }
+      { href: "/rocketlab/presentation", label: "Rocket Lab Presentation" }
     ]
   },
   {
