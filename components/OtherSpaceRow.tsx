@@ -45,8 +45,12 @@ export default function OtherSpaceRow({ companies }: { companies: Company[] }) {
             <a key={company.symbol} href={company.url} target="_blank" rel="noopener noreferrer" className="top-mover-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0, textDecoration: "none", cursor: "pointer" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>
                 <img src={company.logo} alt="" className="top-mover-logo" />
-                <div style={{ minWidth: 0 }}>
-                  <div className="top-mover-name" style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{company.name}</div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                    <div className="top-mover-name" style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{company.name}</div>
+                    {p && p.changePercent >= 5 && <span className="surge-badge surge">급등</span>}
+                    {p && p.changePercent <= -5 && <span className="surge-badge plunge">급락</span>}
+                  </div>
                   <div className="top-mover-price" style={{ fontSize: 11 }}>{company.symbol} · {exLabel}</div>
                 </div>
               </div>

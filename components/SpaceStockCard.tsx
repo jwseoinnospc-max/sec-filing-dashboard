@@ -51,6 +51,8 @@ export function SpaceStockCard({
         <span className="space-stock-name">
           {logo && <img src={logo} alt="" className="space-stock-logo" />}
           {name}
+          {(changePercent ?? 0) >= 5 && <span className="surge-badge surge" style={{ marginLeft: 6 }}>급등</span>}
+          {(changePercent ?? 0) <= -5 && <span className="surge-badge plunge" style={{ marginLeft: 6 }}>급락</span>}
         </span>
         <span className="space-stock-tag">{tag}</span>
       </div>
