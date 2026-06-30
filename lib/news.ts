@@ -1,4 +1,4 @@
-export type NewsItem = {
+﻿export type NewsItem = {
   title: string;
   url: string;
   source: string;
@@ -36,7 +36,7 @@ async function translateToKorean(text: string): Promise<string | undefined> {
     const captured: string[] = [];
     let protected_text = text;
     for (const name of PROTECTED_NAMES) {
-      const regex = new RegExp(name.replace(/[.*+?^${}()|[\]\]/g, "\$&"), "gi");
+      const regex = new RegExp(name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), "gi");
       protected_text = protected_text.replace(regex, (match) => {
         const idx = captured.length;
         captured.push(match);
