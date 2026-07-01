@@ -274,21 +274,41 @@ async function loadLaunches() {
   renderCalendar();
 }
 
-async function fetchRSS(query, lang) {
-  var hl = lang || 'ko'; var ceid = lang ? 'US:en' : 'KR:ko';
-  var rssUrl = 'https://news.google.com/rss/search?q=' + encodeURIComponent(query) + '&hl=' + hl + '&gl=' + (lang ? 'US' : 'KR') + '&ceid=' + ceid;
-  var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl);
-  var res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  var text = await res.text();
-  var xml = new DOMParser().parseFromString(text, 'text/xml');
-  return Array.from(xml.querySelectorAll('item')).map(function(item) {
-    return {
-      title: (item.querySelector('title') || {}).textContent || '',
-      link:  (item.querySelector('link') || {}).textContent || item.querySelector('link') && item.querySelector('link').nextSibling && item.querySelector('link').nextSibling.nodeValue || '',
-      pubDate: (item.querySelector('pubDate') || {}).textContent || '',
-    };
-  });
+async function fetchRSS(query) {
+  var rssUrl = 'https://news.google.com/rss/search?q=' + encodeURIComponent(query) + '&hl=ko&gl=KR&ceid=KR:ko';
+  var proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(rssUrl),
+    'https://api.allorigins.win/get?url=' + encodeURIComponent(rssUrl),
+  ];
+  var lastErr = null;
+  for (var i = 0; i < proxies.length; i++) {
+    try {
+      var res = await fetch(proxies[i]);
+      if (!res.ok) { lastErr = new Error('HTTP ' + res.status); continue; }
+      var text;
+      var ct = res.headers.get('content-type') || '';
+      if (ct.indexOf('json') >= 0) { var j = await res.json(); text = j.contents; }
+      else { text = await res.text(); }
+      if (!text) { lastErr = new Error('empty response'); continue; }
+      var xml = new DOMParser().parseFromString(text, 'text/xml');
+      var items = Array.from(xml.querySelectorAll('item'));
+      if (!items.length) { lastErr = new Error('no items'); continue; }
+      return items.map(function(item) {
+        var linkEl = item.querySelector('link');
+        var link = '';
+        if (linkEl) {
+          link = linkEl.textContent.trim();
+          if (!link && linkEl.nextSibling) link = (linkEl.nextSibling.nodeValue || '').trim();
+        }
+        return {
+          title: (item.querySelector('title') || {}).textContent || '',
+          link: link,
+          pubDate: (item.querySelector('pubDate') || {}).textContent || '',
+        };
+      });
+    } catch(e) { lastErr = e; }
+  }
+  throw lastErr || new Error('all proxies failed');
 }
 
 async function loadNews() {
