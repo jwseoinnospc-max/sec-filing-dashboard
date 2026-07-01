@@ -74,8 +74,6 @@ a { color: inherit; text-decoration: none; }
 .heat-cell .name { font-size: 12px; color: var(--muted); }
 .heat-cell .score { font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--text); }
 
-.chart-box { position: relative; height: 220px; }
-.radar-wrap { display: flex; justify-content: center; min-height: 280px; align-items: center; }
 
 .news-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .news-tab { font-size: 11.5px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--line); color: var(--muted); cursor: pointer; user-select: none; }
@@ -98,19 +96,8 @@ a { color: inherit; text-decoration: none; }
 <div class="main-grid">
   <div>
     <div class="panel">
-      <h2>트렌드 레이더 <span class="src-pill">Google News RSS</span></h2>
-      <div class="panel-sub">최근 수집 기사 카테고리별 언급 비중 (0-100 정규화)</div>
-      <div class="radar-wrap" id="radarWrap"><div class="skeleton" style="width:220px;height:220px;border-radius:50%;"></div></div>
-    </div>
-    <div class="panel">
-      <h2>일별 뉴스 언급량</h2>
-      <div class="panel-sub">수집된 기사의 발행일 기준 집계</div>
-      <div class="chart-box"><canvas id="lineChart"></canvas></div>
-    </div>
-    <div class="panel">
       <h2>일별 이노스페이스 언급량 <span class="src-pill">Google News RSS</span></h2>
       <div class="panel-sub">이노스페이스(Innospace) 관련 기사 일별 언급 수</div>
-      <div class="chart-box"><canvas id="innoChart"></canvas></div>
     </div>
     <div class="panel">
       <h2>섹터 히트맵</h2>
@@ -289,27 +276,6 @@ async function loadNews() {
     return { title: it.title, link: it.link, pubDate: it.pubDate, source: src, cat: classify(it.title) };
   });
 }
-function renderRadar() {
-  var counts = CATEGORIES.map(function(c) { return allNews.filter(function(n) { return n.cat === c.tag; }).length; });
-  var mx = Math.max.apply(null, counts.concat([1]));
-  document.getElementById('radarWrap').innerHTML = '<canvas id="radarChart" width="300" height="280"></canvas>';
-  new Chart(document.getElementById('radarChart'), {
-    type: 'radar',
-    data: {
-      labels: CATEGORIES.map(function(c) { return c.tag; }),
-      datasets: [{
-        data: counts.map(function(x) { return Math.round(x / mx * 100); }),
-        borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.15)',
-        pointBackgroundColor: '#38bdf8', pointRadius: 3, borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: false,
-      scales: { r: { min: 0, max: 100, angleLines: { color: 'rgba(255,255,255,0.06)' }, grid: { color: 'rgba(255,255,255,0.06)' }, pointLabels: { color: '#94a3b8', font: { size: 10.5 } }, ticks: { display: false, backdropColor: 'transparent' } } },
-      plugins: { legend: { display: false } }
-    }
-  });
-}
 
 function renderHeat() {
   var grid = document.getElementById('heatGrid');
@@ -326,22 +292,6 @@ function renderHeat() {
   });
 }
 
-var lineInst = null;
-function renderLine() {
-  var byDay = {};
-  allNews.forEach(function(n) {
-    var d = new Date(n.pubDate);
-    if (isNaN(d)) return;
-    var k = (d.getMonth() + 1) + '/' + d.getDate();
-    byDay[k] = (byDay[k] || 0) + 1;
-  });
-  if (lineInst) lineInst.destroy();
-  lineInst = new Chart(document.getElementById('lineChart'), {
-    type: 'bar',
-    data: { labels: Object.keys(byDay), datasets: [{ data: Object.values(byDay), backgroundColor: 'rgba(56,189,248,0.6)', borderRadius: 4, maxBarThickness: 28 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8', font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
-  });
-}
 
 function renderKW() {
   var list = document.getElementById('kwList');
@@ -449,10 +399,9 @@ async function loadAll() {
     document.getElementById('launchCal').innerHTML = '<div class="empty-note">발사 일정을 불러오지 못했습니다 (' + lRes.reason.message + '). Launch Library 2는 시간당 15회 호출 제한이 있어 잠시 후 다시 시도해 주세요.</div>';
   }
   if (nRes.status === 'fulfilled') {
-    renderRadar(); renderHeat(); renderLine(); renderKW(); renderTabs(); renderFeed(); renderLatestNews();
+    renderHeat(); renderKW(); renderTabs(); renderFeed(); renderLatestNews();
   } else {
     document.getElementById('newsList').innerHTML = '<div class="empty-note">뉴스를 불러오지 못했습니다 (' + nRes.reason.message + ').</div>';
-    document.getElementById('radarWrap').innerHTML = '<div class="empty-note">뉴스 데이터 없음</div>';
   }
   if (iRes && iRes.status === 'fulfilled') renderInnoChart();
   var ok = lRes.status === 'fulfilled' && nRes.status === 'fulfilled';
