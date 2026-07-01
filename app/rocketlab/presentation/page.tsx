@@ -53,6 +53,12 @@ export default function RocketLabPresentationPage() {
           <h1>Rocket Lab Presentation</h1>
           <p>분기별 Investor Presentation 자료를 바로 볼 수 있습니다.</p>
         </div>
+        <div className="header-side">
+          <div className="header-side-top">
+            <p className="data-source">Data source: Rocket Lab Investor Relations</p>
+            <p className="made-by">Made by 이노스페이스 투자전략본부</p>
+          </div>
+        </div>
       </section>
 
       {years.map(({ year, quarters }) => (
