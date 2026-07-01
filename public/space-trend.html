@@ -50,11 +50,14 @@ p { color: var(--muted); line-height: 1.6; }
 .nav-menu { position: relative; display: inline-block; margin-bottom: 14px; }
 .nav-menu-toggle { background: var(--accent); color: #001018; border: 0; border-radius: 12px; padding: 12px 24px; font-weight: 700; font-size: 20px; cursor: pointer; }
 .nav-current-group { margin-left: 10px; font-size: 13px; color: var(--muted); font-weight: 700; }
-.nav-menu-panel { position: absolute; top: calc(100% + 6px); left: 0; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; min-width: 220px; box-shadow: 0 16px 40px rgba(0,0,0,0.45); display: none; }
+.nav-menu-panel { position: absolute; top: calc(100% + 6px); left: 0; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; min-width: 280px; box-shadow: 0 16px 40px rgba(0,0,0,0.45); display: none; }
 .nav-menu-panel.open { display: block; }
-.nav-item { display: block; padding: 8px 10px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
-.nav-item:hover { background: rgba(255,255,255,0.07); }
-.nav-item.active { color: var(--accent); font-weight: 700; background: rgba(56,189,248,0.12); }
+.nav-item, .nav-subitem { display: block; padding: 8px 10px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
+.nav-item:hover, .nav-subitem:hover { background: rgba(255,255,255,0.07); }
+.nav-item.active, .nav-subitem.active { color: var(--accent); font-weight: 700; background: rgba(56,189,248,0.12); }
+.nav-group-toggle { display: block; width: 100%; background: none; border: 0; color: var(--text); font-weight: 700; font-size: 13px; padding: 8px 10px; margin-top: 4px; cursor: pointer; text-align: left; border-radius: 6px; }
+.nav-group-toggle:hover { background: rgba(255,255,255,0.07); }
+.nav-subgroup { display: flex; flex-direction: column; gap: 2px; padding-left: 16px; }
 
 /* Header-side (right) */
 .header-side { position: relative; display: flex; flex-direction: column; justify-content: flex-start; min-width: 0; flex: 1; }
@@ -171,11 +174,25 @@ p { color: var(--muted); line-height: 1.6; }
         <div class="nav-menu-panel" id="navPanel">
           <a class="nav-item active" href="/space-trend">Space Trend</a>
           <a class="nav-item" href="/space-market">Space Market</a>
-          <a class="nav-item" href="/rocketlab/dashboard">Rocket Lab Dashboard</a>
-          <a class="nav-item" href="/rocketlab/financial-statement">Financial Statement</a>
-          <a class="nav-item" href="/rocketlab/presentation">Presentation</a>
+          <div>
+            <button type="button" class="nav-group-toggle" onclick="toggleGroup('rocketlab')">
+              <span id="rocketlab-arrow">&#9662;</span> Rocket Lab
+            </button>
+            <div class="nav-subgroup" id="rocketlab-sub">
+              <a class="nav-subitem" href="/rocketlab/dashboard">Rocket Lab Dashboard</a>
+              <a class="nav-subitem" href="/rocketlab/financial-statement">Rocket Lab Financial Statement</a>
+              <a class="nav-subitem" href="/rocketlab/presentation">Rocket Lab Presentation</a>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="nav-group-toggle" onclick="toggleGroup('firefly')">
+              <span id="firefly-arrow">&#9662;</span> Firefly Aerospace
+            </button>
+            <div class="nav-subgroup" id="firefly-sub">
+              <a class="nav-subitem" href="/firefly/financial-statement">Firefly Aerospace Financial Statement</a>
+            </div>
+          </div>
         </div>
-      </div>
       <h1>Global <span class="h1-accent">Space Trend</span> <span style="font-size:22px;font-weight:500;color:var(--muted);letter-spacing:0;">(제작 중)</span></h1>
       <p>Google News &middot; Launch Library 2 (TheSpaceDevs) 기반 실시간 글로벌 우주산업 트렌드</p>
       <p class="last-updated status-line" id="statusLine">데이터를 불러오는 중입니다&#8230;</p>
@@ -247,6 +264,13 @@ p { color: var(--muted); line-height: 1.6; }
 /* ── Nav toggle ── */
 function toggleNav() {
   document.getElementById('navPanel').classList.toggle('open');
+}
+function toggleGroup(id) {
+  var sub = document.getElementById(id + "-sub");
+  var arrow = document.getElementById(id + "-arrow");
+  var isOpen = sub.style.display !== "none";
+  sub.style.display = isOpen ? "none" : "";
+  arrow.innerHTML = isOpen ? "&#9658;" : "&#9662;";
 }
 document.addEventListener('click', function(e) {
   if (!document.getElementById('navMenuWrap').contains(e.target)) {
