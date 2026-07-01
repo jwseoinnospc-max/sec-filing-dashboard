@@ -20,6 +20,7 @@ const GROUPS = [
 ];
 
 function currentGroupLabel(pathname: string) {
+  if (pathname === "/space-trend") return "Space Trend";
   if (pathname === "/space-market") return "Space Market";
   const group = GROUPS.find((g) => g.links.some((link) => link.href === pathname));
   return group?.label ?? null;
@@ -45,6 +46,14 @@ export default function NavMenu() {
 
       {open && (
         <div className="nav-menu-panel">
+          <Link
+            href="/space-trend"
+            className={`nav-item ${pathname === "/space-trend" ? "active" : ""}`}
+            onClick={() => setOpen(false)}
+          >
+            Space Trend
+          </Link>
+
           <Link
             href="/space-market"
             className={`nav-item ${pathname === "/space-market" ? "active" : ""}`}

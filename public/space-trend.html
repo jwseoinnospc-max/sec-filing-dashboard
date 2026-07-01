@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Space Trend · ISD Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg: #0a0e16;
+    --bg-panel: #10151f;
+    --line: #212a3a;
+    --text: #e8ecf3;
+    --text-dim: #8993a8;
+    --text-faint: #5b6478;
+    --up: #24d38e;
+    --down: #ff5470;
+    --accent: #5b8cff;
+    --accent-2: #ffb35b;
+    --radar-glow: rgba(91,140,255,0.25);
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  a{color:inherit;text-decoration:none;}
+  ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+
+  .topbar{ display:flex; align-items:center; gap:14px; padding:14px 28px; border-bottom:1px solid var(--line); background:var(--bg-panel); position:sticky; top:0; z-index:20; }
+  .topbar .menu{color:var(--text-dim); font-size:13px;}
+  .crumb{color:var(--text-faint); font-size:13px;}
+  .crumb b{color:var(--text);}
+  .refresh-btn{
+    margin-left:auto; font-size:12px; color:var(--accent); background:rgba(91,140,255,0.1);
+    border:1px solid rgba(91,140,255,0.35); padding:6px 12px; border-radius:8px; cursor:pointer;
+  }
+  .refresh-btn:disabled{opacity:.5; cursor:default;}
+  .status-line{ font-size:11px; color:var(--text-faint); padding:6px 28px; background:var(--bg-panel); border-bottom:1px solid var(--line);}
+  .status-line b{color:var(--text-dim);}
+  .status-line.error{color:var(--down);}
+
+  .hero{ padding:36px 28px 20px; border-bottom:1px solid var(--line); position:relative; overflow:hidden; }
+  .hero::before{ content:""; position:absolute; right:-120px; top:-160px; width:420px; height:420px; border-radius:50%; background:radial-gradient(circle, var(--radar-glow), transparent 70%); pointer-events:none; }
+  .hero h1{ margin:0 0 6px; font-size:26px; font-weight:700; letter-spacing:-0.01em;}
+  .hero p.sub{ margin:0; color:var(--text-dim); font-size:13.5px; }
+  .hero .meta{ margin-top:14px; display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--text-faint);}
+  .hero .meta span b{color:var(--text-dim); font-weight:500;}
+
+  .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:20px 28px; border-bottom:1px solid var(--line); }
+  .stat-card{ background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; min-height:78px; }
+  .stat-card .label{font-size:12px;color:var(--text-faint); margin-bottom:8px;}
+  .stat-card .value{font-size:22px; font-weight:700; font-family:var(--mono); letter-spacing:-0.02em;}
+  .stat-card .delta{font-size:12.5px; margin-top:6px; font-family:var(--mono); color:var(--text-faint);}
+  .up{color:var(--up);} .down{color:var(--down);}
+
+  .grid{ display:grid; grid-template-columns: 1.15fr 1fr; gap:16px; padding:20px 28px; }
+  @media (max-width: 980px){ .grid{grid-template-columns:1fr;} .stat-row{grid-template-columns:repeat(2,1fr);} }
+
+  .panel{ background:var(--bg-panel); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
+  .panel h2{ margin:0 0 3px; font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .panel .panel-sub{ font-size:12px; color:var(--text-faint); margin-bottom:16px;}
+  .src-pill{ font-size:10px; color:var(--text-faint); border:1px solid var(--line); padding:1px 7px; border-radius:10px; font-weight:400; }
+
+  .skeleton{ height:14px; border-radius:5px; background:linear-gradient(90deg,#141a26 25%,#1b2331 37%,#141a26 63%); background-size:400% 100%; animation:sk 1.4s ease infinite; }
+  @keyframes sk{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+  .radar-wrap{ display:flex; justify-content:center; min-height:280px; align-items:center;}
+  .radar-legend{ display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:14px; justify-content:center; font-size:11.5px; color:var(--text-dim); }
+  .radar-legend span{display:flex; align-items:center; gap:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  .kw-list{list-style:none; margin:0; padding:0;}
+  .kw-item{ display:grid; grid-template-columns: 22px 1fr auto 60px; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .kw-item:last-child{border-bottom:none;}
+  .kw-rank{color:var(--text-faint); font-family:var(--mono); font-size:12px;}
+  .kw-name{font-size:13.5px; font-weight:600;}
+  .kw-name small{display:block; font-weight:400; color:var(--text-faint); font-size:11px; margin-top:2px;}
+  .kw-change{font-family:var(--mono); font-size:12.5px; text-align:right;}
+  .kw-spark{width:60px; height:24px;}
+
+  .heat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .heat-cell{ border-radius:8px; padding:12px 10px; border:1px solid var(--line); display:flex; flex-direction:column; gap:6px; }
+  .heat-cell .name{font-size:12px; color:var(--text-dim);}
+  .heat-cell .score{font-family:var(--mono); font-size:17px; font-weight:700;}
+
+  .chart-box{ position:relative; height:220px; }
+
+  .launch-item{ display:grid; grid-template-columns:52px 1fr auto; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); align-items:center;}
+  .launch-item:last-child{border-bottom:none;}
+  .launch-date{ font-family:var(--mono); font-size:11px; color:var(--text-dim); text-align:center; line-height:1.3; background:rgba(91,140,255,0.08); border:1px solid rgba(91,140,255,0.2); border-radius:6px; padding:5px 2px;}
+  .launch-date b{display:block; font-size:14px; color:var(--text);}
+  .launch-name{font-size:13px; font-weight:600;}
+  .launch-provider{font-size:11px; color:var(--text-faint); margin-top:2px;}
+  .launch-status{font-size:10.5px; padding:3px 8px; border-radius:20px; white-space:nowrap; height:fit-content;}
+  .st-go{color:var(--up); border:1px solid rgba(36,211,142,0.35); background:rgba(36,211,142,0.08);}
+  .st-tbd{color:var(--accent-2); border:1px solid rgba(255,179,91,0.35); background:rgba(255,179,91,0.08);}
+  .st-success{color:var(--text-dim); border:1px solid var(--line); background:transparent;}
+
+  .news-tabs{ display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
+  .news-tab{ font-size:11.5px; padding:5px 11px; border-radius:20px; border:1px solid var(--line); color:var(--text-dim); cursor:pointer; user-select:none;}
+  .news-tab.active{ background:rgba(91,140,255,0.12); border-color:rgba(91,140,255,0.4); color:var(--accent);}
+  .news-item{ display:grid; grid-template-columns:auto 1fr; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .news-item:last-child{border-bottom:none;}
+  .news-tag{ font-size:10.5px; color:var(--accent); border:1px solid rgba(91,140,255,0.35); padding:2px 7px; border-radius:5px; height:fit-content; white-space:nowrap; background:rgba(91,140,255,0.06);}
+  .news-title{font-size:13px; line-height:1.5; color:var(--text);}
+  .news-title:hover{color:var(--accent);}
+  .news-src{font-size:11px; color:var(--text-faint); margin-top:3px;}
+  .empty-note{ font-size:12px; color:var(--text-faint); padding:12px 0;}
+
+  .footer{ padding:22px 28px 40px; color:var(--text-faint); font-size:11.5px; text-align:center; border-top:1px solid var(--line);}
+  .footer .disclaimer{ max-width:680px; margin:10px auto 0; line-height:1.6; color:var(--text-faint);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="menu">☰ 메뉴</span>
+  <span class="crumb">ISD Dashboard / <b>Global Space Trend</b></span>
+  <button class="refresh-btn" id="refreshBtn">↻ 새로고침</button>
+</div>
+<div class="status-line" id="statusLine">데이터를 불러오는 중입니다…</div>
+
+<div class="hero">
+  <h1>Global Space Trend</h1>
+  <p class="sub">Google News · Launch Library 2(TheSpaceDevs) 기반 실시간 글로벌 우주산업 트렌드</p>
+  <div class="meta">
+    <span>Data source: <b>Google News RSS</b> · <b>TheSpaceDevs Launch Library 2</b></span>
+    <span>Made by <b>이노스페이스 투자전략본부</b></span>
+  </div>
+</div>
+
+<div class="stat-row" id="statRow">
+  <div class="stat-card"><div class="label">향후 7일 예정 발사</div><div class="value skeleton" style="width:50%"></div></div>
+  <div class="stat-card"><div class="label">최근 7일 완료 발사</div><div class="value skeleton" style="width:50%"></div></div>
+  <div class="stat-card"><div class="label">수집된 뉴스 기사</div><div class="value skeleton" style="width:50%"></div></div>
+  <div class="stat-card"><div class="label">최다 언급 키워드</div><div class="value skeleton" style="width:50%"></div></div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="panel">
+      <h2>트렌드 레이더 <span class="src-pill">Google News RSS 기반</span></h2>
+      <div class="panel-sub">최근 수집 기사 제목의 카테고리별 언급 비중 (0–100 정규화)</div>
+      <div class="radar-wrap" id="radarWrap"><div class="skeleton" style="width:200px;height:200px;border-radius:50%;"></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>일별 뉴스 언급량</h2>
+      <div class="panel-sub">수집된 기사의 발행일 기준 집계</div>
+      <div class="chart-box"><canvas id="lineChart"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <h2>섹터 히트맵</h2>
+      <div class="panel-sub">카테고리별 기사 수 (수집된 뉴스 기준)</div>
+      <div class="heat-grid" id="heatGrid"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>예정된 발사 <span class="src-pill">Launch Library 2</span></h2>
+      <div class="panel-sub">TheSpaceDevs 실시간 발사 일정</div>
+      <div id="launchList"><div class="skeleton" style="width:100%;height:60px;margin-bottom:8px;"></div><div class="skeleton" style="width:100%;height:60px;"></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>급상승 키워드</h2>
+      <div class="panel-sub">감시 키워드별 기사 언급 수 (수집 구간 기준)</div>
+      <ul class="kw-list" id="kwList"></ul>
+    </div>
+
+    <div class="panel">
+      <h2>트렌드 뉴스 피드 <span class="src-pill">Google News</span></h2>
+      <div class="news-tabs" id="newsTabs"></div>
+      <div id="newsList"><div class="skeleton" style="width:100%;height:50px;margin-bottom:10px;"></div><div class="skeleton" style="width:100%;height:50px;"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="disclaimer">
+    이 페이지는 <b>Google News RSS</b>와 <b>TheSpaceDevs Launch Library 2 API</b>를 실시간으로 호출합니다.
+    RSS는 CORS 문제로 브라우저에서 직접 호출이 불가능해 <b>rss2json.com</b> 무료 프록시를 경유합니다 (호출 제한이 있어 트래픽이 많으면 자체 백엔드 프록시로 교체를 권장합니다).
+    Launch Library 2는 비회원 기준 시간당 15회 호출 제한이 있습니다. 표시된 뉴스/발사 정보는 원본 소스의 저작물이며, 본 페이지는 요약·집계만 제공합니다.
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   설정
+   ========================================================= */
+const CONFIG = {
+  LL2_BASE: 'https://ll.thespacedevs.com/2.3.0',
+  RSS2JSON: 'https://api.rss2json.com/v1/api.json',
+  RSS2JSON_API_KEY: '', // rss2json.com에서 발급받은 키가 있다면 입력 (무료 티어는 비워도 동작, 단 호출 제한 있음)
+  NEWS_QUERY: '우주산업 OR 우주항공 OR SpaceX OR 로켓발사 OR 인공위성',
+  NEWS_HL: 'ko', NEWS_GL: 'KR', NEWS_CEID: 'KR:ko',
+  NEWS_COUNT: 60,
+};
+
+const KEYWORDS = [
+  { name: 'Starship',    re: /starship|스타십/i },
+  { name: 'Starlink',    re: /starlink|스타링크/i },
+  { name: 'Artemis',     re: /artemis|아르테미스/i },
+  { name: 'ISS/우주정거장', re: /\bISS\b|우주정거장|space station/i },
+  { name: 'Rocket Lab',  re: /rocket ?lab|로켓랩/i },
+  { name: 'Blue Origin', re: /blue origin|블루오리진/i },
+  { name: '우주방위',     re: /우주방위|space force|military space/i },
+  { name: '우주쓰레기',   re: /우주쓰레기|space debris/i },
+];
+
+const CATEGORIES = [
+  { tag: '발사체',        re: /발사체|발사|launch|로켓|rocket|스타십|starship/i, color: '#5b8cff' },
+  { tag: '위성/통신',      re: /위성|satellite|스타링크|starlink|통신/i, color: '#ffb35b' },
+  { tag: '유인우주/탐사',  re: /유인|우주비행사|달탐사|아르테미스|artemis|astronaut|lunar|화성|mars/i, color: '#24d38e' },
+  { tag: '우주정거장',    re: /우주정거장|\bISS\b|space station/i, color: '#ff5470' },
+  { tag: '투자/정책',     re: /투자|정책|계약|contract|deal|funding|ipo|규제|규정/i, color: '#b98bff' },
+];
+
+let allNewsItems = [];
+let activeTab = '전체';
+
+/* =========================================================
+   유틸
+   ========================================================= */
+async function fetchJSON(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function classify(title){
+  for(const c of CATEGORIES){ if(c.re.test(title)) return c.tag; }
+  return '기타';
+}
+
+function daysUntil(dateStr){
+  const d = new Date(dateStr), now = new Date();
+  return (d - now) / (1000*60*60*24);
+}
+
+function fmtDate(dateStr){
+  const d = new Date(dateStr);
+  return { md: `${d.getMonth()+1}/${d.getDate()}`, dow: ['일','월','화','수','목','금','토'][d.getDay()] };
+}
+
+function setStatus(msg, isError){
+  const el = document.getElementById('statusLine');
+  el.textContent = msg;
+  el.className = 'status-line' + (isError ? ' error' : '');
+}
+
+/* =========================================================
+   1. Launch Library 2 : 발사 일정
+   ========================================================= */
+async function loadLaunches(){
+  const listEl = document.getElementById('launchList');
+  try{
+    const upcoming = await fetchJSON(`${CONFIG.LL2_BASE}/launches/upcoming/?limit=8&mode=list&ordering=net`);
+    const previous = await fetchJSON(`${CONFIG.LL2_BASE}/launches/previous/?limit=20&mode=list&ordering=-net`);
+
+    const upcoming7 = upcoming.results.filter(l => daysUntil(l.net) <= 7);
+    const previous7 = previous.results.filter(l => daysUntil(l.net) >= -7);
+
+    document.getElementById('statRow').children[0].querySelector('.value').outerHTML =
+      `<div class="value">${upcoming7.length}건</div>`;
+    document.getElementById('statRow').children[1].querySelector('.value').outerHTML =
+      `<div class="value">${previous7.length}건</div>`;
+
+    listEl.innerHTML = '';
+    upcoming.results.slice(0,8).forEach(l=>{
+      const {md, dow} = fmtDate(l.net);
+      const statusName = l.status?.abbrev || l.status?.name || '';
+      let stClass = 'st-tbd';
+      if(/go/i.test(statusName)) stClass = 'st-go';
+      if(/success/i.test(statusName)) stClass = 'st-success';
+      const provider = l.launch_service_provider?.name || l?.agencies?.[0]?.name || '';
+      const div = document.createElement('div');
+      div.className = 'launch-item';
+      div.innerHTML = `
+        <div class="launch-date">${md}<b>${dow}</b></div>
+        <div>
+          <div class="launch-name">${l.name}</div>
+          <div class="launch-provider">${provider}</div>
+        </div>
+        <span class="launch-status ${stClass}">${statusName}</span>
+      `;
+      listEl.appendChild(div);
+    });
+    if(upcoming.results.length === 0){
+      listEl.innerHTML = '<div class="empty-note">예정된 발사 데이터가 없습니다.</div>';
+    }
+    return true;
+  }catch(e){
+    listEl.innerHTML = `<div class="empty-note">발사 일정을 불러오지 못했습니다 (${e.message}). Launch Library 2는 시간당 15회 호출 제한이 있어 잠시 후 다시 시도해 주세요.</div>`;
+    document.getElementById('statRow').children[0].querySelector('.value').outerHTML = `<div class="value" style="font-size:15px;color:var(--text-faint)">N/A</div>`;
+    document.getElementById('statRow').children[1].querySelector('.value').outerHTML = `<div class="value" style="font-size:15px;color:var(--text-faint)">N/A</div>`;
+    return false;
+  }
+}
+
+/* =========================================================
+   2. Google News RSS (rss2json 프록시 경유) : 뉴스 수집
+   ========================================================= */
+async function loadNews(){
+  const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(CONFIG.NEWS_QUERY)}&hl=${CONFIG.NEWS_HL}&gl=${CONFIG.NEWS_GL}&ceid=${CONFIG.NEWS_CEID}`;
+  const params = new URLSearchParams({ rss_url: rssUrl, count: String(CONFIG.NEWS_COUNT) });
+  if(CONFIG.RSS2JSON_API_KEY) params.set('api_key', CONFIG.RSS2JSON_API_KEY);
+  const url = `${CONFIG.RSS2JSON}?${params.toString()}`;
+
+  const data = await fetchJSON(url);
+  if(data.status !== 'ok') throw new Error(data.message || 'rss2json 오류');
+
+  allNewsItems = data.items.map(it=>{
+    let src = 'Google News';
+    try{ src = new URL(it.link).hostname.replace('www.',''); }catch(_e){}
+    return {
+      title: it.title,
+      link: it.link,
+      pubDate: it.pubDate,
+      source: src,
+      category: classify(it.title),
+    };
+  });
+  return allNewsItems;
+}
+
+/* =========================================================
+   3. 렌더링: 통계 / 레이더 / 히트맵 / 라인차트 / 키워드 / 뉴스피드
+   ========================================================= */
+function renderNewsStats(){
+  const cards = document.getElementById('statRow').children;
+  cards[2].querySelector('.value').outerHTML = `<div class="value">${allNewsItems.length}건</div>`;
+
+  const counts = {};
+  KEYWORDS.forEach(k=> counts[k.name] = allNewsItems.filter(n=> k.re.test(n.title)).length);
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  cards[3].querySelector('.value').outerHTML = top && top[1] > 0
+    ? `<div class="value" style="font-size:18px;">${top[0]}</div>`
+    : `<div class="value" style="font-size:15px;color:var(--text-faint)">데이터 부족</div>`;
+}
+
+function renderRadar(){
+  const counts = CATEGORIES.map(c => allNewsItems.filter(n => n.category === c.tag).length);
+  const max = Math.max(...counts, 1);
+  const scores = counts.map(c => Math.round((c / max) * 100));
+
+  document.getElementById('radarWrap').innerHTML = '<canvas id="radarChart" width="320" height="300"></canvas>';
+  new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: CATEGORIES.map(c=>c.tag),
+      datasets: [{
+        label: '언급 비중',
+        data: scores,
+        borderColor: '#5b8cff', backgroundColor: 'rgba(91,140,255,0.18)',
+        pointBackgroundColor: '#5b8cff', pointRadius: 3, borderWidth: 2
+      }]
+    },
+    options: {
+      responsive:false,
+      scales: { r: { min:0, max:100,
+        angleLines:{ color:'rgba(255,255,255,0.08)' }, grid:{ color:'rgba(255,255,255,0.08)' },
+        pointLabels:{ color:'#8993a8', font:{size:10.5} }, ticks:{ display:false, backdropColor:'transparent' } } },
+      plugins:{ legend:{ display:false } }
+    }
+  });
+}
+
+function renderHeatmap(){
+  const grid = document.getElementById('heatGrid');
+  grid.innerHTML = '';
+  const counts = CATEGORIES.map(c => ({ ...c, count: allNewsItems.filter(n => n.category === c.tag).length }));
+  const other = allNewsItems.filter(n => n.category === '기타').length;
+  const max = Math.max(...counts.map(c=>c.count), other, 1);
+  [...counts, {tag:'기타', count: other, color:'#8993a8'}].forEach(c=>{
+    const t = c.count / max;
+    const cell = document.createElement('div');
+    cell.className = 'heat-cell';
+    cell.style.background = `rgba(91,140,255,${0.05 + t*0.25})`;
+    cell.innerHTML = `<span class="name">${c.tag}</span><span class="score">${c.count}</span>`;
+    grid.appendChild(cell);
+  });
+}
+
+let lineChartInstance = null;
+function renderLineChart(){
+  const byDay = {};
+  allNewsItems.forEach(n=>{
+    const d = new Date(n.pubDate);
+    if(isNaN(d)) return;
+    const key = `${d.getMonth()+1}/${d.getDate()}`;
+    byDay[key] = (byDay[key]||0) + 1;
+  });
+  const labels = Object.keys(byDay);
+  const values = Object.values(byDay);
+
+  if(lineChartInstance) lineChartInstance.destroy();
+  lineChartInstance = new Chart(document.getElementById('lineChart'), {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'기사 수', data: values, backgroundColor:'#5b8cff', borderRadius:4, maxBarThickness:28 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ ticks:{ color:'#8993a8', font:{size:10} }, grid:{ display:false } },
+        y:{ ticks:{ color:'#8993a8', font:{size:10}, precision:0 }, grid:{ color:'rgba(255,255,255,0.06)' } }
+      }
+    }
+  });
+  if(labels.length === 0){
+    document.querySelector('.chart-box').insertAdjacentHTML('beforeend', '<div class="empty-note" style="position:absolute;top:0;">발행일 데이터를 파싱할 수 없습니다.</div>');
+  }
+}
+
+function renderKeywordRanking(){
+  const kwList = document.getElementById('kwList');
+  kwList.innerHTML = '';
+  const ranked = KEYWORDS.map(k=>{
+    const matches = allNewsItems.filter(n => k.re.test(n.title));
+    const byDay = {};
+    matches.forEach(m=>{
+      const d = new Date(m.pubDate);
+      if(isNaN(d)) return;
+      const key = `${d.getMonth()+1}/${d.getDate()}`;
+      byDay[key] = (byDay[key]||0)+1;
+    });
+    return { name:k.name, count: matches.length, spark: Object.values(byDay) };
+  }).sort((a,b)=> b.count - a.count).filter(k=>k.count>0);
+
+  if(ranked.length === 0){
+    kwList.innerHTML = '<div class="empty-note">감시 키워드에 해당하는 기사가 수집되지 않았습니다.</div>';
+    return;
+  }
+
+  ranked.forEach((k,i)=>{
+    const li = document.createElement('li');
+    li.className = 'kw-item';
+    li.innerHTML = `
+      <span class="kw-rank">${i+1}</span>
+      <span class="kw-name">${k.name}<small>기사 ${k.count}건</small></span>
+      <span class="kw-change up">${k.count}건</span>
+      <canvas class="kw-spark" id="spark${i}"></canvas>
+    `;
+    kwList.appendChild(li);
+    requestAnimationFrame(()=>{
+      const data = k.spark.length ? k.spark : [k.count];
+      new Chart(document.getElementById(`spark${i}`), {
+        type:'line',
+        data:{ labels: data.map((_,x)=>x), datasets:[{ data, borderColor:'#24d38e', borderWidth:1.5, pointRadius:0, tension:.4 }] },
+        options:{ responsive:false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}, elements:{line:{fill:false}} }
+      });
+    });
+  });
+}
+
+function renderNewsTabs(){
+  const tabs = ['전체', ...CATEGORIES.map(c=>c.tag), '기타'];
+  const el = document.getElementById('newsTabs');
+  el.innerHTML = '';
+  tabs.forEach(t=>{
+    const span = document.createElement('span');
+    span.className = 'news-tab' + (t === activeTab ? ' active' : '');
+    span.textContent = t;
+    span.onclick = ()=>{ activeTab = t; renderNewsTabs(); renderNewsFeed(); };
+    el.appendChild(span);
+  });
+}
+
+function renderNewsFeed(){
+  const list = document.getElementById('newsList');
+  const items = activeTab === '전체' ? allNewsItems : allNewsItems.filter(n=>n.category===activeTab);
+  list.innerHTML = '';
+  if(items.length === 0){
+    list.innerHTML = '<div class="empty-note">해당 카테고리의 기사가 없습니다.</div>';
+    return;
+  }
+  items.slice(0,20).forEach(n=>{
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    const d = new Date(n.pubDate);
+    const dateLabel = isNaN(d) ? '' : `${d.getMonth()+1}월 ${d.getDate()}일`;
+    div.innerHTML = `
+      <span class="news-tag">${n.category}</span>
+      <div>
+        <a class="news-title" href="${n.link}" target="_blank" rel="noopener">${n.title}</a>
+        <div class="news-src">${dateLabel} · ${n.source}</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* =========================================================
+   메인 로드 시퀀스
+   ========================================================= */
+async function loadAll(){
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  setStatus('데이터를 불러오는 중입니다…');
+
+  const results = await Promise.allSettled([ loadLaunches(), loadNews() ]);
+  const launchOk = results[0].status === 'fulfilled' && results[0].value;
+  const newsOk = results[1].status === 'fulfilled';
+
+  if(newsOk){
+    renderNewsStats();
+    renderRadar();
+    renderHeatmap();
+    renderLineChart();
+    renderKeywordRanking();
+    renderNewsTabs();
+    renderNewsFeed();
+  }else{
+    const err = results[1].reason?.message || '알 수 없는 오류';
+    document.getElementById('newsList').innerHTML = `<div class="empty-note">뉴스를 불러오지 못했습니다 (${err}). rss2json 무료 프록시의 호출 제한일 수 있습니다.</div>`;
+    document.getElementById('radarWrap').innerHTML = '<div class="empty-note">뉴스 데이터가 없어 레이더를 표시할 수 없습니다.</div>';
+    ['statRow'].forEach(id=>{
+      const cards = document.getElementById(id).children;
+      cards[2].querySelector('.value').outerHTML = `<div class="value" style="font-size:15px;color:var(--text-faint)">N/A</div>`;
+      cards[3].querySelector('.value').outerHTML = `<div class="value" style="font-size:15px;color:var(--text-faint)">N/A</div>`;
+    });
+  }
+
+  if(launchOk && newsOk) setStatus(`마지막 업데이트: ${new Date().toLocaleString('ko-KR')}`);
+  else setStatus('일부 데이터를 불러오지 못했습니다. 위 항목별 안내를 확인해 주세요.', true);
+
+  btn.disabled = false;
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadAll);
+loadAll();
+</script>
+
+</body>
+</html>
