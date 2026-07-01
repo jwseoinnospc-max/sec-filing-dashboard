@@ -1,6 +1,14 @@
+"use client";
+import { useEffect } from "react";
 import NavMenu from "@/components/NavMenu";
 
 export default function SpaceTrendPage() {
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = "linear-gradient(135deg,rgba(2,6,23,0.6),rgba(15,23,42,0.6)),url('/bg-drone.jpg') center/cover no-repeat fixed";
+    return () => { document.body.style.background = prev; };
+  }, []);
+
   return (
     <div className="page" style={{ display: "flex", flexDirection: "column" }}>
       <section className="header">
