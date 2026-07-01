@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     const title = (/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/.exec(block) ||
       /<title>([\s\S]*?)<\/title>/.exec(block) || [])[1] || "";
     const link = (/<link>([\s\S]*?)<\/link>/.exec(block) ||
-      /<link\s*\/>([^\s<][^\n<]*)/s.exec(block) || [])[1] || "";
+      /<link\s*\/>([^\s<][^\n<]*)/.exec(block) || [])[1] || "";
     const pubDate = (/<pubDate>([\s\S]*?)<\/pubDate>/.exec(block) || [])[1] || "";
     if (title) items.push({ title: title.trim(), link: link.trim(), pubDate: pubDate.trim() });
   }
