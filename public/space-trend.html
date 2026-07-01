@@ -108,6 +108,11 @@ a { color: inherit; text-decoration: none; }
       <div class="chart-box"><canvas id="lineChart"></canvas></div>
     </div>
     <div class="panel">
+      <h2>일별 이노스페이스 언급량 <span class="src-pill">Google News RSS</span></h2>
+      <div class="panel-sub">이노스페이스(Innospace) 관련 기사 일별 언급 수</div>
+      <div class="chart-box"><canvas id="innoChart"></canvas></div>
+    </div>
+    <div class="panel">
       <h2>섹터 히트맵</h2>
       <div class="panel-sub">카테고리별 기사 수</div>
       <div class="heat-grid" id="heatGrid"></div>
@@ -118,6 +123,10 @@ a { color: inherit; text-decoration: none; }
       <h2>발사 캘린더 <span class="src-pill">Launch Library 2</span></h2>
       <div class="panel-sub">TheSpaceDevs 실시간 발사 일정 · 항목 위에 마우스를 올리면 상세 정보가 표시됩니다</div>
       <div id="launchCal"><div class="skeleton" style="width:100%;height:260px;border-radius:8px;"></div></div>
+    </div>
+    <div class="panel">
+      <h2>최신 뉴스 <span class="src-pill">Google News</span></h2>
+      <div id="latestNewsList"><div class="skeleton" style="width:100%;height:50px;"></div></div>
     </div>
     <div class="panel">
       <h2>급상승 키워드</h2>
@@ -381,19 +390,70 @@ function renderFeed() {
   });
 }
 
+
+var innoNews = [];
+var innoChartInst = null;
+
+async function loadInnospace() {
+  var q = '이노스페이스 OR Innospace OR INNOSPACE';
+  var rss = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=ko&gl=KR&ceid=KR:ko';
+  var data = await fetchJSON(RSS2JSON + '?rss_url=' + encodeURIComponent(rss) + '&count=60');
+  if (data.status !== 'ok') throw new Error(data.message || 'rss2json error');
+  innoNews = data.items.map(function(it) {
+    var src = 'Google News';
+    try { src = new URL(it.link).hostname.replace('www.', ''); } catch (e) {}
+    return { title: it.title, link: it.link, pubDate: it.pubDate, source: src };
+  });
+}
+
+function renderInnoChart() {
+  var byDay = {};
+  innoNews.forEach(function(n) {
+    var d = new Date(n.pubDate);
+    if (isNaN(d)) return;
+    var k = (d.getMonth() + 1) + '/' + d.getDate();
+    byDay[k] = (byDay[k] || 0) + 1;
+  });
+  if (innoChartInst) innoChartInst.destroy();
+  if (!Object.keys(byDay).length) {
+    document.getElementById('innoChart').parentNode.innerHTML = '<div class="empty-note">이노스페이스 관련 기사가 없습니다.</div>';
+    return;
+  }
+  innoChartInst = new Chart(document.getElementById('innoChart'), {
+    type: 'bar',
+    data: { labels: Object.keys(byDay), datasets: [{ data: Object.values(byDay), backgroundColor: 'rgba(56,189,248,0.6)', borderRadius: 4, maxBarThickness: 28 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#94a3b8', font: { size: 10 }, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+  });
+}
+
+function renderLatestNews() {
+  var list = document.getElementById('latestNewsList');
+  var items = allNews.slice(0, 8);
+  list.innerHTML = '';
+  if (!items.length) { list.innerHTML = '<div class="empty-note">뉴스 데이터 없음</div>'; return; }
+  items.forEach(function(n) {
+    var d = new Date(n.pubDate);
+    var dl = isNaN(d) ? '' : (d.getMonth() + 1) + '월 ' + d.getDate() + '일';
+    var div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = '<span class="news-tag">' + n.cat + '</span><div><a class="news-title" href="' + n.link + '" target="_blank" rel="noopener">' + n.title + '</a><div class="news-src">' + dl + ' · ' + n.source + '</div></div>';
+    list.appendChild(div);
+  });
+}
 async function loadAll() {
   setStatus('데이터를 불러오는 중입니다...');
-  var results = await Promise.allSettled([loadLaunches(), loadNews()]);
-  var lRes = results[0], nRes = results[1];
+  var results = await Promise.allSettled([loadLaunches(), loadNews(), loadInnospace()]);
+  var lRes = results[0], nRes = results[1], iRes = results[2];
   if (lRes.status === 'rejected') {
     document.getElementById('launchCal').innerHTML = '<div class="empty-note">발사 일정을 불러오지 못했습니다 (' + lRes.reason.message + '). Launch Library 2는 시간당 15회 호출 제한이 있어 잠시 후 다시 시도해 주세요.</div>';
   }
   if (nRes.status === 'fulfilled') {
-    renderRadar(); renderHeat(); renderLine(); renderKW(); renderTabs(); renderFeed();
+    renderRadar(); renderHeat(); renderLine(); renderKW(); renderTabs(); renderFeed(); renderLatestNews();
   } else {
     document.getElementById('newsList').innerHTML = '<div class="empty-note">뉴스를 불러오지 못했습니다 (' + nRes.reason.message + ').</div>';
     document.getElementById('radarWrap').innerHTML = '<div class="empty-note">뉴스 데이터 없음</div>';
   }
+  if (iRes && iRes.status === 'fulfilled') renderInnoChart();
   var ok = lRes.status === 'fulfilled' && nRes.status === 'fulfilled';
   setStatus(ok ? '최근 업데이트: ' + new Date().toLocaleString('ko-KR') + ' KST' : '일부 데이터를 불러오지 못했습니다.', !ok);
 }
