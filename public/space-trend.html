@@ -558,10 +558,12 @@ function renderTopNews(){
 
   var todayNews=dedup(allNews.filter(function(n){return isRecent(n.pubDate,1);}));
   var items=todayNews.length>=5 ? todayNews.slice(0,10)
-           : dedup(allNews.filter(function(n){return isRecent(n.pubDate,2);})).slice(0,10);
+           : dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).length>=3
+             ? dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).slice(0,10)
+             : dedup(allNews.filter(function(n){return isRecent(n.pubDate,7);})).slice(0,10);
 
   if(!items.length){
-    el.innerHTML='<div class="empty">오늘자 뉴스를 불러오는 중입니다...</div>';return;
+    el.innerHTML='<div class="empty">뉴스를 불러오는 중입니다...</div>';return;
   }
   el.innerHTML=items.map(function(n){
     var src='';try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}
@@ -739,7 +741,7 @@ document.getElementById('nFilters').addEventListener('click',function(e){
 /* ===== LOAD ALL ===== */
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
-  renderCompanies();renderContract();renderTracker();renderReports();renderWeekly();renderCal();
+  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
@@ -749,7 +751,7 @@ async function loadAll(){
       var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
-    renderTopNews();renderHotKW();renderInvest();renderTrend();renderDist();renderNewsTable();
+    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
   }else{
     document.getElementById('topNews').innerHTML='<div class="empty">뉴스를 불러오지 못했습니다.</div>';
     document.getElementById('hotKw').innerHTML='<div class="empty">데이터 없음</div>';
