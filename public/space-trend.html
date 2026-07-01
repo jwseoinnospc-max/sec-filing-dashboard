@@ -69,10 +69,6 @@ a { color: inherit; text-decoration: none; }
 .kw-change { font-family: var(--mono); font-size: 12.5px; text-align: right; color: var(--good); }
 .kw-spark { width: 60px; height: 24px; }
 
-.heat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.heat-cell { border-radius: 10px; padding: 12px 10px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.2); }
-.heat-cell .name { font-size: 12px; color: var(--muted); }
-.heat-cell .score { font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--text); }
 
 
 .news-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
@@ -105,12 +101,6 @@ a { color: inherit; text-decoration: none; }
       <div class="news-tabs" id="newsTabs"></div>
       <div id="newsList"><div class="skeleton" style="width:100%;height:50px;"></div></div>
     </div>
-    <div class="panel">
-      <h2>섹터 히트맵</h2>
-      <div class="panel-sub">카테고리별 기사 수</div>
-      <div class="heat-grid" id="heatGrid"></div>
-    </div>
-  </div>
   <div>
     <div class="panel">
       <h2>발사 캘린더 <span class="src-pill">Launch Library 2</span></h2>
@@ -271,21 +261,6 @@ async function loadNews() {
   });
 }
 
-function renderHeat() {
-  var grid = document.getElementById('heatGrid');
-  grid.innerHTML = '';
-  var all = CATEGORIES.map(function(c) { return { tag: c.tag, count: allNews.filter(function(n) { return n.cat === c.tag; }).length }; });
-  all.push({ tag: '기타', count: allNews.filter(function(n) { return n.cat === '기타'; }).length });
-  var mx = Math.max.apply(null, all.map(function(x) { return x.count; }).concat([1]));
-  all.forEach(function(c) {
-    var cell = document.createElement('div');
-    cell.className = 'heat-cell';
-    cell.style.borderColor = 'rgba(56,189,248,' + (0.05 + (c.count / mx) * 0.3).toFixed(2) + ')';
-    cell.innerHTML = '<span class="name">' + c.tag + '</span><span class="score">' + c.count + '</span>';
-    grid.appendChild(cell);
-  });
-}
-
 
 function renderKW() {
   var list = document.getElementById('kwList');
@@ -379,7 +354,7 @@ async function loadAll() {
     document.getElementById('launchCal').innerHTML = '<div class="empty-note">발사 일정을 불러오지 못했습니다 (' + lRes.reason.message + '). Launch Library 2는 시간당 15회 호출 제한이 있어 잠시 후 다시 시도해 주세요.</div>';
   }
   if (nRes.status === 'fulfilled') {
-    renderHeat(); renderKW(); renderTabs(); renderFeed();
+    renderKW(); renderTabs(); renderFeed();
   } else {
     document.getElementById('newsList').innerHTML = '<div class="empty-note">뉴스를 불러오지 못했습니다 (' + nRes.reason.message + ').</div>';
   }
