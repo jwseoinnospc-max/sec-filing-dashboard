@@ -14,7 +14,9 @@
   --orange:#f59e0b; --purple:#a855f7; --teal:#14b8a6;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px;padding:0 14px 32px;}
+body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px;padding:0 14px 32px;position:relative;}
+body::before{content:'';position:fixed;inset:0;background:url('/bg-drone.jpg') center/cover no-repeat;opacity:0.18;z-index:0;pointer-events:none;}
+.dashboard,.status-bar{position:relative;z-index:1;}
 a{color:inherit;text-decoration:none;}
 
 /* Status */
@@ -484,17 +486,20 @@ function renderContract(){
 
 /* ===== TRACKER ===== */
 var TT_DATA=[
-  {co:'Impulse Space',ab:'IS',amt:'$500M',rnd:'Series D',dt:'2026.06.26'},
-  {co:'PLD Space',ab:'PD',amt:'€120M',rnd:'Series C',dt:'2026.06.25'},
-  {co:'Firefly Aerospace',ab:'FA',amt:'$75M',rnd:'Series B',dt:'2026.06.20'},
-  {co:'ispace',ab:'IS',amt:'¥15.1B',rnd:'Series D',dt:'2026.06.18'},
-  {co:'Stoke Space',ab:'SS',amt:'$80M',rnd:'Series C',dt:'2026.06.10'},
-  {co:'Apex Space',ab:'AS',amt:'$95M',rnd:'Series B',dt:'2026.06.05'},
+  {co:'SpaceX',ab:'SX',amt:'$6.45B',rnd:'Gov Contract',dt:'2026.05.29',u:'https://techcrunch.com/2026/05/29/spacex-awarded-6-45b-in-space-force-contracts-ahead-of-ipo/'},
+  {co:'Impulse Space',ab:'IS',amt:'$500M',rnd:'Series D',dt:'2026.06',u:'https://spacenews.com/impulse-space-raises-500-million/'},
+  {co:'Sierra Space',ab:'SS',amt:'$550M',rnd:'Equity',dt:'2026.03',u:'https://news.crunchbase.com/venture/biggest-funding-rounds-space-tech-sierra-ai-ayar/'},
+  {co:'Vast',ab:'VA',amt:'$500M',rnd:'Series A',dt:'2026.03',u:'https://news.crunchbase.com/venture/biggest-funding-rounds-space-tech-sierra-ai-ayar/'},
+  {co:'PLD Space',ab:'PD',amt:'$209M',rnd:'Series',dt:'2026.03.05',u:'https://spaceflightnow.com/2026/03/05/spanish-launch-startup-pld-space-raises-209-million-to-scale-its-rocket-production/'},
+  {co:'Starcloud',ab:'SC',amt:'$170M',rnd:'Series A',dt:'2026.03.30',u:'https://techcrunch.com/2026/03/30/starcloud-raises-170-million-series-ato-build-data-centers-in-space/'},
+  {co:'MDA Space',ab:'MD',amt:'$688M',rnd:'Gov Contract',dt:'2026.06.24',u:'https://mda.space/article/canadian-space-agency-and-mda-space-conclude-contract-for-replenishment-satellite-valued-at-688m'},
+  {co:'Quantum Space',ab:'QS',amt:'$1.2B',rnd:'SPAC',dt:'2026.06.08',u:'https://www.morningstar.com/news/pr-newswire/20260608da77885/quantum-space-a-leading-space-defense-and-orbital-mobility-company-to-go-public-via-merger-with-inflection-point-acquisition-corp-vi'},
 ];
 function renderTracker(){
   document.getElementById('ttTable').innerHTML='<thead><tr><th>회사</th><th>금액</th><th>라운드</th><th>날짜</th></tr></thead><tbody>'+
     TT_DATA.map(function(r){
-      return '<tr><td><div class="tt-co"><div class="ii-logo">'+r.ab+'</div>'+r.co+'</div></td><td class="tt-amt">'+r.amt+'</td><td><span class="tt-rnd">'+r.rnd+'</span></td><td>'+r.dt+'</td></tr>';
+      var link=r.u?' onclick="window.open(\''+r.u+'\')" style="cursor:pointer"':'';
+      return '<tr'+link+'><td><div class="tt-co"><div class="ii-logo">'+r.ab+'</div>'+r.co+'</div></td><td class="tt-amt">'+r.amt+'</td><td><span class="tt-rnd">'+r.rnd+'</span></td><td>'+r.dt+'</td></tr>';
     }).join('')+'</tbody>';
 }
 
@@ -562,25 +567,19 @@ function renderHotKW(){
   }).join('');
 }
 
-/* ===== INVEST (from news) ===== */
+/* ===== INVEST (real 2026 data, deduped) ===== */
 function renderInvest(){
-  var inv=allNews.filter(function(n){
-    var t=n.title.toLowerCase();
-    return t.includes('invest')||t.includes('fund')||t.includes('series')||t.includes('million')||t.includes('billion')||t.includes('투자')||t.includes('수주')||t.includes('계약')||t.includes('raise');
-  }).slice(0,4);
   var el=document.getElementById('investList');
-  if(!inv.length){
-    el.innerHTML=TT_DATA.slice(0,3).map(function(r){
-      return '<div class="ii"><div class="ii-logo">'+r.ab+'</div><div class="ii-info"><div class="ii-co">'+r.co+'</div><div class="ii-det">'+r.rnd+' · '+r.dt+'</div></div><div class="ii-amt">'+r.amt+'</div></div>';
-    }).join('');return;
-  }
-  el.innerHTML=inv.map(function(n){
-    var ws=n.title.split(' ');
-    var ab=ws.slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
-    return '<div class="ii" onclick="window.open(\''+n.link.replace(/\'/g,'\\\'')+'\')">' +
-      '<div class="ii-logo">'+ab+'</div>' +
-      '<div class="ii-info"><div class="ii-co">'+ws.slice(0,3).join(' ')+'</div><div class="ii-det">'+fmtD(n.pubDate)+'</div></div>' +
-      '<div class="ii-amt">↗</div></div>';
+  var seen={};
+  var items=TT_DATA.filter(function(r){
+    if(seen[r.co])return false;seen[r.co]=true;return true;
+  }).slice(0,5);
+  el.innerHTML=items.map(function(r){
+    var link=r.u?' onclick="window.open(\''+r.u+'\')"':'';
+    return '<div class="ii"'+link+' style="cursor:pointer">'+
+      '<div class="ii-logo">'+r.ab+'</div>'+
+      '<div class="ii-info"><div class="ii-co">'+r.co+'</div><div class="ii-det">'+r.rnd+' · '+r.dt+'</div></div>'+
+      '<div class="ii-amt">'+r.amt+'</div></div>';
   }).join('');
 }
 
