@@ -185,7 +185,7 @@ export default async function SpaceMarketPage() {
         <div className="header-side">
           <div className="header-side-top">
             <p className="data-source">Data source: 한국투자증권 OpenAPI (KIS) · Finnhub · Google News RSS</p>
-            <p className="made-by">Made by 이노스페이스 투자전략실</p>
+            <p className="made-by">Made by 이노스페이스 투자전략본부</p>
           </div>
         </div>
       </section>

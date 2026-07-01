@@ -448,7 +448,7 @@ export default function FinancialStatementPage() {
             <p className="data-source">
               Data source: Rocket Lab FY2021 10-K (FY2020 comparative figures) · FY2022–2024 10-K · Q1–Q3 2025 10-Q · FY2025 10-K · Q1 FY2026 Earnings Release
             </p>
-            <p className="made-by">Made by 이노스페이스 투자전략실</p>
+            <p className="made-by">Made by 이노스페이스 투자전략본부</p>
           </div>
         </div>
       </section>
