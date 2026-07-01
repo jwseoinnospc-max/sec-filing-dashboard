@@ -13,9 +13,8 @@ export default function SpaceMarketTabToggle() {
     if (domestic) domestic.style.display = active === "domestic" ? "block" : "none";
   }, [active]);
 
-  // 힌트 애니메이션: 2.4초 후 사라짐
   useEffect(() => {
-    const t = setTimeout(() => setShowHint(false), 2400);
+    const t = setTimeout(() => setShowHint(false), 6000);
     return () => clearTimeout(t);
   }, []);
 
@@ -37,14 +36,11 @@ export default function SpaceMarketTabToggle() {
         <span className="space-market-title-divider">·</span>
         <button
           type="button"
-          className={`space-market-title-tab ${active === "global" ? "active" : ""}`}
+          className={`space-market-title-tab ${active === "global" ? "active" : ""} ${showHint ? "tab-hint-blink" : ""}`}
           onClick={() => handleTab("global")}
         >
           🌍 글로벌 우주항공 기업
         </button>
-        {showHint && (
-          <span className="tab-switch-hint">탭을 눌러 전환</span>
-        )}
       </div>
     </div>
   );

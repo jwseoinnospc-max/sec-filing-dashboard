@@ -370,8 +370,8 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .space-market-title-tab { background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; font-size: 20px; font-weight: 800; letter-spacing: 0.04em; color: var(--muted); transition: color 0.15s; }
 .space-market-title-tab:hover { color: var(--text); }
 .space-market-title-tab.active { color: var(--accent); }
-.tab-switch-hint { margin-left: 10px; font-size: 11px; font-weight: 500; color: var(--accent); opacity: 0; animation: tab-hint-pulse 0.6s ease-in-out 3 forwards; pointer-events: none; align-self: center; }
-@keyframes tab-hint-pulse { 0% { opacity: 0; } 40% { opacity: 1; } 100% { opacity: 0; } }
+.tab-hint-blink { border-radius: 6px; animation: tab-box-blink 0.9s ease-in-out infinite; }
+@keyframes tab-box-blink { 0%, 100% { box-shadow: 0 0 0 2px transparent; } 50% { box-shadow: 0 0 0 2px var(--accent); } }
 .space-market-title-divider { color: var(--line); font-size: 18px; user-select: none; }
 .etf-clickable { cursor: pointer; }
 .etf-clickable:hover { border-color: var(--accent); }
