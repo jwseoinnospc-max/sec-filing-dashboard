@@ -56,43 +56,6 @@ function InvestorFlowRow({ flow }: { flow: InvestorFlow }) {
   );
 }
 
-function InvestorFlowModal({ label, flow, onClose }: { label: string; flow: InvestorFlow | null; onClose: () => void }) {
-  const rows = flow ? [
-    { name: "외국인", value: flow.foreign },
-    { name: "기관", value: flow.institution },
-    { name: "개인", value: flow.individual },
-  ] : [];
-  return (
-    <div className="etf-modal-overlay" onClick={onClose}>
-      <div className="etf-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 340 }}>
-        <div className="etf-modal-header">
-          <span>{label} 투자자별 순매수</span>
-          <button type="button" onClick={onClose} className="etf-modal-close">✕</button>
-        </div>
-        <div className="etf-modal-note">※ 시총 상위 30개 종목 합산 기준 · 단위: 억원</div>
-        {!flow ? (
-          <div style={{ padding: "20px 0", textAlign: "center", color: "var(--muted)" }}>데이터 조회 중...</div>
-        ) : (
-          <table className="etf-modal-table">
-            <thead>
-              <tr><th>구분</th><th style={{ textAlign: "right" }}>순매수 (억원)</th></tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.name}>
-                  <td style={{ fontWeight: 700 }}>{r.name}</td>
-                  <td style={{ textAlign: "right", fontWeight: 700, color: r.value >= 0 ? "#ef4444" : "#4488ff" }}>
-                    {r.value >= 0 ? "+" : ""}{r.value.toLocaleString("ko-KR")}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
-}
 
 const ETF_LINKS: Record<string, { name: string; desc: string; href: string }> = {
   "KODEX 미국우주항공": {
@@ -310,12 +273,9 @@ export default function SectorIndexRow({
     nasdaq: IndexQuote | null;
     kodexSpace: IndexQuote | null;
     tigerSpace: IndexQuote | null;
-    kospiFlow: InvestorFlow | null;
-    kosdaqFlow: InvestorFlow | null;
-  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null, kospiFlow: null, kosdaqFlow: null });
+  }>({ kospi: null, kosdaq: null, nasdaq: null, kodexSpace: null, tigerSpace: null });
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [activeAvgModal, setActiveAvgModal] = useState<"global" | "domestic" | null>(null);
-  const [activeFlowModal, setActiveFlowModal] = useState<"kospi" | "kosdaq" | null>(null);
   const [activeEtfLinkModal, setActiveEtfLinkModal] = useState<string | null>(null);
 
   useEffect(() => {
@@ -361,15 +321,11 @@ export default function SectorIndexRow({
           label="KOSPI"
           quote={indices.kospi}
           formatLast={(v) => v.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
-          onClick={() => setActiveFlowModal("kospi")}
-          clickTitle="투자자 현황 보기"
         />
         <IndexCard
           label="KOSDAQ"
           quote={indices.kosdaq}
           formatLast={(v) => v.toFixed(2)}
-          onClick={() => setActiveFlowModal("kosdaq")}
-          clickTitle="투자자 현황 보기"
         />
         <IndexCard label="NASDAQ" quote={indices.nasdaq} formatLast={(v) => v.toLocaleString("en-US", { maximumFractionDigits: 2 })} />
         <IndexCard label="KODEX 미국우주항공" quote={indices.kodexSpace} formatLast={(v) => `₩${v.toLocaleString()}`} onClick={() => setActiveEtfLinkModal("KODEX 미국우주항공")} clickTitle="ETF 상세 보기" />
@@ -396,12 +352,6 @@ export default function SectorIndexRow({
         return q ? <EtfLinkModal label={activeEtfLinkModal} quote={q} onClose={() => setActiveEtfLinkModal(null)} /> : null;
       })()}
       {activeModal && <EtfModal label={activeModal} onClose={() => setActiveModal(null)} etfHoldings={etfHoldings} dataAsOf={dataAsOf} />}
-      {activeFlowModal === "kospi" && indices.kospi && (
-        <InvestorFlowModal label="KOSPI" flow={indices.kospiFlow} onClose={() => setActiveFlowModal(null)} />
-      )}
-      {activeFlowModal === "kosdaq" && indices.kosdaq && (
-        <InvestorFlowModal label="KOSDAQ" flow={indices.kosdaqFlow} onClose={() => setActiveFlowModal(null)} />
-      )}
       {activeAvgModal === "global" && (
         <AvgModal title="글로벌 우주항공 평균" items={allGlobalItems} onClose={() => setActiveAvgModal(null)} />
       )}
