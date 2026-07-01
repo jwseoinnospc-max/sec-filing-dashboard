@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -500,14 +500,26 @@ function renderTracker(){
 
 /* ===== REPORTS ===== */
 var RP_DATA=[
-  {t:'2026 Global Space Economy Report',p:'Morgan Stanley',d:'6.20',ic:'📊'},
-  {t:'Satellite Manufacturing Market 2026',p:'Euroconsult',d:'6.18',ic:'📡'},
-  {t:'Defense Space Systems Report 2026',p:'BRYC',d:'6.15',ic:'🛡️'},
-  {t:'Commercial Launch Market Outlook',p:'SpaceWorks',d:'6.10',ic:'🚀'},
+  {t:'Space Economy Report 2026 (12th ed.)',p:'Novaspace',d:'2026.01.30',ic:'🌐',u:'https://nova.space/hub/product/space-economy-report/',note:'$626B → $1T by 2034 전망'},
+  {t:'Q1 2026 Global Space Activity Briefing',p:'BryceTech',d:'2026.04.10',ic:'🚀',u:'https://brycetech.com/reports/report-documents/bryce-briefing-2026-Q1/',note:'발사 35%↑, 위성 1,216기 발사'},
+  {t:'Start-Up Space 2025',p:'BryceTech',d:'2025.03',ic:'💡',u:'https://brycetech.com/reports/report-documents/start_up_space_2025/',note:'2024 민간 우주투자 동향 분석'},
+  {t:'Space Industry Outlook 2026',p:'Novaspace',d:'2026.04.21',ic:'📈',u:'https://nova.space/in-the-loop/2026-outlook-what-to-expect-in-the-space-industry/',note:'트렌드·리스크·기회 분석'},
+  {t:'Space Investment Quarterly Q3 2025',p:'Space Capital',d:'2025.10',ic:'💰',u:'https://www.spacecapital.com/reports/space-investment-quarterly-q3-2025',note:'VC $8.5B, 250+ deals'},
+  {t:'Space Infrastructure Investment 2025',p:'Analysys Mason',d:'2025',ic:'🛰️',u:'https://www.analysysmason.com/research/content/reports/space-investment-analysis/',note:'인프라 투자 5분기 최고치'},
+  {t:'3 Commercial Trends: $1.8T Space Market',p:'WEF',d:'2026.06',ic:'🌍',u:'https://www.weforum.org/stories/2026/06/3-commercial-trends-driving-space-market/',note:'글로벌 우주시장 3대 트렌드'},
+  {t:'Emerging Space 2026',p:'BryceTech',d:'2026.04',ic:'🔭',u:'https://brycetech.com/reports/report-documents/Emerging_Space.pdf',note:'신흥 우주국 동향 분석'},
 ];
 function renderReports(){
   document.getElementById('reportList').innerHTML=RP_DATA.map(function(r){
-    return '<div class="ri"><div class="ri-thumb">'+r.ic+'</div><div class="ri-info"><div class="ri-title">'+r.t+'</div><div class="ri-meta">'+r.p+' | '+r.d+'</div></div></div>';
+    return '<a href="'+r.u+'" target="_blank" style="display:block;text-decoration:none;color:inherit;">'+
+      '<div class="ri">'+
+        '<div class="ri-thumb">'+r.ic+'</div>'+
+        '<div class="ri-info">'+
+          '<div class="ri-title">'+r.t+'</div>'+
+          '<div class="ri-meta">'+r.p+' | '+r.d+'</div>'+
+          '<div style="font-size:10px;color:var(--accent2);margin-top:2px;">'+r.note+'</div>'+
+        '</div>'+
+      '</div></a>';
   }).join('');
 }
 
