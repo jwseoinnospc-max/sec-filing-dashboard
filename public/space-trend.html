@@ -22,14 +22,8 @@
 }
 * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 body {
+  background: var(--bg);
   margin: 0;
-  background:
-    linear-gradient(135deg, rgba(2,6,23,0.6), rgba(15,23,42,0.6)),
-    url('/rocketlab-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
   color: var(--text);
   min-height: 100vh;
 }
@@ -60,8 +54,8 @@ p { color: var(--muted); line-height: 1.6; }
 .nav-subgroup { display: flex; flex-direction: column; gap: 2px; padding-left: 16px; }
 
 /* Header-side (right) */
-.header-side { position: relative; display: flex; flex-direction: column; justify-content: flex-start; min-width: 0; flex: 1; }
-.header-side-top { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.header-side { display: none; }
+.page-meta { position: fixed; top: 13px; right: 32px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; z-index: 10; }
 .data-source { margin: 0; font-size: 15px; color: var(--muted); }
 .made-by { margin: 0; font-size: 15px; color: var(--muted); }
 
@@ -159,6 +153,10 @@ p { color: var(--muted); line-height: 1.6; }
 </head>
 <body>
 <div class="page">
+<div class="page-meta">
+  <p class="data-source">Data source: Google News RSS &middot; TheSpaceDevs Launch Library 2</p>
+  <p class="made-by">Made by 이노스페이스 투자전략본부</p>
+</div>
 
   <!-- Header: same structure as Space Market -->
   <section class="header">
@@ -191,12 +189,6 @@ p { color: var(--muted); line-height: 1.6; }
       <h1>Global <span class="h1-accent">Space Trend</span> <span style="font-size:22px;font-weight:500;color:var(--muted);letter-spacing:0;">(제작 중)</span></h1>
       <p>Google News &middot; Launch Library 2 (TheSpaceDevs) 기반 실시간 글로벌 우주산업 트렌드</p>
       <p class="last-updated status-line" id="statusLine">데이터를 불러오는 중입니다&#8230;</p>
-    </div>
-    <div class="header-side">
-      <div class="header-side-top">
-        <p class="data-source">Data source: Google News RSS &middot; TheSpaceDevs Launch Library 2</p>
-        <p class="made-by">Made by 이노스페이스 투자전략본부</p>
-      </div>
     </div>
   </section>
 
