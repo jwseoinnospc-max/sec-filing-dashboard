@@ -34,35 +34,6 @@ a { color: inherit; text-decoration: none; }
 /* ── Page shell ── */
 .page { min-height: 100vh; padding: 13px 32px 48px; }
 
-/* ── Header: identical to globals.css ── */
-.header { display: flex; justify-content: space-between; gap: 24px; align-items: stretch; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #ffffff; }
-h1 { margin: 0; font-size: 51px; line-height: 1.2; letter-spacing: -0.04em; }
-.h1-accent { color: var(--accent); }
-p { color: var(--muted); line-height: 1.6; }
-.last-updated { margin-top: 4px; font-size: 12px; color: var(--muted); opacity: 0.8; }
-
-/* Nav menu */
-.nav-menu { position: relative; display: inline-block; margin-bottom: 14px; }
-.nav-menu-toggle { background: var(--accent); color: #001018; border: 0; border-radius: 12px; padding: 12px 24px; font-weight: 700; font-size: 20px; cursor: pointer; }
-.nav-current-group { margin-left: 10px; font-size: 13px; color: var(--muted); font-weight: 700; }
-.nav-menu-panel { position: absolute; top: calc(100% + 6px); left: 0; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px; min-width: 280px; box-shadow: 0 16px 40px rgba(0,0,0,0.45); display: none; }
-.nav-menu-panel.open { display: block; }
-.nav-item, .nav-subitem { display: block; padding: 8px 10px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
-.nav-item:hover, .nav-subitem:hover { background: rgba(255,255,255,0.07); }
-.nav-item.active, .nav-subitem.active { color: var(--accent); font-weight: 700; background: rgba(56,189,248,0.12); }
-.nav-group-toggle { display: block; width: 100%; background: none; border: 0; color: var(--text); font-weight: 700; font-size: 13px; padding: 8px 10px; margin-top: 4px; cursor: pointer; text-align: left; border-radius: 6px; }
-.nav-group-toggle:hover { background: rgba(255,255,255,0.07); }
-.nav-subgroup { display: flex; flex-direction: column; gap: 2px; padding-left: 16px; }
-
-/* Header-side (right) */
-.header-side { display: none; }
-.page-meta { position: fixed; top: 13px; right: 32px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; z-index: 10; }
-.data-source { margin: 0; font-size: 15px; color: var(--muted); }
-.made-by { margin: 0; font-size: 15px; color: var(--muted); }
-
-/* Status line */
-.status-line { margin-top: 4px; font-size: 12px; color: var(--muted); opacity: 0.8; }
-.status-line.error { color: var(--bad); opacity: 1; }
 
 /* ── Stat row ── */
 
@@ -154,45 +125,8 @@ p { color: var(--muted); line-height: 1.6; }
 </head>
 <body>
 <div class="page">
-<div class="page-meta">
-  <p class="data-source">Data source: Google News RSS &middot; TheSpaceDevs Launch Library 2</p>
-  <p class="made-by">Made by 이노스페이스 투자전략본부</p>
-</div>
 
-  <!-- Header: same structure as Space Market -->
-  <section class="header">
-    <div>
-      <div class="nav-menu" id="navMenuWrap">
-        <button type="button" class="nav-menu-toggle" onclick="toggleNav()">&#9776; 메뉴</button>
-        <span class="nav-current-group">Space Trend</span>
-        <div class="nav-menu-panel" id="navPanel">
-          <a class="nav-item active" href="/space-trend" target="_parent">Space Trend</a>
-          <a class="nav-item" href="/space-market" target="_parent">Space Market</a>
-          <div>
-            <button type="button" class="nav-group-toggle" onclick="toggleGroup('rocketlab')">
-              <span id="rocketlab-arrow">&#9662;</span> Rocket Lab
-            </button>
-            <div class="nav-subgroup" id="rocketlab-sub">
-              <a class="nav-subitem" href="/rocketlab/dashboard" target="_parent">Rocket Lab Dashboard</a>
-              <a class="nav-subitem" href="/rocketlab/financial-statement" target="_parent">Rocket Lab Financial Statement</a>
-              <a class="nav-subitem" href="/rocketlab/presentation" target="_parent">Rocket Lab Presentation</a>
-            </div>
-          </div>
-          <div>
-            <button type="button" class="nav-group-toggle" onclick="toggleGroup('firefly')">
-              <span id="firefly-arrow">&#9662;</span> Firefly Aerospace
-            </button>
-            <div class="nav-subgroup" id="firefly-sub">
-              <a class="nav-subitem" href="/firefly/financial-statement" target="_parent">Firefly Aerospace Financial Statement</a>
-            </div>
-          </div>
-        </div>
-      <h1><span class="h1-accent">Space Trend</span> <span style="font-size:22px;font-weight:500;color:var(--muted);letter-spacing:0;">(제작 중)</span></h1>
-      <p>Google News &middot; Launch Library 2 (TheSpaceDevs) 기반 실시간 글로벌 우주산업 트렌드</p>
-      <p class="last-updated status-line" id="statusLine">데이터를 불러오는 중입니다&#8230;</p>
-    </div>
-  </section>
-
+  <p class="status-line" id="statusLine" style="margin:0 0 12px;font-size:12px;color:var(--muted);opacity:0.8;">데이터를 불러오는 중입니다&hellip;</p>
   <!-- Main two-col grid -->
   <div class="main-grid">
     <div>
@@ -242,21 +176,6 @@ p { color: var(--muted); line-height: 1.6; }
 
 <script>
 /* ── Nav toggle ── */
-function toggleNav() {
-  document.getElementById('navPanel').classList.toggle('open');
-}
-function toggleGroup(id) {
-  var sub = document.getElementById(id + "-sub");
-  var arrow = document.getElementById(id + "-arrow");
-  var isOpen = sub.style.display !== "none";
-  sub.style.display = isOpen ? "none" : "";
-  arrow.innerHTML = isOpen ? "&#9658;" : "&#9662;";
-}
-document.addEventListener('click', function(e) {
-  if (!document.getElementById('navMenuWrap').contains(e.target)) {
-    document.getElementById('navPanel').classList.remove('open');
-  }
-});
 
 const LL2 = 'https://ll.thespacedevs.com/2.3.0';
 const RSS2JSON = 'https://api.rss2json.com/v1/api.json';
