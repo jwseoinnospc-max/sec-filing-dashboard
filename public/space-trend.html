@@ -303,7 +303,9 @@ function renderTabs() {
 
 function renderFeed() {
   var list = document.getElementById('newsList');
-  var items = activeTab === '전체' ? allNews : allNews.filter(function(n) { return n.cat === activeTab; });
+  var raw = activeTab === '전체' ? allNews : allNews.filter(function(n) { return n.cat === activeTab; });
+  var seen = {};
+  var items = raw.filter(function(n) { var key = n.title.trim().slice(0, 40); if (seen[key]) return false; seen[key] = true; return true; });
   list.innerHTML = '';
   if (!items.length) { list.innerHTML = '<div class="empty-note">해당 카테고리의 기사가 없습니다.</div>'; return; }
   items.slice(0, 20).forEach(function(n) {
