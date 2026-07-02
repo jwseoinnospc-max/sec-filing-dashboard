@@ -398,8 +398,7 @@ function CompareCard({
           display: flex;
           align-items: center;
           justify-content: center;
-          width: max-content;
-          max-width: 100%;
+          width: 100%;
           white-space: nowrap;
           margin: -4px auto 0;
           padding: 8px 22px;
