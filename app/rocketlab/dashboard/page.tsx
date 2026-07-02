@@ -9,6 +9,7 @@ import OperatingLossCard from '@/components/OperatingLossCard';
 import NetIncomeCard from '@/components/NetIncomeCard';
 import OperatingCashFlowCard from '@/components/OperatingCashFlowCard';
 import RndExpenseCard from '@/components/RndExpenseCard';
+import LaunchEconomicsChartCard from '@/components/LaunchEconomicsChartCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPoints } from '@/lib/quarterData';
 
@@ -172,6 +173,8 @@ export default async function Home() {
           revenueText={money(LAUNCH_REVENUE_Q1_2026 / 1000)}
           costText={money(LAUNCH_COST_Q1_2026 / 1000)}
         />
+
+        <LaunchEconomicsChartCard />
 
         <LaunchCountCard
           filingUrl={Q1_2026_FILING_URL}
