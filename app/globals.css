@@ -13,14 +13,18 @@
 body {
   margin: 0;
   font-family: 'Pretendard', Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
     linear-gradient(135deg, rgba(2, 6, 23, 0.6), rgba(15, 23, 42, 0.6)),
-    url('/rocketlab-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  color: var(--text);
+    url('/rocketlab-bg.jpg') center / cover no-repeat;
+  pointer-events: none;
 }
 a { color: inherit; }
 .page { min-height: 100vh; padding: 13px 32px 32px; }
@@ -222,12 +226,12 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .table th, .table td { text-align: left; border-bottom: 1px solid var(--line); padding: 12px 8px; font-size: 14px; }
 .table th { color: var(--muted); font-weight: 600; }
 .footer { margin-top: 18px; font-size: 12px; color: var(--muted); }
-.header-side { position: relative; display: flex; flex-direction: column; justify-content: flex-start; min-width: 0; flex: 1; }
-.header-side-top { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.header-side { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; gap: 14px; }
+.header-side-top { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .data-source { margin: 0; font-size: 15px; color: var(--muted); }
 .data-updated { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
 .made-by { margin: 0; font-size: 15px; color: var(--muted); }
-.pill-group { display: flex; flex-direction: column; gap: 14px; width: 100%; margin-top: 92px; }
+.pill-group { display: flex; flex-direction: column; gap: 14px; width: 100%; margin-top: 0; }
 .highlight-pill { width: 100%; background: linear-gradient(90deg, #ffffff 0%, #eaf4ff 55%, #9fd3f5 100%); color: #0b3f99; font-weight: 700; font-size: 17px; text-align: left; padding: 14px 24px; border-radius: 0 999px 999px 0; }
 .notice { border-left: 3px solid var(--warn); padding-left: 12px; color: #ffffff; opacity: 1; margin: 0 0 14px; }
 .notice:last-child { margin-bottom: 0; }
@@ -268,14 +272,10 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-growth-up { color: #f87171; }
 .fin-table .fin-growth-down { color: #60a5fa; }
 .space-market-page { background: var(--bg); }
-.firefly-page {
+.firefly-page::before {
   background:
     linear-gradient(135deg, rgba(2, 6, 23, 0.75), rgba(15, 23, 42, 0.75)),
-    url('/firefly-bg.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+    url('/firefly-bg.png') center / cover no-repeat !important;
 }
 .space-group-title { margin: 28px 0 12px; font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
 .sector-index-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
