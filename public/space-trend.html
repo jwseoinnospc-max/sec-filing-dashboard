@@ -19,6 +19,11 @@ body::before{content:'';position:fixed;inset:0;background:url('/bg-drone.jpg') c
 .dashboard,.status-bar{position:relative;z-index:1;}
 a{color:inherit;text-decoration:none;}
 
+/* News tabs */
+.news-tabs{display:flex;gap:4px;}
+.ntab{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:12px;padding:3px 10px;cursor:pointer;transition:all 0.15s;font-family:inherit;}
+.ntab.active{background:rgba(59,130,246,0.2);border-color:var(--accent);color:var(--accent2);font-weight:600;}
+
 /* Status */
 .status-bar{font-size:14px;color:var(--muted);padding:8px 0 10px;display:flex;align-items:center;gap:7px;}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--up);}
@@ -27,7 +32,7 @@ a{color:inherit;text-decoration:none;}
 /* Grid */
 .dashboard{display:flex;flex-direction:column;gap:10px;}
 .row{display:grid;gap:10px;}
-.row-1{grid-template-columns:2fr 1fr 1fr 1.2fr;}
+.row-1{grid-template-columns:3fr 1fr 1.2fr;}
 .row-2{grid-template-columns:3fr 2fr 2fr 2fr;}
 .row-3{grid-template-columns:2fr 2.5fr 3fr 1.8fr;}
 
@@ -199,8 +204,12 @@ a{color:inherit;text-decoration:none;}
 
     <!-- 오늘의 주요 뉴스 -->
     <div class="card">
-      <div class="card-header">
+      <div class="card-header" style="margin-bottom:8px;">
         <span class="card-title">오늘의 주요 뉴스</span>
+        <div class="news-tabs">
+          <button class="ntab active" data-tab="global" onclick="switchNewsTab('global',this)">🌐 글로벌</button>
+          <button class="ntab" data-tab="kr" onclick="switchNewsTab('kr',this)">🇰🇷 국내</button>
+        </div>
       </div>
       <div id="topNews"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
     </div>
@@ -209,18 +218,8 @@ a{color:inherit;text-decoration:none;}
     <div class="card">
       <div class="card-header">
         <span class="card-title">최근 투자/수주</span>
-        <span class="more-link">더보기 &gt;</span>
       </div>
       <div id="investList"><div class="sk"></div><div class="sk"></div></div>
-    </div>
-
-    <!-- 발사 일정 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">발사 일정</span>
-        <span class="more-link">더보기 &gt;</span>
-      </div>
-      <div id="launchSched"><div class="sk"></div><div class="sk"></div></div>
     </div>
 
     <!-- 시장 보고서 -->
@@ -535,7 +534,18 @@ function renderWeekly(){
 /* ===== TOP NEWS (오늘자 RSS 기사 필터링 + 정적 큐레이션 폴백) ===== */
 var EMOJIS={Launch:'🚀',Satellite:'🛰️',Defense:'⭐',Investment:'💰','M&A':'🤝',Policy:'🏛️',Manufacturing:'🏭',AI:'🤖',Other:'📰'};
 
-/* 2026-07-02 큐레이션 뉴스 */
+/* 2026-07-02 국내 뉴스 */
+var KR_NEWS=[
+  {title:'누리호 5차 발사 준비 박차 — 초소형군집위성 5기 탑재, 하반기 발사 목표',cat:'Launch',pubDate:'Tue, 30 Jun 2026 09:00:00 GMT',link:'https://www.kari.re.kr/kor/contents/51',source:'kari.re.kr'},
+  {title:'KOMPSAT-6(다목적실용위성 6호) 운용 개시 — 고해상도 지구관측 임무 돌입',cat:'Satellite',pubDate:'Wed, 01 Jul 2026 06:00:00 GMT',link:'https://www.kari.re.kr/kor/contents/170',source:'kari.re.kr'},
+  {title:'한화에어로스페이스 대전 폭발사고 수사 진행 — 누리호 엔진 개발 일정 영향 주목',cat:'Manufacturing',pubDate:'Mon, 29 Jun 2026 08:00:00 GMT',link:'https://www.hanwhaspacehub.com/launch/',source:'hanwhaspacehub.com'},
+  {title:'우주항공청 2026 예산 1조 1131억 확정 — 전년 대비 15% 증가, 뉴스페이스 펀드 2000억',cat:'Policy',pubDate:'Tue, 30 Jun 2026 10:00:00 GMT',link:'https://www.newsspace.kr/news/article.html?no=11917',source:'newsspace.kr'},
+  {title:'SK하이닉스·LG전자 우주부품 누리호 탑재 확정 — 우주환경 실증으로 수출 기반 마련',cat:'Manufacturing',pubDate:'Wed, 01 Jul 2026 07:00:00 GMT',link:'https://www.newsspace.kr/news/article.html?no=13025',source:'newsspace.kr'},
+  {title:'한국 차세대발사체(NGLV) 체계개발 본격화 — 2030년 달 탐사 임무 대응',cat:'Launch',pubDate:'Mon, 29 Jun 2026 11:00:00 GMT',link:'https://www.kari.re.kr/kor/contents/177',source:'kari.re.kr'},
+  {title:'이노스페이스, 한빛-TLV 후속 상업 발사체 개발 계획 공개 — 소형위성 전용 궤도진입',cat:'Launch',pubDate:'Sun, 28 Jun 2026 09:00:00 GMT',link:'https://www.newsspace.kr/',source:'newsspace.kr'},
+];
+
+/* 2026-07-02 글로벌 큐레이션 뉴스 */
 var CURATED_NEWS=[
   {title:'ULA Atlas V, Amazon Leo 8 위성 29기 발사 성공 — 역대 Atlas V 최대 탑재량(18톤)',cat:'Launch',pubDate:'Wed, 02 Jul 2026 04:24:00 GMT',link:'https://www.space.com/space-exploration/launches-spacecraft/ula-atlas-v-amazon-leo-8-internet-satellite-launch',source:'space.com'},
   {title:'SpaceX Falcon 9, Starlink 17-46 미션 24기 발사 — 상반기 누적 1,600기 돌파',cat:'Satellite',pubDate:'Wed, 01 Jul 2026 22:57:00 GMT',link:'https://spaceflightnow.com/2026/07/01/live-coverage-spacex-to-launch-24-starlink-satellites-on-falcon-9-rocket-from-vandenberg-sfb-9/',source:'spaceflightnow.com'},
@@ -549,40 +559,49 @@ var CURATED_NEWS=[
   {title:'방위·주권 수요가 우주산업 성장 견인 — Golden Dome 연계 위성 수요 급증',cat:'Defense',pubDate:'Tue, 30 Jun 2026 11:00:00 GMT',link:'https://nova.space/in-the-loop/2026-outlook-what-to-expect-in-the-space-industry/',source:'nova.space'},
 ];
 
-function renderTopNews(){
-  var el=document.getElementById('topNews');
-  var now=new Date();
+var activeNewsTab='global';
 
-  function isRecent(pd, daysBack){
-    if(!pd)return false;
-    var d=new Date(pd); if(isNaN(d))return false;
-    var diff=(now-d)/(1000*60*60*24);
-    return diff>=0&&diff<daysBack;
-  }
-
-  var seen={};
-  function dedup(arr){
-    return arr.filter(function(n){
-      var k=n.title.trim().slice(0,40);
-      if(seen[k])return false; seen[k]=true; return true;
-    });
-  }
-
-  var todayNews=dedup(allNews.filter(function(n){return isRecent(n.pubDate,1);}));
-  var items=todayNews.length>=5 ? todayNews.slice(0,10)
-           : dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).length>=3
-             ? dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).slice(0,10)
-             : CURATED_NEWS; /* RSS 미확보 시 큐레이션 데이터 사용 */
-
-  function renderItem(n){
+function renderNewsItems(items){
+  return items.map(function(n){
     var src=n.source||'';if(!src){try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}}
     return '<div class="ni" onclick="window.open(\''+n.link.replace(/\'/g,'\\\'')+'\')">' +
       '<div class="ni-thumb">'+(EMOJIS[n.cat]||'📰')+'</div>' +
       '<div class="ni-body"><div class="ni-title">'+n.title+'</div>' +
       '<div class="ni-meta">'+fmtD(n.pubDate)+' | '+catBadge(n.cat)+
       '<span style="margin-left:4px;color:var(--muted)">'+src+'</span></div></div></div>';
+  }).join('');
+}
+
+function switchNewsTab(tab, btn){
+  activeNewsTab=tab;
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  renderTopNews();
+}
+
+function renderTopNews(){
+  var el=document.getElementById('topNews');
+  var now=new Date();
+
+  if(activeNewsTab==='kr'){
+    el.innerHTML=renderNewsItems(KR_NEWS);
+    return;
   }
-  el.innerHTML=items.map(renderItem).join('');
+
+  /* 글로벌: RSS 우선, 미확보 시 큐레이션 */
+  function isRecent(pd,daysBack){
+    if(!pd)return false;
+    var d=new Date(pd);if(isNaN(d))return false;
+    return (now-d)/(1000*60*60*24)<daysBack;
+  }
+  var seen={};
+  function dedup(arr){return arr.filter(function(n){var k=n.title.trim().slice(0,40);if(seen[k])return false;seen[k]=true;return true;});}
+  var rss1=dedup(allNews.filter(function(n){return isRecent(n.pubDate,1);}));
+  var items=rss1.length>=5?rss1.slice(0,10)
+    :dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).length>=3
+      ?dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).slice(0,10)
+      :CURATED_NEWS;
+  el.innerHTML=renderNewsItems(items);
 }
 
 /* ===== HOT KEYWORDS ===== */
