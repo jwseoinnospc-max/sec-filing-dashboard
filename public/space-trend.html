@@ -533,14 +533,27 @@ function renderWeekly(){
     '<div class="dl-btns"><button class="dl-btn dl-ppt">PPT 다운로드</button><button class="dl-btn dl-pdf">PDF 다운로드</button></div>';
 }
 
-/* ===== TOP NEWS (오늘자 RSS 기사 필터링) ===== */
+/* ===== TOP NEWS (오늘자 RSS 기사 필터링 + 정적 큐레이션 폴백) ===== */
 var EMOJIS={Launch:'🚀',Satellite:'🛰️',Defense:'⭐',Investment:'💰','M&A':'🤝',Policy:'🏛️',Manufacturing:'🏭',AI:'🤖',Other:'📰'};
+
+/* 2026-07-02 큐레이션 뉴스 */
+var CURATED_NEWS=[
+  {title:'ULA Atlas V, Amazon Leo 8 위성 29기 발사 성공 — 역대 Atlas V 최대 탑재량(18톤)',cat:'Launch',pubDate:'Wed, 02 Jul 2026 04:24:00 GMT',link:'https://www.space.com/space-exploration/launches-spacecraft/ula-atlas-v-amazon-leo-8-internet-satellite-launch',source:'space.com'},
+  {title:'SpaceX Falcon 9, Starlink 17-46 미션 24기 발사 — 상반기 누적 1,600기 돌파',cat:'Satellite',pubDate:'Wed, 01 Jul 2026 22:57:00 GMT',link:'https://spaceflightnow.com/2026/07/01/live-coverage-spacex-to-launch-24-starlink-satellites-on-falcon-9-rocket-from-vandenberg-sfb-9/',source:'spaceflightnow.com'},
+  {title:'Blue Origin, New Glenn 발사대 재건 착수 — 수평-수직 하이브리드 통합 방식으로 전환',cat:'Launch',pubDate:'Wed, 02 Jul 2026 10:00:00 GMT',link:'https://spacenews.com/blue-origin-begins-rebuilding-new-glenn-pad/',source:'spacenews.com'},
+  {title:'NASA, Swift 망원경 구조에 3,000만 달러 투입 — Northrop Grumman Pegasus XL 공중발사',cat:'Policy',pubDate:'Tue, 30 Jun 2026 14:00:00 GMT',link:'https://www.space.com/',source:'space.com'},
+  {title:'X급 태양폭풍 발생 — CME 7월 3일 지구 도달 예상, 통신 장애 주의',cat:'Other',pubDate:'Wed, 02 Jul 2026 06:00:00 GMT',link:'https://www.space.com/news',source:'space.com'},
+  {title:'Blue Origin, New Glenn 연내 복귀 재확인 — 5월 폭발 사고 후 복구 순조',cat:'Launch',pubDate:'Sat, 28 Jun 2026 12:00:00 GMT',link:'https://www.space.com/space-exploration/launches-spacecraft/blue-origin-says-new-glenn-rocket-will-launch-again-before-the-end-of-the-year-after-explosion',source:'space.com'},
+  {title:'WEF: 글로벌 우주시장 1.8조 달러 견인하는 3대 상업 트렌드 발표',cat:'Investment',pubDate:'Mon, 30 Jun 2026 08:00:00 GMT',link:'https://www.weforum.org/stories/2026/06/3-commercial-trends-driving-space-market/',source:'weforum.org'},
+  {title:'글로벌 우주경제 6,260억 달러 달성 — 10년 내 1조 달러 전망 가시화',cat:'Investment',pubDate:'Tue, 01 Jul 2026 09:00:00 GMT',link:'https://orbitalradar.com/space-economy',source:'orbitalradar.com'},
+  {title:'SpaceX Falcon Heavy, NASA 낸시 그레이스 로먼 우주망원경 발사 준비 완료',cat:'Launch',pubDate:'Mon, 29 Jun 2026 15:00:00 GMT',link:'https://www.spacex.com/launches',source:'spacex.com'},
+  {title:'방위·주권 수요가 우주산업 성장 견인 — Golden Dome 연계 위성 수요 급증',cat:'Defense',pubDate:'Tue, 30 Jun 2026 11:00:00 GMT',link:'https://nova.space/in-the-loop/2026-outlook-what-to-expect-in-the-space-industry/',source:'nova.space'},
+];
+
 function renderTopNews(){
   var el=document.getElementById('topNews');
   var now=new Date();
-  var todayY=now.getFullYear(), todayM=now.getMonth(), todayD=now.getDate();
 
-  /* 오늘자 기사 필터 → 부족하면 어제 포함 */
   function isRecent(pd, daysBack){
     if(!pd)return false;
     var d=new Date(pd); if(isNaN(d))return false;
@@ -560,19 +573,17 @@ function renderTopNews(){
   var items=todayNews.length>=5 ? todayNews.slice(0,10)
            : dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).length>=3
              ? dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).slice(0,10)
-             : dedup(allNews.filter(function(n){return isRecent(n.pubDate,7);})).slice(0,10);
+             : CURATED_NEWS; /* RSS 미확보 시 큐레이션 데이터 사용 */
 
-  if(!items.length){
-    el.innerHTML='<div class="empty">뉴스를 불러오는 중입니다...</div>';return;
-  }
-  el.innerHTML=items.map(function(n){
-    var src='';try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}
+  function renderItem(n){
+    var src=n.source||'';if(!src){try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}}
     return '<div class="ni" onclick="window.open(\''+n.link.replace(/\'/g,'\\\'')+'\')">' +
       '<div class="ni-thumb">'+(EMOJIS[n.cat]||'📰')+'</div>' +
       '<div class="ni-body"><div class="ni-title">'+n.title+'</div>' +
       '<div class="ni-meta">'+fmtD(n.pubDate)+' | '+catBadge(n.cat)+
       '<span style="margin-left:4px;color:var(--muted)">'+src+'</span></div></div></div>';
-  }).join('');
+  }
+  el.innerHTML=items.map(renderItem).join('');
 }
 
 /* ===== HOT KEYWORDS ===== */
