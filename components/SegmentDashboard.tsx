@@ -249,10 +249,10 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 130px 1fr;
+          grid-template-columns: 1fr 110px 1fr;
           align-items: center;
           gap: 0;
-          padding: 22px 4px 18px;
+          padding: 22px 2px 18px;
         }
 
         .period {
@@ -289,7 +289,7 @@ function CompareCard({
         }
 
         .connector .line {
-          width: 18px;
+          width: 8px;
           height: 2px;
         }
 
@@ -325,7 +325,7 @@ function CompareCard({
           font-size: 12px;
           line-height: 1.35;
           color: var(--muted);
-          min-width: 90px;
+          min-width: 72px;
         }
 
         .side-label span {
