@@ -225,24 +225,6 @@ export default async function Home() {
           rndText={money(Q1_2026_RND / 1000)}
           growthText={growth(Q1_2026_RND, Q1_2025_RND)}
         />
-
-        <NetIncomeCard
-          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_NET_INCOME))}
-          netIncomeText={money(Q1_2026_NET_INCOME / 1000)}
-          marginText={pct(Q1_2026_NET_INCOME / Q1_2026_REVENUE)}
-        />
-
-        <OperatingCashFlowCard
-          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_CASH_FLOW))}
-          ocfText={money(Q1_2026_OPERATING_CASH_FLOW / 1000)}
-          marginText={pct(Q1_2026_OPERATING_CASH_FLOW / Q1_2026_REVENUE)}
-        />
-
-        <OperatingLossCard
-          filingUrl={filingTextLink(Q1_2026_FILING_URL, filingNumber(Q1_2026_OPERATING_LOSS))}
-          lossText={money(Q1_2026_OPERATING_LOSS / 1000)}
-          ttmLossText={money(TTM_OPERATING_LOSS / 1000)}
-        />
       </section>
 
       <SegmentDashboard />
