@@ -249,7 +249,7 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 110px 1fr;
+          grid-template-columns: 1fr 180px 1fr;
           align-items: center;
           gap: 0;
           padding: 22px 2px 18px;
@@ -364,14 +364,14 @@ function CompareCard({
 
         .arrow-wrap {
           position: relative;
-          width: 160px;
+          width: 100%;
           height: 80px;
           margin: 18px auto 0;
         }
 
         .arrow {
           display: block;
-          width: 160px;
+          width: 100%;
           height: 80px;
         }
 
