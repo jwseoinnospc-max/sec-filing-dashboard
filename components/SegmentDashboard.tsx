@@ -221,7 +221,7 @@ function CompareCard({
           container-type: inline-size;
           position: relative;
           background: rgba(17, 24, 39, 0.88);
-          border: 1px solid var(--line);
+          border: none;
           border-radius: 0 0 12px 12px;
           color: var(--text);
           overflow: hidden;
@@ -230,7 +230,7 @@ function CompareCard({
 
         .title-bar {
           background: var(--bg);
-          border: 1px solid #1e293b;
+          border: none;
           color: #ffffff;
           text-align: center;
           font-size: 16px;
@@ -256,7 +256,7 @@ function CompareCard({
         }
 
         .period {
-          border: 1px solid #1e293b;
+          border: none;
           border-radius: 8px;
           padding: 16px 12px;
         }
