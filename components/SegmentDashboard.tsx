@@ -249,16 +249,16 @@ function CompareCard({
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 150px 1fr;
+          grid-template-columns: 1fr 130px 1fr;
           align-items: center;
-          gap: 12px;
-          padding: 22px 14px 18px;
+          gap: 0;
+          padding: 22px 4px 18px;
         }
 
         .period {
           border: none;
           border-radius: 8px;
-          padding: 16px 12px;
+          padding: 16px 4px;
         }
 
         .period h3 {
