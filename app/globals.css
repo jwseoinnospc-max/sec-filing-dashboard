@@ -85,7 +85,7 @@ p { color: var(--muted); line-height: 1.6; }
 .search input { min-width: 220px; background: transparent; border: 0; outline: 0; color: var(--text); padding: 10px; font-size: 14px; }
 button, input, select, textarea { font-family: inherit; }
 button { background: var(--accent); color: #001018; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; align-items: start; }
 .metric-negative, .metric-negative a { color: #f87171; }
 .grid .card { padding: 12px; }
 .grid .card h3 { font-size: 11px; }
@@ -209,7 +209,7 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .delta { margin-top: 8px; color: var(--good); font-size: 13px; }
 .metric-sub { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
 .metric-sub strong { color: var(--text); font-size: 16px; font-weight: 800; margin-left: 4px; }
-.backlog-card { display: flex; align-items: center; justify-content: flex-start; gap: 6px; }
+.backlog-card { display: flex; align-items: flex-start; justify-content: flex-start; gap: 6px; }
 .backlog-text { flex: 1; min-width: 0; }
 .backlog-metric-sub { border-top: none; padding-top: 0; }
 .metric-sub-rule { display: block; width: 50%; border-top: 1px dashed var(--line); margin-bottom: 10px; }
