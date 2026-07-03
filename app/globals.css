@@ -272,10 +272,18 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-growth-up { color: #f87171; }
 .fin-table .fin-growth-down { color: #60a5fa; }
 .space-market-page { background: var(--bg); }
+.firefly-page {
+  position: relative;
+}
 .firefly-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
     linear-gradient(135deg, rgba(2, 6, 23, 0.75), rgba(15, 23, 42, 0.75)),
-    url('/firefly-bg.png') center / cover no-repeat !important;
+    url('/firefly-bg.png') center / cover no-repeat;
+  pointer-events: none;
 }
 .space-group-title { margin: 28px 0 12px; font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
 .sector-index-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
