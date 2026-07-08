@@ -8,7 +8,7 @@ const ANNUAL_LAUNCH_ECONOMICS = [
   { year: "2023", revenue: 7.2, cost: 6.4 },
   { year: "2024", revenue: 7.8, cost: 5.7 },
   { year: "2025", revenue: 9.5, cost: 5.6 },
-  { year: "26 1Q", revenue: 10.6, cost: 5.9 },
+  { year: "2026 1Q", revenue: 10.6, cost: 5.9 },
 ];
 
 export default function LaunchEconomicsChartCard() {
@@ -19,7 +19,7 @@ export default function LaunchEconomicsChartCard() {
         <BarChart data={ANNUAL_LAUNCH_ECONOMICS} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
           <XAxis dataKey="year" tick={(props) => {
             const { x, y, payload } = props;
-            const isNew = payload.value === "26 1Q";
+            const isNew = payload.value === "2026 1Q";
             return <text x={x} y={y} dy={12} textAnchor="middle" fontSize={11} fill={isNew ? "#22c55e" : "#94a3b8"} fontWeight={isNew ? 700 : 400}>{payload.value}</text>;
           }} axisLine={{ stroke: "#334155" }} tickLine={false} />
           <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} />
