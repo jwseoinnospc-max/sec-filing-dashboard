@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const ANNUAL_LAUNCH_ECONOMICS = [
   { year: "2021", revenue: 6.5, cost: 9.0 },
@@ -17,7 +17,11 @@ export default function LaunchEconomicsChartCard() {
       <h3>📊 발사 1회 평균 수익 및 비용 (US$M)</h3>
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={ANNUAL_LAUNCH_ECONOMICS} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
-          <XAxis dataKey="year" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={{ stroke: "#334155" }} tickLine={false} />
+          <XAxis dataKey="year" tick={(props) => {
+            const { x, y, payload } = props;
+            const isNew = payload.value === "26 1Q";
+            return <text x={x} y={y} dy={12} textAnchor="middle" fontSize={11} fill={isNew ? "#22c55e" : "#94a3b8"} fontWeight={isNew ? 700 : 400}>{payload.value}</text>;
+          }} axisLine={{ stroke: "#334155" }} tickLine={false} />
           <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} axisLine={false} tickLine={false} />
           <Tooltip
             formatter={(v, name) => [`$${v}M`, name === "revenue" ? "발사 수익" : "발사 비용"]}
@@ -27,16 +31,8 @@ export default function LaunchEconomicsChartCard() {
             wrapperStyle={{ fontSize: 11 }}
             formatter={(value) => (value === "revenue" ? "발사 수익" : "발사 비용")}
           />
-          <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
-            {ANNUAL_LAUNCH_ECONOMICS.map((entry) => (
-              <Cell key={entry.year} fill={entry.year === "26 1Q" ? "#22c55e" : "#f59e0b"} />
-            ))}
-          </Bar>
-          <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
-            {ANNUAL_LAUNCH_ECONOMICS.map((entry) => (
-              <Cell key={entry.year} fill={entry.year === "26 1Q" ? "#22c55e" : "#38bdf8"} />
-            ))}
-          </Bar>
+          <Bar dataKey="cost" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="revenue" fill="#38bdf8" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
