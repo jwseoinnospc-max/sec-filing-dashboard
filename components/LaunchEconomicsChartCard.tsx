@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const ANNUAL_LAUNCH_ECONOMICS = [
   { year: "2021", revenue: 6.5, cost: 9.0 },
@@ -27,8 +27,16 @@ export default function LaunchEconomicsChartCard() {
             wrapperStyle={{ fontSize: 11 }}
             formatter={(value) => (value === "revenue" ? "발사 수익" : "발사 비용")}
           />
-          <Bar dataKey="cost" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="revenue" fill="#38bdf8" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
+            {ANNUAL_LAUNCH_ECONOMICS.map((entry) => (
+              <Cell key={entry.year} fill={entry.year === "26 1Q" ? "#22c55e" : "#f59e0b"} />
+            ))}
+          </Bar>
+          <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+            {ANNUAL_LAUNCH_ECONOMICS.map((entry) => (
+              <Cell key={entry.year} fill={entry.year === "26 1Q" ? "#22c55e" : "#38bdf8"} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
