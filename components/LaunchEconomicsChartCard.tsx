@@ -8,6 +8,7 @@ const ANNUAL_LAUNCH_ECONOMICS = [
   { year: "2023", revenue: 7.2, cost: 6.4 },
   { year: "2024", revenue: 7.8, cost: 5.7 },
   { year: "2025", revenue: 9.5, cost: 5.6 },
+  { year: "26 1Q", revenue: 10.6, cost: 5.9 },
 ];
 
 export default function LaunchEconomicsChartCard() {
