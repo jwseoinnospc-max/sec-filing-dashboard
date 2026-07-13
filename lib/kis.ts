@@ -214,11 +214,18 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
       cache: "no-store"
     });
 
-    // Token was invalidated externally (e.g. a new token was issued elsewhere) — retry once with a fresh token.
-    if (res.status === 401 && !forceRefresh) return fetchDomesticPriceOnce(code, true);
-    if (!res.ok) return null;
+    // KIS sometimes returns 200 with rt_cd:"1" for auth errors instead of HTTP 401.
+    if (!res.ok || res.status === 401) {
+      if (!forceRefresh) return fetchDomesticPriceOnce(code, true);
+      return null;
+    }
 
     const data = await res.json();
+    // EGW001xx / EGW002xx = token invalid/expired — retry with a fresh token.
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticPriceOnce(code, true);
+    }
+
     const output = data?.output;
     if (!output || !output.stck_prpr) return null;
 
@@ -287,10 +294,16 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
       }
     );
 
-    if (res.status === 401 && !forceRefresh) return fetchDomesticDailyHistoryOnce(code, true);
-    if (!res.ok) return null;
+    if (!res.ok || res.status === 401) {
+      if (!forceRefresh) return fetchDomesticDailyHistoryOnce(code, true);
+      return null;
+    }
 
     const data = await res.json();
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticDailyHistoryOnce(code, true);
+    }
+
     const rows = data?.output2;
     if (!Array.isArray(rows) || rows.length === 0) return null;
 
