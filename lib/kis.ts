@@ -140,7 +140,7 @@ async function fetchOverseasPriceOnce(symbol: string, excd: string): Promise<Kis
         tr_id: "HHDFS00000300",
         custtype: "P"
       },
-      next: { revalidate: 900 }
+      cache: "no-store"
     });
 
     if (!res.ok) return null;
@@ -203,7 +203,7 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
         tr_id: "FHKST01010100",
         custtype: "P"
       },
-      next: { revalidate: 900 }
+      cache: "no-store"
     });
 
     if (!res.ok) return null;
@@ -275,7 +275,7 @@ async function fetchDomesticDailyHistoryOnce(code: string): Promise<KisDailyBar[
           tr_id: "FHKST03010100",
           custtype: "P"
         },
-        next: { revalidate: 3600 }
+        cache: "no-store"
       }
     );
 
@@ -413,7 +413,7 @@ export async function getDomesticIndex(iscd: string): Promise<KisIndexQuote | nu
         tr_id: "FHPUP02100000",
         custtype: "P"
       },
-      next: { revalidate: 900 }
+      cache: "no-store"
     });
     if (!res.ok) return null;
     const data = await res.json();
