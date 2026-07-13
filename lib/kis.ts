@@ -85,21 +85,29 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
   }
 }
 
-async function getAccessToken(): Promise<string | null> {
+async function getAccessToken(forceRefresh = false): Promise<string | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   if (!appKey || !appSecret) return null;
 
-  if (tokenCache && tokenCache.expiresAt > Date.now()) {
+  if (!forceRefresh && tokenCache && tokenCache.expiresAt > Date.now()) {
     return tokenCache.accessToken;
+  }
+
+  if (forceRefresh) {
+    // Token was rejected by KIS — clear stale caches so we issue a fresh one.
+    tokenCache = null;
+    lastAttemptAt = 0;
   }
 
   // Another instance may already hold a valid token — check the shared store before
   // considering a brand new issuance.
-  const shared = await kvGetToken();
-  if (shared) {
-    tokenCache = shared;
-    return shared.accessToken;
+  if (!forceRefresh) {
+    const shared = await kvGetToken();
+    if (shared) {
+      tokenCache = shared;
+      return shared.accessToken;
+    }
   }
 
   if (Date.now() - lastAttemptAt < ATTEMPT_COOLDOWN_MS) {
@@ -187,10 +195,10 @@ export type KisDomesticPrice = {
   bps: number | null;
 };
 
-async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | null> {
+async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promise<KisDomesticPrice | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
-  const token = await getAccessToken();
+  const token = await getAccessToken(forceRefresh);
   if (!appKey || !appSecret || !token) return null;
 
   try {
@@ -206,6 +214,8 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
       cache: "no-store"
     });
 
+    // Token was invalidated externally (e.g. a new token was issued elsewhere) — retry once with a fresh token.
+    if (res.status === 401 && !forceRefresh) return fetchDomesticPriceOnce(code, true);
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -235,8 +245,6 @@ async function fetchDomesticPriceOnce(code: string): Promise<KisDomesticPrice | 
 
 // FID_INPUT_ISCD: 6-digit KRX stock code (e.g. "012450" for Hanwha Aerospace)
 export async function getDomesticPrice(code: string): Promise<KisDomesticPrice | null> {
-  const first = await fetchDomesticPriceOnce(code);
-  if (first) return first;
   return fetchDomesticPriceOnce(code);
 }
 
@@ -246,10 +254,10 @@ function formatDate(d: Date) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-async function fetchDomesticDailyHistoryOnce(code: string): Promise<KisDailyBar[] | null> {
+async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false): Promise<KisDailyBar[] | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
-  const token = await getAccessToken();
+  const token = await getAccessToken(forceRefresh);
   if (!appKey || !appSecret || !token) return null;
 
   const today = new Date();
@@ -279,6 +287,7 @@ async function fetchDomesticDailyHistoryOnce(code: string): Promise<KisDailyBar[
       }
     );
 
+    if (res.status === 401 && !forceRefresh) return fetchDomesticDailyHistoryOnce(code, true);
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -296,8 +305,6 @@ async function fetchDomesticDailyHistoryOnce(code: string): Promise<KisDailyBar[
 
 // Daily close-price history (~last 100 trading days, KIS's per-call cap) for charting.
 export async function getDomesticDailyHistory(code: string): Promise<KisDailyBar[] | null> {
-  const first = await fetchDomesticDailyHistoryOnce(code);
-  if (first) return first;
   return fetchDomesticDailyHistoryOnce(code);
 }
 
