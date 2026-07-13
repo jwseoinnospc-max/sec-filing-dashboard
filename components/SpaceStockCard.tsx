@@ -75,7 +75,7 @@ export function SpaceStockCard({
           </div>
         </>
       ) : (
-        <div className="space-stock-price space-stock-price-na">조회 중...</div>
+        <div className="space-stock-price space-stock-price-na">조회 실패</div>
       )}
 
       {supportsChart ? (

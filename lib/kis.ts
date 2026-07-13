@@ -64,7 +64,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         appkey: appKey,
         appsecret: appSecret
       }),
-      next: { revalidate: 900 }
+      cache: "no-store"
     });
 
     const data = await res.json();
