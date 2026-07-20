@@ -1,5 +1,6 @@
 ﻿"use client";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import LineSidebar from "./LineSidebar";
 
 const NAV_ITEMS = [
@@ -21,8 +22,14 @@ export default function NavMenu() {
   return (
     <aside className="nav-sidebar">
       <div className="nav-sidebar-brand">
-        <span className="nav-sidebar-brand-text">ISD</span>
-        <span className="nav-sidebar-brand-sub">Dashboard</span>
+        <Image
+          src="/innospace-logo.png"
+          alt="INNOSPACE"
+          width={130}
+          height={56}
+          style={{ objectFit: "contain", objectPosition: "left center" }}
+          priority
+        />
       </div>
       <LineSidebar
         items={NAV_ITEMS.map(i => i.label)}

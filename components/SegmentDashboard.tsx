@@ -477,7 +477,7 @@ export default function SegmentDashboard() {
       <style jsx>{`
         .segment-dashboard {
           display: grid;
-          grid-template-columns: 560px minmax(0, 1fr) minmax(0, 1fr);
+          grid-template-columns: 370px minmax(0, 1fr) minmax(0, 1fr);
           gap: 24px;
           margin: 20px 0;
         }
@@ -491,5 +491,6 @@ export default function SegmentDashboard() {
     </section>
   );
 }
+
 
 
