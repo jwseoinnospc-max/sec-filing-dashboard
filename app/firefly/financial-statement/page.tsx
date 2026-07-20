@@ -369,35 +369,6 @@ export default function FireflyFinancialStatementPage() {
 
       <section className="main">
         <FireflyFinancialTable rows={rows} />
-
-        <div className="card" style={{ marginTop: 16 }}>
-          <div className="section-title"><h2>주요 지표 해설</h2></div>
-          <p className="notice">
-            📈 <strong>FY2025 매출 $159.9M (+163% YoY)</strong> — Spacecraft Solutions 부문이 $131.2M으로 82% 기여.
-            Blue Ghost 달 착륙선 및 위성 플랫폼 납품이 매출 급증의 핵심.
-          </p>
-          <p className="notice">
-            ✅ <strong>매출총이익 흑자 전환</strong> — FY2024 -$11.4M → FY2025 +$30.7M.
-            매출총이익률(GPM) -18.7% → +19.2%로 대폭 개선.
-          </p>
-          <p className="notice">
-            🚀 <strong>Q1 2025 매출 급등 ($55.9M)</strong> — Blue Ghost Mission 1 완료 인식(2025.03) 및 Spacecraft Solutions 납품 집중 분기.
-          </p>
-          <p className="notice">
-            🏛️ <strong>2025년 IPO 자금 조달 $1.26B</strong> — IPO·Series D 우선주 발행으로 재무활동 현금흐름 급등.
-            SG&A Q4 2025 급증($44M)은 IPO 관련 일회성 비용 반영.
-          </p>
-          <p className="notice">
-            💰 <strong>R&D 비용 $200M (FY2025)</strong> — Beta 중형 로켓 개발 및 Blue Ghost 2 준비에 집중 투자.
-            매출 대비 R&D 비율 125%.
-          </p>
-          <p className="notice">
-            📦 <strong>수주잔고 $1.35B (+23% YoY)</strong> — NSSL Phase 3, NASA CLPS TO-20A 포함 정부 계약 중심.
-          </p>
-          <p className="notice">
-            ⚠️ <strong>Q3 2025 순손실 $133.4M 중 $42.2M은 비현금 워런트 평가손</strong> — 영업손실($62.2M) 기준으로 분석 필요.
-          </p>
-        </div>
       </section>
     </main>
   );
