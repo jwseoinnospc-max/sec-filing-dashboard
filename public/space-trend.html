@@ -588,7 +588,11 @@ function renderTopNews(){
     return;
   }
 
-  /* 글로벌: RSS 우선, 미확보 시 큐레이션 */
+  /* 글로벌: 오늘 자(24시간 이내) RSS 기사만 표시 */
+  if(!allNews.length){
+    el.innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+    return;
+  }
   function isRecent(pd,daysBack){
     if(!pd)return false;
     var d=new Date(pd);if(isNaN(d))return false;
@@ -596,12 +600,12 @@ function renderTopNews(){
   }
   var seen={};
   function dedup(arr){return arr.filter(function(n){var k=n.title.trim().slice(0,40);if(seen[k])return false;seen[k]=true;return true;});}
-  var rss1=dedup(allNews.filter(function(n){return isRecent(n.pubDate,1);}));
-  var items=rss1.length>=5?rss1.slice(0,10)
-    :dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).length>=3
-      ?dedup(allNews.filter(function(n){return isRecent(n.pubDate,3);})).slice(0,10)
-      :CURATED_NEWS;
-  el.innerHTML=renderNewsItems(items);
+  var todayItems=dedup(allNews.filter(function(n){return isRecent(n.pubDate,1);})).slice(0,10);
+  if(!todayItems.length){
+    el.innerHTML='<div class="empty">오늘 자 새 기사가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML=renderNewsItems(todayItems);
 }
 
 /* ===== HOT KEYWORDS ===== */
@@ -771,8 +775,6 @@ document.getElementById('nFilters').addEventListener('click',function(e){
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
   renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
-  // 큐레이션 뉴스를 즉시 표시 (RSS 로드 전 스켈레톤 대체)
-  renderTopNews();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
