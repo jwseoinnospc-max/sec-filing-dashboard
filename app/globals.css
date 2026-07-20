@@ -560,3 +560,123 @@ body { padding-left: 186px; }
   max-width: 130px;
   height: auto;
 }
+
+/* ───────── Grouped nav section ───────── */
+.nav-groups {
+  margin-top: 12px;
+  padding-left: calc(22px + 10px); /* match LineSidebar marker-length + gap */
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 7px 0;
+  text-align: left;
+  position: relative;
+  color: #4a6080;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.18s;
+  white-space: nowrap;
+}
+
+.nav-group-header:hover,
+.nav-group-header--active {
+  color: #94a3b8;
+}
+
+.nav-group-marker {
+  position: absolute;
+  left: calc(-22px - 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 1px;
+  background: #1e3048;
+  flex-shrink: 0;
+  transition: background 0.18s, width 0.18s;
+}
+
+.nav-group-header--active .nav-group-marker {
+  background: #2a4a6a;
+  width: 20px;
+}
+
+.nav-group-label {
+  flex: 1;
+  pointer-events: none;
+}
+
+.nav-group-chevron {
+  font-size: 9px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.nav-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 4px;
+  border-left: 1px solid #1a2a3a;
+  margin-left: 4px;
+  padding-left: 12px;
+}
+
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 0;
+  text-decoration: none;
+  color: #4a6080;
+  font-size: 0.8rem;
+  transition: color 0.15s, transform 0.15s;
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-sub-item:hover {
+  color: #94a3b8;
+  transform: translateX(3px);
+}
+
+.nav-sub-item--active {
+  color: #38bdf8 !important;
+}
+
+.nav-sub-tick {
+  width: 10px;
+  height: 1px;
+  background: #1e3048;
+  flex-shrink: 0;
+  transition: background 0.15s, width 0.15s;
+}
+
+.nav-sub-item:hover .nav-sub-tick {
+  background: #2a4a6a;
+  width: 14px;
+}
+
+.nav-sub-item--active .nav-sub-tick {
+  background: #38bdf8;
+  width: 14px;
+}
+
+.nav-sub-label {
+  pointer-events: none;
+}
