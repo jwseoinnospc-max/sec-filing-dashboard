@@ -27,6 +27,7 @@ function OBJModel({
   initYaw,
   autoRotate,
   autoRotateSpeed,
+  autoRotateAxis,
   enableManualRotation,
   onLoaded,
 }: {
@@ -35,6 +36,7 @@ function OBJModel({
   initYaw: number;
   autoRotate: boolean;
   autoRotateSpeed: number;
+  autoRotateAxis: "x" | "y";
   enableManualRotation: boolean;
   onLoaded?: () => void;
 }) {
@@ -53,14 +55,12 @@ function OBJModel({
       if (mesh.isMesh) {
         mesh.castShadow = true;
         mesh.receiveShadow = true;
-        // Use default if material is missing or pitch-black
         const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
         if (!mat || (mat as THREE.MeshPhongMaterial).color?.getHex() === 0) {
           mesh.material = defaultMat;
         }
       }
     });
-    // Normalize size
     const box = new THREE.Box3().setFromObject(cloned);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
@@ -111,7 +111,11 @@ function OBJModel({
   useFrame((_, dt) => {
     let need = false;
     if (autoRotate) {
-      groupRef.current.rotation.y += autoRotateSpeed * dt;
+      if (autoRotateAxis === "x") {
+        groupRef.current.rotation.x += autoRotateSpeed * dt;
+      } else {
+        groupRef.current.rotation.y += autoRotateSpeed * dt;
+      }
       need = true;
     }
     groupRef.current.rotation.y += vel.current.x;
@@ -147,6 +151,7 @@ export interface ModelViewerProps {
   environmentPreset?: string;
   autoRotate?: boolean;
   autoRotateSpeed?: number;
+  autoRotateAxis?: "x" | "y";
   showScreenshotButton?: boolean;
   fadeIn?: boolean;
   onModelLoaded?: () => void;
@@ -170,7 +175,7 @@ export default function ModelViewer({
   environmentPreset = "city",
   autoRotate = false,
   autoRotateSpeed = 0.35,
-  showScreenshotButton = false,
+  autoRotateAxis = "y",
   onModelLoaded,
 }: ModelViewerProps) {
   const initPitch = deg2rad(defaultRotationX);
@@ -206,6 +211,7 @@ export default function ModelViewer({
             initYaw={initYaw}
             autoRotate={autoRotate}
             autoRotateSpeed={autoRotateSpeed}
+            autoRotateAxis={autoRotateAxis}
             enableManualRotation={enableManualRotation}
             onLoaded={onModelLoaded}
           />
@@ -215,6 +221,7 @@ export default function ModelViewer({
           enablePan={false}
           enableRotate={false}
           enableZoom={enableManualZoom}
+          zoomSpeed={1.2}
           minDistance={minZoomDistance}
           maxDistance={maxZoomDistance}
         />
