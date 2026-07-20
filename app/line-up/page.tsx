@@ -211,9 +211,7 @@ function NanoPortrait() {
           defaultZoom={2.5}
           defaultRotationX={-5}
           defaultRotationY={20}
-          autoRotate
-          autoRotateAxis="x"
-          autoRotateSpeed={0.5}
+          
           enableManualRotation={true}
           enableManualZoom={true}
           minZoomDistance={1.0}
@@ -322,3 +320,4 @@ export default function LineUpPage() {
     </main>
   );
 }
+
