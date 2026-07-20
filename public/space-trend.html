@@ -792,5 +792,43 @@ async function loadAll(){
 loadAll();
 setInterval(loadAll,10*60*1000);
 </script>
+
+<!-- AnimatedContent: GSAP + ScrollTrigger card entrance animations -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+function animateCards() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach((card, i) => {
+    // Reset visibility (cards start hidden via gsap.set)
+    gsap.set(card, { y: 60, opacity: 0, scale: 0.97, visibility: 'visible' });
+
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 90%',
+      once: true,
+      onEnter: () => {
+        gsap.to(card, {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.7,
+          ease: 'power3.out',
+          delay: (i % 4) * 0.08  // stagger within each row
+        });
+      }
+    });
+  });
+}
+
+// Run after initial render completes (cards may be injected by renderAll)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(animateCards, 100));
+} else {
+  setTimeout(animateCards, 300);
+}
+</script>
 </body>
 </html>
