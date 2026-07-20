@@ -701,6 +701,7 @@ body { padding-left: 186px; }
   content: "";
   position: absolute;
   inset: -3px -48px;
+  pointer-events: none;
 }
 
 /* animated marker line */
