@@ -271,7 +271,12 @@ button { background: var(--accent); color: #001018; border: 0; border-radius: 10
 .fin-table .fin-growth { font-weight: 700; }
 .fin-table .fin-growth-up { color: #f87171; }
 .fin-table .fin-growth-down { color: #60a5fa; }
-.space-market-page { background: var(--bg); }
+.space-market-page { background: var(--bg); position: relative; }
+/* SideRays WebGL canvas sits at z-index:0; all page content must be above it */
+.space-market-page > *:not([style*="position: fixed"]) { position: relative; z-index: 1; }
+/* Hide the default rocketlab-bg on this page — SideRays replaces it */
+.space-market-page ~ * body::before,
+body:has(.space-market-page)::before { opacity: 0; }
 .firefly-page {
   position: relative;
 }

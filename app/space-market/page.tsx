@@ -8,6 +8,7 @@ import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
 import TopMoverRow, { type MoverItem } from "@/components/TopMoverRow";
 import SpaceMarketTabToggle from "@/components/SpaceMarketTabs";
+import SideRays from "@/components/SideRays";
 import { SpaceStockCard } from "@/components/SpaceStockCard";
 import { getProfile, getValuation } from "@/lib/finnhub";
 import { getDomesticPrice, getDomesticDailyHistory, type KisDomesticPrice, type KisDailyBar } from "@/lib/kis";
@@ -174,6 +175,18 @@ export default async function SpaceMarketPage() {
 
   return (
     <main className="page space-market-page">
+      <SideRays
+        rayColor1="#3b82f6"
+        rayColor2="#06b6d4"
+        intensity={1.8}
+        speed={1.8}
+        spread={2.2}
+        opacity={0.85}
+        saturation={1.8}
+        falloff={1.4}
+        blend={0.6}
+        origin="top-right"
+      />
       <section className="header">
         <div>
           <NavMenu />
