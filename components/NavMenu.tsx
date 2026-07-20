@@ -25,8 +25,8 @@ export default function NavMenu() {
         <Image
           src="/innospace-logo.png"
           alt="INNOSPACE"
-          width={130}
-          height={56}
+          width={88}
+          height={36}
           style={{ objectFit: "contain", objectPosition: "left center" }}
           priority
         />
