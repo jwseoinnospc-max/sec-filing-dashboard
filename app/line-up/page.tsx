@@ -212,7 +212,7 @@ function NanoPortrait() {
           defaultRotationX={-5}
           defaultRotationY={20}
           autoRotate
-          autoRotateAxis="y"
+          autoRotateAxis="x"
           autoRotateSpeed={0.5}
           enableManualRotation={true}
           enableManualZoom={true}
