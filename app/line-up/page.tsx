@@ -1,7 +1,11 @@
 ﻿"use client";
 import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import NavMenu from "@/components/NavMenu";
 import SideRays from "@/components/SideRays";
+
+// ModelViewer uses WebGL/Canvas — SSR must be disabled
+const ModelViewer = dynamic(() => import("@/components/ModelViewer"), { ssr: false });
 
 const VEHICLES = [
   {
@@ -22,6 +26,7 @@ const VEHICLES = [
     accentHex: "#38bdf8",
     glowColor: "rgba(56,189,248,0.2)",
     stages: 2,
+    modelUrl: "/models/rocket_nano.obj",
   },
   {
     id: "micro",
@@ -41,6 +46,7 @@ const VEHICLES = [
     accentHex: "#a78bfa",
     glowColor: "rgba(167,139,250,0.2)",
     stages: 3,
+    modelUrl: null,
   },
   {
     id: "mini",
@@ -60,6 +66,7 @@ const VEHICLES = [
     accentHex: "#fb923c",
     glowColor: "rgba(251,146,60,0.2)",
     stages: 3,
+    modelUrl: null,
   },
 ];
 
@@ -68,7 +75,7 @@ function hexToRgb(hex: string): [number, number, number] {
   return m ? [parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255] : [1, 1, 1];
 }
 
-function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
+function CanvasPortrait({ v }: { v: (typeof VEHICLES)[0] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -104,7 +111,6 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.fillStyle = bg;
       ctx!.fillRect(0, 0, W, H);
 
-      // Stars
       for (let i = 0; i < 55; i++) {
         const sx = ((i * 137 + t * 0.04) % W + W) % W;
         const sy = ((i * 89) % H + H) % H;
@@ -118,14 +124,11 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       const cx = W / 2;
       const cy = H * 0.44;
       const p = 0.78 + 0.22 * Math.sin(t * 0.04);
-      // Scale rocket height by vehicle size
       const hScale = v.id === "mini" ? 1.35 : v.id === "micro" ? 1.12 : 1;
-      // Scale rocket width by diameter
       const wScale = v.id === "mini" ? 1.6 : 1;
       const bodyH = 58 * hScale;
       const bw = 10 * wScale;
 
-      // Engine glow
       const eg = ctx!.createRadialGradient(cx, cy + 38 * hScale, 0, cx, cy + 38 * hScale, 50 * wScale);
       eg.addColorStop(0, "rgba(" + rc + "," + gc + "," + bc + "," + (0.52 * p) + ")");
       eg.addColorStop(0.55, "rgba(" + rc + "," + gc + "," + bc + "," + (0.18 * p) + ")");
@@ -133,7 +136,6 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.fillStyle = eg;
       ctx!.fillRect(0, 0, W, H);
 
-      // Body
       ctx!.beginPath();
       ctx!.moveTo(cx, cy - bodyH);
       ctx!.lineTo(cx - bw * 0.8, cy - bodyH + 13);
@@ -147,11 +149,9 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.lineWidth = 0.85;
       ctx!.stroke();
 
-      // Stage separators
       const segH = bodyH / v.stages;
       for (let s = 1; s < v.stages; s++) {
         const sy2 = cy - bodyH + segH * s;
-        // interpolate width at this y
         const frac = (sy2 - (cy - bodyH)) / bodyH;
         const w2 = bw * (0.8 + 0.2 * frac);
         ctx!.beginPath();
@@ -162,7 +162,6 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
         ctx!.stroke();
       }
 
-      // Fins
       const finW = 6 * wScale;
       for (const side of [-1, 1]) {
         ctx!.beginPath();
@@ -175,31 +174,22 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
         ctx!.stroke();
       }
 
-      // Nozzle(s)
-      const nozzleW = v.id === "mini" ? 10 : 7;
-      const nozzleCount = v.id === "mini" ? 2 : 1;
-      const nozzleSpacing = v.id === "mini" ? 12 : 0;
-      for (let n = 0; n < nozzleCount; n++) {
-        const nx = cx + (n - (nozzleCount - 1) / 2) * nozzleSpacing;
-        ctx!.beginPath();
-        ctx!.moveTo(nx - nozzleW * 0.7, cy + 14);
-        ctx!.lineTo(nx - nozzleW, cy + 24);
-        ctx!.lineTo(nx + nozzleW, cy + 24);
-        ctx!.lineTo(nx + nozzleW * 0.7, cy + 14);
-        ctx!.closePath();
-        ctx!.fillStyle = "rgba(75,75,88," + (0.72 * p) + ")";
-        ctx!.fill();
+      ctx!.beginPath();
+      ctx!.moveTo(cx - 7, cy + 14);
+      ctx!.lineTo(cx - 9, cy + 24);
+      ctx!.lineTo(cx + 9, cy + 24);
+      ctx!.lineTo(cx + 7, cy + 14);
+      ctx!.closePath();
+      ctx!.fillStyle = "rgba(75,75,88," + (0.72 * p) + ")";
+      ctx!.fill();
 
-        // Flame
-        const fl = 2.5 * Math.sin(t * 0.22 + n);
-        ctx!.beginPath();
-        ctx!.moveTo(nx - nozzleW * 0.7, cy + 24);
-        ctx!.quadraticCurveTo(nx + fl, cy + 48, nx + nozzleW * 0.7, cy + 24);
-        ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.48 * p) + ")";
-        ctx!.fill();
-      }
+      const fl = 2.5 * Math.sin(t * 0.22);
+      ctx!.beginPath();
+      ctx!.moveTo(cx - 7, cy + 24);
+      ctx!.quadraticCurveTo(cx + fl, cy + 48, cx + 7, cy + 24);
+      ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.48 * p) + ")";
+      ctx!.fill();
 
-      // Scan sweep
       const sl = (t * 1.4) % H;
       const slg = ctx!.createLinearGradient(0, sl - 18, 0, sl + 2);
       slg.addColorStop(0, "transparent");
@@ -207,7 +197,6 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.fillStyle = slg;
       ctx!.fillRect(0, sl - 18, W, 20);
 
-      // Bottom fade
       const fade = ctx!.createLinearGradient(0, H * 0.58, 0, H);
       fade.addColorStop(0, "transparent");
       fade.addColorStop(1, "rgba(4,8,15,0.88)");
@@ -223,15 +212,51 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
   }, [v]);
 
   return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
+    />
+  );
+}
+
+function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
+  return (
     <div
       className="lineup-card"
       style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor } as React.CSSProperties}
     >
       <div className="lineup-portrait">
-        <canvas
-          ref={canvasRef}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
-        />
+        {v.modelUrl ? (
+          /* 3D model viewer for 한빛-나노 */
+          <div style={{ position: "absolute", inset: 0, background: "#04080f" }}>
+            <ModelViewer
+              url={v.modelUrl}
+              width="100%"
+              height="100%"
+              defaultRotationX={0}
+              defaultRotationY={15}
+              defaultZoom={1.2}
+              minZoomDistance={0.5}
+              maxZoomDistance={5}
+              autoRotate={true}
+              autoRotateSpeed={0.3}
+              enableMouseParallax={false}
+              enableHoverRotation={true}
+              enableManualRotation={true}
+              enableManualZoom={true}
+              ambientIntensity={0.5}
+              keyLightIntensity={1.2}
+              fillLightIntensity={0.6}
+              rimLightIntensity={1.0}
+              environmentPreset="night"
+              autoFrame={true}
+              fadeIn={true}
+              showScreenshotButton={false}
+            />
+          </div>
+        ) : (
+          <CanvasPortrait v={v} />
+        )}
         <div className="lineup-scanlines" />
         <div className="lineup-fade" />
       </div>
@@ -286,7 +311,9 @@ export default function LineUpPage() {
           <NavMenu />
           <h1><span className="h1-accent">Line-Up</span></h1>
           <p>이노스페이스 발사체 라인업 · Launch Vehicle Portfolio</p>
-          <p style={{ fontSize: "11px", marginTop: "4px" }}>*Based on Launching from the Alcântara Space Center (2° South of the Equator)</p>
+          <p style={{ fontSize: "11px", marginTop: "4px" }}>
+            *Based on Launching from the Alcântara Space Center (2° South of the Equator)
+          </p>
         </div>
         <div className="header-side">
           <div className="header-side-top">

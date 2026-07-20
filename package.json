@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
@@ -17,6 +19,7 @@
     "react": "latest",
     "react-dom": "latest",
     "recharts": "latest",
+    "three": "^0.185.1",
     "typescript": "latest"
   }
 }
