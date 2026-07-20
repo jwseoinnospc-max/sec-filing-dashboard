@@ -5,49 +5,61 @@ import SideRays from "@/components/SideRays";
 
 const VEHICLES = [
   {
-    id: "hanbit-tlv",
-    name: "한빛-TLV",
-    sub: "Hanbit Test Launch Vehicle",
-    status: "비행 성공",
-    statusColor: "#22c55e",
-    role: "1단 시험발사체",
-    propulsion: "하이브리드 엔진 (LOX / 고체연료)",
-    orbit: "Sub-orbital",
-    stages: "1단",
-    payload: "기술 검증",
-    highlight: "2023.03 제주 해상 발사 성공",
-    accentHex: "#38bdf8",
-    glowColor: "rgba(56,189,248,0.2)",
-  },
-  {
-    id: "hero",
-    name: "HERO",
-    sub: "Hybrid Engine Rocket",
+    id: "nano",
+    name: "한빛-나노",
+    sub: "Hanbit-Nano",
     status: "개발 중",
     statusColor: "#f59e0b",
-    role: "소형 상업 발사체",
-    propulsion: "하이브리드 엔진 (LOX / 고체연료)",
-    orbit: "SSO 500 km",
-    stages: "2단",
-    payload: "50 kg class",
-    highlight: "상업 소형위성 발사 서비스 목표",
-    accentHex: "#a78bfa",
-    glowColor: "rgba(167,139,250,0.2)",
+    payload: "~90 kg",
+    altitude: "~500 km",
+    diameter: "1.4 m",
+    length: "21.8 m",
+    prop1: "Paraffin / LOx",
+    prop2: "Methane / LOx",
+    prop3: null,
+    engines: "HyPER-25 · LiMER-3",
+    highlight: "소형 위성 발사 목표 · 2단 구성",
+    accentHex: "#38bdf8",
+    glowColor: "rgba(56,189,248,0.2)",
+    stages: 2,
   },
   {
-    id: "next",
-    name: "NEXT",
-    sub: "Next Generation Vehicle",
-    status: "기획 단계",
-    statusColor: "#64748b",
-    role: "중형 상업 발사체",
-    propulsion: "하이브리드 엔진 (확장형)",
-    orbit: "SSO / MEO",
-    stages: "2단+",
-    payload: "300 kg class (목표)",
-    highlight: "HERO 후속 중형 발사체 로드맵",
+    id: "micro",
+    name: "한빛-마이크로",
+    sub: "Hanbit-Micro",
+    status: "개발 중",
+    statusColor: "#f59e0b",
+    payload: "~170 kg",
+    altitude: "~500 km",
+    diameter: "1.4 m",
+    length: "22.5 m",
+    prop1: "Paraffin / LOx",
+    prop2: "Methane / LOx",
+    prop3: "Methane / LOx",
+    engines: "HyPER-25 · LiMER-3 · LiMEK-0.4",
+    highlight: "3단 구성 · 탑재중량 향상",
+    accentHex: "#a78bfa",
+    glowColor: "rgba(167,139,250,0.2)",
+    stages: 3,
+  },
+  {
+    id: "mini",
+    name: "한빛-미니",
+    sub: "Hanbit-Mini",
+    status: "개발 중",
+    statusColor: "#f59e0b",
+    payload: "~1,300 kg",
+    altitude: "~500 km",
+    diameter: "3.7 m",
+    length: "39.6 m",
+    prop1: "Paraffin / LOx",
+    prop2: "Paraffin / LOx",
+    prop3: "Methane / LOx",
+    engines: "HyPER-25 × 2 · LiMER-3",
+    highlight: "중형급 탑재중량 · 3단 구성",
     accentHex: "#fb923c",
     glowColor: "rgba(251,146,60,0.2)",
+    stages: 3,
   },
 ];
 
@@ -92,6 +104,7 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.fillStyle = bg;
       ctx!.fillRect(0, 0, W, H);
 
+      // Stars
       for (let i = 0; i < 55; i++) {
         const sx = ((i * 137 + t * 0.04) % W + W) % W;
         const sy = ((i * 89) % H + H) % H;
@@ -105,67 +118,88 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       const cx = W / 2;
       const cy = H * 0.44;
       const p = 0.78 + 0.22 * Math.sin(t * 0.04);
-      const hScale = v.id === "hero" ? 1.15 : v.id === "next" ? 1.3 : 1;
-      const bodyH = 56 * hScale;
+      // Scale rocket height by vehicle size
+      const hScale = v.id === "mini" ? 1.35 : v.id === "micro" ? 1.12 : 1;
+      // Scale rocket width by diameter
+      const wScale = v.id === "mini" ? 1.6 : 1;
+      const bodyH = 58 * hScale;
+      const bw = 10 * wScale;
 
-      const eg = ctx!.createRadialGradient(cx, cy + 38 * hScale, 0, cx, cy + 38 * hScale, 46);
-      eg.addColorStop(0, "rgba(" + rc + "," + gc + "," + bc + "," + (0.48 * p) + ")");
-      eg.addColorStop(0.55, "rgba(" + rc + "," + gc + "," + bc + "," + (0.16 * p) + ")");
+      // Engine glow
+      const eg = ctx!.createRadialGradient(cx, cy + 38 * hScale, 0, cx, cy + 38 * hScale, 50 * wScale);
+      eg.addColorStop(0, "rgba(" + rc + "," + gc + "," + bc + "," + (0.52 * p) + ")");
+      eg.addColorStop(0.55, "rgba(" + rc + "," + gc + "," + bc + "," + (0.18 * p) + ")");
       eg.addColorStop(1, "transparent");
       ctx!.fillStyle = eg;
       ctx!.fillRect(0, 0, W, H);
 
+      // Body
       ctx!.beginPath();
       ctx!.moveTo(cx, cy - bodyH);
-      ctx!.lineTo(cx - 8, cy - bodyH + 13);
-      ctx!.lineTo(cx - 10, cy + 14);
-      ctx!.lineTo(cx + 10, cy + 14);
-      ctx!.lineTo(cx + 8, cy - bodyH + 13);
+      ctx!.lineTo(cx - bw * 0.8, cy - bodyH + 13);
+      ctx!.lineTo(cx - bw, cy + 14);
+      ctx!.lineTo(cx + bw, cy + 14);
+      ctx!.lineTo(cx + bw * 0.8, cy - bodyH + 13);
       ctx!.closePath();
-      ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.5 * p) + ")";
+      ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.48 * p) + ")";
       ctx!.fill();
       ctx!.strokeStyle = "rgba(" + rc + "," + gc + "," + bc + ",0.85)";
       ctx!.lineWidth = 0.85;
       ctx!.stroke();
 
+      // Stage separators
+      const segH = bodyH / v.stages;
+      for (let s = 1; s < v.stages; s++) {
+        const sy2 = cy - bodyH + segH * s;
+        // interpolate width at this y
+        const frac = (sy2 - (cy - bodyH)) / bodyH;
+        const w2 = bw * (0.8 + 0.2 * frac);
+        ctx!.beginPath();
+        ctx!.moveTo(cx - w2, sy2);
+        ctx!.lineTo(cx + w2, sy2);
+        ctx!.strokeStyle = "rgba(" + rc + "," + gc + "," + bc + ",0.4)";
+        ctx!.lineWidth = 0.8;
+        ctx!.stroke();
+      }
+
+      // Fins
+      const finW = 6 * wScale;
       for (const side of [-1, 1]) {
         ctx!.beginPath();
-        ctx!.moveTo(cx + side * 10, cy + 2);
-        ctx!.lineTo(cx + side * 21, cy + 24);
-        ctx!.lineTo(cx + side * 10, cy + 18);
+        ctx!.moveTo(cx + side * bw, cy + 2);
+        ctx!.lineTo(cx + side * (bw + finW + 6), cy + 22);
+        ctx!.lineTo(cx + side * bw, cy + 16);
         ctx!.closePath();
         ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.42 * p) + ")";
         ctx!.fill();
         ctx!.stroke();
       }
 
-      if (v.stages !== "1단") {
+      // Nozzle(s)
+      const nozzleW = v.id === "mini" ? 10 : 7;
+      const nozzleCount = v.id === "mini" ? 2 : 1;
+      const nozzleSpacing = v.id === "mini" ? 12 : 0;
+      for (let n = 0; n < nozzleCount; n++) {
+        const nx = cx + (n - (nozzleCount - 1) / 2) * nozzleSpacing;
         ctx!.beginPath();
-        ctx!.moveTo(cx - 9, cy - bodyH * 0.4);
-        ctx!.lineTo(cx + 9, cy - bodyH * 0.4);
-        ctx!.strokeStyle = "rgba(" + rc + "," + gc + "," + bc + ",0.38)";
-        ctx!.lineWidth = 0.8;
-        ctx!.stroke();
-      }
+        ctx!.moveTo(nx - nozzleW * 0.7, cy + 14);
+        ctx!.lineTo(nx - nozzleW, cy + 24);
+        ctx!.lineTo(nx + nozzleW, cy + 24);
+        ctx!.lineTo(nx + nozzleW * 0.7, cy + 14);
+        ctx!.closePath();
+        ctx!.fillStyle = "rgba(75,75,88," + (0.72 * p) + ")";
+        ctx!.fill();
 
-      ctx!.beginPath();
-      ctx!.moveTo(cx - 7, cy + 14);
-      ctx!.lineTo(cx - 9, cy + 24);
-      ctx!.lineTo(cx + 9, cy + 24);
-      ctx!.lineTo(cx + 7, cy + 14);
-      ctx!.closePath();
-      ctx!.fillStyle = "rgba(75,75,88," + (0.72 * p) + ")";
-      ctx!.fill();
-
-      if (v.status !== "기획 단계") {
-        const fl = 3 * Math.sin(t * 0.22);
+        // Flame
+        const fl = 2.5 * Math.sin(t * 0.22 + n);
         ctx!.beginPath();
-        ctx!.moveTo(cx - 7, cy + 24);
-        ctx!.quadraticCurveTo(cx + fl, cy + 50, cx + 7, cy + 24);
+        ctx!.moveTo(nx - nozzleW * 0.7, cy + 24);
+        ctx!.quadraticCurveTo(nx + fl, cy + 48, nx + nozzleW * 0.7, cy + 24);
         ctx!.fillStyle = "rgba(" + rc + "," + gc + "," + bc + "," + (0.48 * p) + ")";
         ctx!.fill();
       }
 
+      // Scan sweep
       const sl = (t * 1.4) % H;
       const slg = ctx!.createLinearGradient(0, sl - 18, 0, sl + 2);
       slg.addColorStop(0, "transparent");
@@ -173,6 +207,7 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       ctx!.fillStyle = slg;
       ctx!.fillRect(0, sl - 18, W, 20);
 
+      // Bottom fade
       const fade = ctx!.createLinearGradient(0, H * 0.58, 0, H);
       fade.addColorStop(0, "transparent");
       fade.addColorStop(1, "rgba(4,8,15,0.88)");
@@ -209,11 +244,16 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
         </div>
         <div className="lineup-sub">{v.sub}</div>
         <div className="lineup-specs">
-          <div className="lineup-spec"><span className="lspec-key">역할</span><span className="lspec-val">{v.role}</span></div>
-          <div className="lineup-spec"><span className="lspec-key">추진</span><span className="lspec-val">{v.propulsion}</span></div>
-          <div className="lineup-spec"><span className="lspec-key">목표궤도</span><span className="lspec-val">{v.orbit}</span></div>
-          <div className="lineup-spec"><span className="lspec-key">단수</span><span className="lspec-val">{v.stages}</span></div>
-          <div className="lineup-spec"><span className="lspec-key">탑재중량</span><span className="lspec-val">{v.payload}</span></div>
+          <div className="lineup-spec"><span className="lspec-key">탑재중량</span><span className="lspec-val lspec-accent">{v.payload}</span></div>
+          <div className="lineup-spec"><span className="lspec-key">고도</span><span className="lspec-val">{v.altitude}</span></div>
+          <div className="lineup-spec"><span className="lspec-key">직경</span><span className="lspec-val">{v.diameter}</span></div>
+          <div className="lineup-spec"><span className="lspec-key">길이</span><span className="lspec-val">{v.length}</span></div>
+          <div className="lineup-spec-divider" />
+          <div className="lineup-spec"><span className="lspec-key">1단</span><span className="lspec-val">{v.prop1}</span></div>
+          <div className="lineup-spec"><span className="lspec-key">2단</span><span className="lspec-val">{v.prop2}</span></div>
+          {v.prop3 && <div className="lineup-spec"><span className="lspec-key">3단</span><span className="lspec-val">{v.prop3}</span></div>}
+          <div className="lineup-spec-divider" />
+          <div className="lineup-spec"><span className="lspec-key">엔진</span><span className="lspec-val">{v.engines}</span></div>
         </div>
         <div className="lineup-highlight">{v.highlight}</div>
       </div>
@@ -246,6 +286,7 @@ export default function LineUpPage() {
           <NavMenu />
           <h1><span className="h1-accent">Line-Up</span></h1>
           <p>이노스페이스 발사체 라인업 · Launch Vehicle Portfolio</p>
+          <p style={{ fontSize: "11px", marginTop: "4px" }}>*Based on Launching from the Alcântara Space Center (2° South of the Equator)</p>
         </div>
         <div className="header-side">
           <div className="header-side-top">

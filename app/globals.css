@@ -427,3 +427,5 @@ body.line-up-page::before { opacity: 0; }
 .lspec-val { color: var(--text); font-size: 12px; line-height: 1.4; }
 .lineup-highlight { font-size: 11px; color: var(--lineup-accent, #38bdf8); border-left: 2px solid var(--lineup-accent, #38bdf8); padding-left: 8px; opacity: .85; line-height: 1.5; }
 @media (max-width: 880px) { .lineup-grid { grid-template-columns: 1fr; } .lineup-portrait { aspect-ratio: 16/9; } }
+.lspec-accent { color: var(--lineup-accent, #38bdf8) !important; font-weight: 700; }
+.lineup-spec-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
