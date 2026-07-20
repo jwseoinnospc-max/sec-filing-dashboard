@@ -176,14 +176,14 @@ export default async function SpaceMarketPage() {
   return (
     <main className="page space-market-page">
       <SideRays
-        rayColor1="#1e293b"
-        rayColor2="#334155"
-        intensity={2.2}
-        speed={1.2}
+        rayColor1="#0f172a"
+        rayColor2="#1e293b"
+        intensity={1.4}
+        speed={1.0}
         spread={2.5}
-        opacity={0.7}
-        saturation={0.3}
-        falloff={1.2}
+        opacity={0.4}
+        saturation={0.1}
+        falloff={1.6}
         blend={0.5}
         origin="top-right"
       />
