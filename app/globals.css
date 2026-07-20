@@ -451,7 +451,7 @@ body.line-up-page::before {
 .sc-bl { bottom: 6px; left: 6px; border-width: 0 0 1.5px 1.5px; }
 .sc-br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
 .sc-badge {
-  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none;
   font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.12em;
   color: var(--lineup-accent, #38bdf8); background: rgba(0,0,0,0.55);
   border: 1px solid var(--lineup-accent, #38bdf8); border-radius: 2px;
