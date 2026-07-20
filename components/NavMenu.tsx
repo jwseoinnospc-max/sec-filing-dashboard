@@ -46,7 +46,13 @@ export default function NavMenu() {
 
       {open && (
         <div className="nav-menu-panel">
-          {/* Space Trend 비공개 — 공개 시: href="/space-trend" nav-item 링크 추가 */}
+          <Link
+            href="/space-trend"
+            className={`nav-item ${pathname === "/space-trend" ? "active" : ""}`}
+            onClick={() => setOpen(false)}
+          >
+            Space Trend
+          </Link>
 
           <Link
             href="/space-market"
