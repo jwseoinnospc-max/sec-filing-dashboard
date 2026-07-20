@@ -67,14 +67,18 @@ function BacklogDonut({
 }
 
 /* ─── Launch history ────────────────────────────────────────── */
-const LAUNCHES = [
-  { date: "2021-09", mission: "Alpha 1st Flight (FLTA001)", vehicle: "Alpha", result: "실패", color: "#ef4444" },
-  { date: "2022-10", mission: "Alpha 2nd Flight (FLTA002)", vehicle: "Alpha", result: "부분 성공", color: "#f59e0b" },
-  { date: "2023-03", mission: "Alpha Victus Nox (FLTA003)", vehicle: "Alpha", result: "성공", color: "#22c55e" },
-  { date: "2023-07", mission: "Alpha Noise of Summer (FLTA004)", vehicle: "Alpha", result: "성공", color: "#22c55e" },
-  { date: "2024-05", mission: "Alpha 005 (Lockheed Martin)", vehicle: "Alpha", result: "성공", color: "#22c55e" },
-  { date: "2024-09", mission: "Alpha 006", vehicle: "Alpha", result: "성공", color: "#22c55e" },
-  { date: "2025-03", mission: "Blue Ghost Mission 1 (CLPS TO-2AB)", vehicle: "Blue Ghost", result: "달 착륙 성공", color: "#38bdf8" },
+const LAUNCHES_VEHICLE = [
+  { date: "2021-09", mission: "Alpha 1st Flight (FLTA001)", result: "실패", color: "#ef4444" },
+  { date: "2022-10", mission: "Alpha 2nd Flight (FLTA002)", result: "부분 성공", color: "#f59e0b" },
+  { date: "2023-03", mission: "Alpha Victus Nox (FLTA003)", result: "성공", color: "#22c55e" },
+  { date: "2023-07", mission: "Alpha Noise of Summer (FLTA004)", result: "성공", color: "#22c55e" },
+  { date: "2024-05", mission: "Alpha 005 (Lockheed Martin)", result: "성공", color: "#22c55e" },
+  { date: "2024-09", mission: "Alpha 006", result: "성공", color: "#22c55e" },
+];
+
+const LAUNCHES_LANDER = [
+  { date: "2025-03", mission: "Blue Ghost Mission 1 (CLPS TO-2AB)", result: "달 착륙 성공", color: "#38bdf8" },
+  { date: "2026 예정", mission: "Blue Ghost Mission 2 (CLPS TO-20A)", result: "예정", color: "#64748b" },
 ];
 
 /* ─── Key contracts ─────────────────────────────────────────── */
@@ -173,37 +177,76 @@ export default function FireflyDashboardPage() {
         />
       </section>
 
-      {/* ── Revenue Trend ── */}
+      {/* ── Launch History ── */}
       <section className="main" style={{ marginTop: 24 }}>
         <div className="card" style={{ maxWidth: "100%" }}>
-            <SectionTitle>발사 이력</SectionTitle>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid #1e293b" }}>
-                  <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>날짜</th>
-                  <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>미션</th>
-                  <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>발사체</th>
-                  <th style={{ textAlign: "center", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>결과</th>
-                </tr>
-              </thead>
-              <tbody>
-                {LAUNCHES.map((l) => (
-                  <tr key={l.mission} style={{ borderBottom: "1px solid #0f172a" }}>
-                    <td style={{ padding: "7px 8px", color: "#94a3b8", fontSize: 12 }}>{l.date}</td>
-                    <td style={{ padding: "7px 8px" }}>{l.mission}</td>
-                    <td style={{ padding: "7px 8px", color: "#f97316" }}>{l.vehicle}</td>
-                    <td style={{ padding: "7px 8px", textAlign: "center" }}>
-                      <span style={{
-                        background: l.color + "22", color: l.color,
-                        border: `1px solid ${l.color}44`,
-                        borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600,
-                      }}>{l.result}</span>
-                    </td>
+          <SectionTitle>발사 이력</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+
+            {/* 발사체 (Alpha) */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#f97316", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8, paddingLeft: 2 }}>
+                🚀 발사체 · Alpha
+              </div>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #1e293b" }}>
+                    <th style={{ textAlign: "left", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>날짜</th>
+                    <th style={{ textAlign: "left", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>미션</th>
+                    <th style={{ textAlign: "center", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>결과</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {LAUNCHES_VEHICLE.map((l) => (
+                    <tr key={l.mission} style={{ borderBottom: "1px solid #0f172a" }}>
+                      <td style={{ padding: "7px 8px", color: "#94a3b8", fontSize: 12, whiteSpace: "nowrap" }}>{l.date}</td>
+                      <td style={{ padding: "7px 8px" }}>{l.mission}</td>
+                      <td style={{ padding: "7px 8px", textAlign: "center" }}>
+                        <span style={{
+                          background: l.color + "22", color: l.color,
+                          border: `1px solid ${l.color}44`,
+                          borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
+                        }}>{l.result}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 달착륙선 (Blue Ghost) */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#38bdf8", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8, paddingLeft: 2 }}>
+                🌕 달착륙선 · Blue Ghost
+              </div>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #1e293b" }}>
+                    <th style={{ textAlign: "left", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>날짜</th>
+                    <th style={{ textAlign: "left", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>미션</th>
+                    <th style={{ textAlign: "center", padding: "5px 8px", color: "#64748b", fontWeight: 500 }}>결과</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {LAUNCHES_LANDER.map((l) => (
+                    <tr key={l.mission} style={{ borderBottom: "1px solid #0f172a" }}>
+                      <td style={{ padding: "7px 8px", color: "#94a3b8", fontSize: 12, whiteSpace: "nowrap" }}>{l.date}</td>
+                      <td style={{ padding: "7px 8px" }}>{l.mission}</td>
+                      <td style={{ padding: "7px 8px", textAlign: "center" }}>
+                        <span style={{
+                          background: l.color + "22", color: l.color,
+                          border: `1px solid ${l.color}44`,
+                          borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
+                        }}>{l.result}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
           </div>
+        </div>
         
         {/* ── Contracts ── */}
         <div className="card" style={{ marginTop: 16 }}>
