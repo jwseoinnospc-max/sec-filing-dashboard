@@ -1,7 +1,11 @@
 ﻿"use client";
 import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import NavMenu from "@/components/NavMenu";
 import SideRays from "@/components/SideRays";
+
+/* ModelViewer — SSR 비활성화 (WebGL) */
+const ModelViewer = dynamic(() => import("@/components/ModelViewer"), { ssr: false });
 
 /* ─── Vehicle data ──────────────────────────────────────────── */
 const VEHICLES = [
@@ -49,39 +53,50 @@ function hexPath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number)
   ctx.stroke();
 }
 
-function drawT(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, "#050c22"); bg.addColorStop(1, "#091845");
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = "rgba(13,110,245,.15)"; ctx.lineWidth = 0.7;
+/* drawT — 배경 fill 없음 (투명), screen 블렌드용 */
+function drawTOverlay(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
+  ctx.clearRect(0, 0, W, H);
+
+  /* 헥사 그리드 */
+  ctx.strokeStyle = "rgba(77,179,255,.22)"; ctx.lineWidth = 0.8;
   const R = 14, hx = R * Math.sqrt(3), hy = R * 1.5;
   for (let row = -1; row < H / hy + 2; row++)
     for (let col = -1; col < W / hx + 2; col++)
       hexPath(ctx, col * hx + (row % 2) * (hx / 2), row * hy, R);
+
+  /* 스캔 스윕 */
   const sy = (t * 1.6) % H;
   const sg = ctx.createLinearGradient(0, sy - 20, 0, sy + 2);
-  sg.addColorStop(0, "transparent"); sg.addColorStop(1, "rgba(13,110,245,.11)");
+  sg.addColorStop(0, "transparent"); sg.addColorStop(1, "rgba(77,179,255,.18)");
   ctx.fillStyle = sg; ctx.fillRect(0, sy - 20, W, 22);
+
+  /* 엔진 글로우 */
   const cx = W / 2, cy = H * 0.41, p = 0.7 + 0.3 * Math.sin(t * 0.045);
-  const eg = ctx.createRadialGradient(cx, cy + 36, 0, cx, cy + 36, 42);
-  eg.addColorStop(0, `rgba(77,179,255,${0.5 * p})`);
-  eg.addColorStop(0.5, `rgba(13,110,245,${0.28 * p})`);
+  const eg = ctx.createRadialGradient(cx, cy + 36, 0, cx, cy + 36, 48);
+  eg.addColorStop(0, `rgba(77,179,255,${0.55 * p})`);
+  eg.addColorStop(0.5, `rgba(13,110,245,${0.3 * p})`);
   eg.addColorStop(1, "transparent");
   ctx.fillStyle = eg; ctx.fillRect(0, 0, W, H);
+
+  /* 로켓 실루엣 */
   ctx.beginPath();
   ctx.moveTo(cx, cy - 46); ctx.lineTo(cx - 9, cy + 12); ctx.lineTo(cx - 14, cy + 12);
   ctx.lineTo(cx - 14, cy + 32); ctx.lineTo(cx + 14, cy + 32); ctx.lineTo(cx + 14, cy + 12);
   ctx.lineTo(cx + 9, cy + 12); ctx.closePath();
-  ctx.fillStyle = `rgba(77,179,255,${0.6 * p})`; ctx.fill();
-  ctx.strokeStyle = `rgba(13,110,245,.9)`; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = `rgba(130,210,255,${0.55 * p})`; ctx.fill();
+  ctx.strokeStyle = "rgba(77,179,255,.9)"; ctx.lineWidth = 1; ctx.stroke();
+
+  /* 핀 */
   ctx.beginPath(); ctx.moveTo(cx - 14, cy + 18); ctx.lineTo(cx - 22, cy + 32); ctx.lineTo(cx - 14, cy + 32); ctx.closePath();
-  ctx.fillStyle = `rgba(13,110,245,${0.5 * p})`; ctx.fill();
+  ctx.fillStyle = `rgba(13,110,245,${0.55 * p})`; ctx.fill();
   ctx.beginPath(); ctx.moveTo(cx + 14, cy + 18); ctx.lineTo(cx + 22, cy + 32); ctx.lineTo(cx + 14, cy + 32); ctx.closePath();
-  ctx.fillStyle = `rgba(13,110,245,${0.5 * p})`; ctx.fill();
+  ctx.fillStyle = `rgba(13,110,245,${0.55 * p})`; ctx.fill();
+
+  /* 화염 */
   const fl = 4 * Math.sin(t * 0.2);
   ctx.beginPath(); ctx.moveTo(cx - 8, cy + 32);
-  ctx.quadraticCurveTo(cx + fl, cy + 58, cx + 8, cy + 32);
-  ctx.fillStyle = `rgba(130,220,255,${0.55 * p})`; ctx.fill();
+  ctx.quadraticCurveTo(cx + fl, cy + 60, cx + 8, cy + 32);
+  ctx.fillStyle = `rgba(150,230,255,${0.65 * p})`; ctx.fill();
 }
 
 function drawZ(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
@@ -150,60 +165,87 @@ function drawP(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
   ctx.restore();
 }
 
-const DRAW_FNS = [drawT, drawZ, drawP];
-
-/* ─── SC Portrait canvas component ─────────────────────────── */
-function SCPortrait({ drawFn }: { drawFn: (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void }) {
+/* ─── SC Portrait (순수 캔버스) ─────────────────────────────── */
+function SCPortrait({ drawFn, blendMode = "normal" }: {
+  drawFn: (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
+  blendMode?: string;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
-
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ctx = el.getContext("2d");
-    if (!ctx) return;
+    const el = ref.current; if (!el) return;
+    const ctx = el.getContext("2d"); if (!ctx) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let t = 0, raf = 0;
-
     function resize() {
       el!.width = el!.clientWidth * dpr;
       el!.height = el!.clientHeight * dpr;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
-
     function loop() {
       const W = el!.clientWidth, H = el!.clientHeight;
-      ctx!.clearRect(0, 0, W, H);
       drawFn(ctx!, W, H, t++);
       raf = requestAnimationFrame(loop);
     }
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [drawFn]);
+  return (
+    <canvas ref={ref} style={{
+      position: "absolute", inset: 0, width: "100%", height: "100%",
+      display: "block", mixBlendMode: blendMode as React.CSSProperties["mixBlendMode"],
+    }} />
+  );
+}
 
-  return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />;
+/* ─── 나노 포트레이트: 3D 모델 + 캔버스 오버레이 ────────────── */
+function NanoPortrait() {
+  return (
+    <>
+      {/* Layer 1: 3D OBJ 모델 */}
+      <div style={{ position: "absolute", inset: 0, background: "#050c22" }}>
+        <ModelViewer
+          url="/models/rocket_nano.obj"
+          width="100%"
+          height="100%"
+          defaultZoom={2.5}
+          defaultRotationX={-5}
+          defaultRotationY={20}
+          autoRotate
+          autoRotateSpeed={0.6}
+          environmentPreset="city"
+          ambientIntensity={0.4}
+          keyLightIntensity={1.2}
+          fillLightIntensity={0.4}
+          rimLightIntensity={0.8}
+        />
+      </div>
+      {/* Layer 2: SC 헥사 그리드 + 글로우 오버레이 (screen 블렌드) */}
+      <SCPortrait drawFn={drawTOverlay} blendMode="screen" />
+    </>
+  );
 }
 
 /* ─── Vehicle card ──────────────────────────────────────────── */
-function VehicleCard({ v, drawFn }: { v: typeof VEHICLES[0]; drawFn: typeof drawT }) {
+type DrawFn = (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
+
+function VehicleCard({ v, portrait }: {
+  v: typeof VEHICLES[0];
+  portrait: React.ReactNode;
+}) {
   return (
     <div
       className={`lineup-card sc-card sc-${v.faction}`}
       style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor } as React.CSSProperties}
     >
       <div className="lineup-portrait">
-        <SCPortrait drawFn={drawFn} />
-        {/* scanlines */}
+        {portrait}
         <div className="lineup-scanlines" />
-        {/* bottom fade */}
         <div className="lineup-fade" />
-        {/* corner brackets */}
         <span className="sc-corner sc-tl" /><span className="sc-corner sc-tr" />
         <span className="sc-corner sc-bl" /><span className="sc-corner sc-br" />
-        {/* status badge */}
         <div className="sc-badge">{v.status}</div>
       </div>
-
       <div className="lineup-info">
         <div className="lineup-name-row">
           <span className="lineup-name">{v.name}</span>
@@ -234,6 +276,12 @@ export default function LineUpPage() {
     return () => document.body.classList.remove("line-up-page");
   }, []);
 
+  const portraits: React.ReactNode[] = [
+    <NanoPortrait key="nano" />,
+    <SCPortrait key="micro" drawFn={drawZ} />,
+    <SCPortrait key="mini"  drawFn={drawP} />,
+  ];
+
   return (
     <main className="page line-up-page-main">
       <SideRays
@@ -263,7 +311,7 @@ export default function LineUpPage() {
 
       <div className="lineup-grid">
         {VEHICLES.map((v, i) => (
-          <VehicleCard key={v.id} v={v} drawFn={DRAW_FNS[i]} />
+          <VehicleCard key={v.id} v={v} portrait={portraits[i]} />
         ))}
       </div>
     </main>
