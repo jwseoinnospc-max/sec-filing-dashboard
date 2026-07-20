@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -20,6 +20,7 @@ const GROUPS = [
 ];
 
 function currentGroupLabel(pathname: string) {
+  if (pathname === "/line-up") return "Line-Up";
   if (pathname === "/space-trend") return "Space Trend";
   if (pathname === "/space-market") return "Space Market";
   const group = GROUPS.find((g) => g.links.some((link) => link.href === pathname));
@@ -46,6 +47,14 @@ export default function NavMenu() {
 
       {open && (
         <div className="nav-menu-panel">
+          <Link
+            href="/line-up"
+            className={`nav-item ${pathname === "/line-up" ? "active" : ""}`}
+            onClick={() => setOpen(false)}
+          >
+            Line-Up
+          </Link>
+
           <Link
             href="/space-trend"
             className={`nav-item ${pathname === "/space-trend" ? "active" : ""}`}
