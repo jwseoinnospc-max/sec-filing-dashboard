@@ -304,7 +304,7 @@ export default function LineUpPage() {
       <section className="header">
         <div>
           <NavMenu />
-          <h1><span className="h1-accent">Line-Up</span></h1>
+          <h1><span className="h1-accent">Line-Up</span>{" "}<span style={{ fontSize: "22px", fontWeight: 500, color: "var(--muted)", letterSpacing: 0 }}>(Test)</span></h1>
           <p>이노스페이스 발사체 라인업 · Launch Vehicle Portfolio</p>
           <p style={{ fontSize: "11px", marginTop: "4px" }}>
             *Based on Launching from the Alcântara Space Center (2° South of the Equator)
@@ -324,4 +324,5 @@ export default function LineUpPage() {
     </main>
   );
 }
+
 
