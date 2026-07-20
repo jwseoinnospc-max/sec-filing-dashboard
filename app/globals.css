@@ -402,7 +402,12 @@ body:has(.space-market-page)::before { opacity: 0; }
 .etf-modal-table tr:last-child td { border-bottom: none; }
 
 /* ── Line-Up page ── */
-body.line-up-page::before { opacity: 0; }
+body.line-up-page::before {
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.55), rgba(4, 8, 24, 0.55)),
+    url('/bg-drone.jpg') center / cover no-repeat;
+  opacity: 1;
+}
 .line-up-page-main { background: var(--bg); position: relative; }
 .line-up-page-main > *:not([style*="position: fixed"]) { position: relative; z-index: 1; }
 .lineup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
