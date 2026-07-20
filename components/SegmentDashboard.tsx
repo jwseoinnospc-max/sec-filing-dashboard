@@ -9,7 +9,6 @@ const LIGHT_BLUE = "#EAF4FF";
 
 const IR_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
 
-// Chrome/Edge text-fragment navigation: jumps to and highlights the matching number on the filing page.
 function filingLink(value: number) {
   return `${IR_FILING_URL}#:~:text=${encodeURIComponent(formatNumber(value))}`;
 }
@@ -26,8 +25,6 @@ function pct(value: number) {
 function Donut({ total, data, size }: { total: number; data: Segment; size: number }) {
   const launchPct = (data.launch / total) * 100;
   const holeInset = size * 0.25;
-  // Center the blue (Launch) arc on the right-side leader line by starting the gradient
-  // half the arc's angle before it ??this also centers the gray (Space Systems) arc on the left-side leader line.
   const startDeg = 90 - (launchPct / 100) * 360 / 2;
 
   return (
@@ -51,7 +48,6 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
       >
         {formatNumber(total)}
       </a>
-
       <div
         className="donut"
         style={{
@@ -116,12 +112,11 @@ function CompareCard({
   return (
     <section className="compare-card">
       <div className="title-bar">{title}</div>
-      <div className="unit">?⑥쐞: 泥??щ윭</div>
+      <div className="unit">단위: 천 달러</div>
 
       <div className="body">
         <div className="period">
           <h3>{previousLabel}</h3>
-
           <div className="chart-row">
             <div className="side-block">
               <div className="side-label left">
@@ -135,9 +130,7 @@ function CompareCard({
                 <span className="dot" />
               </div>
             </div>
-
             <Donut total={previousTotal} data={previous} size={previousSize} />
-
             <div className="side-block">
               <div className="connector blue">
                 <span className="dot" />
@@ -166,24 +159,23 @@ function CompareCard({
               <polygon points="100,0 160,32 100,64" fill={LIGHT_BLUE} />
             </svg>
             <div className="growth-text">
-              <span>?꾨뀈 ?숆린 ?鍮?/span>
+              <span>전년 동기 대비 </span>
               <strong>{pct(totalGrowth)}</strong>
-              <span style={{ color: "#dc2626" }}>{totalGrowth >= 0 ? "?? : "??}</span>
+              <span style={{ color: "#dc2626" }}>{totalGrowth >= 0 ? "↑" : "↓"}</span>
             </div>
           </div>
 
           <a className="pill blue" href={sourceHref}>
-            ?꾨뀈 ?숆린 ?鍮?{pct(launchGrowth)} 利앷?
+            전년 동기 대비 {pct(launchGrowth)} 증가
           </a>
 
           <a className="pill gray" href={sourceHref}>
-            ?꾨뀈 ?숆린 ?鍮?{pct(systemsGrowth)} 利앷?
+            전년 동기 대비 {pct(systemsGrowth)} 증가
           </a>
         </div>
 
         <div className="period">
           <h3>{currentLabel}</h3>
-
           <div className="chart-row">
             <div className="side-block">
               <div className="side-label left">
@@ -197,9 +189,7 @@ function CompareCard({
                 <span className="dot" />
               </div>
             </div>
-
             <Donut total={currentTotal} data={current} size={currentSize} />
-
             <div className="side-block">
               <div className="connector blue">
                 <span className="dot" />
@@ -227,7 +217,6 @@ function CompareCard({
           overflow: hidden;
           min-height: 179px;
         }
-
         .title-bar {
           background: var(--bg);
           border: none;
@@ -237,7 +226,6 @@ function CompareCard({
           font-weight: 400;
           padding: 10px;
         }
-
         .unit {
           position: absolute;
           top: 45px;
@@ -246,7 +234,6 @@ function CompareCard({
           font-weight: 800;
           color: var(--muted);
         }
-
         .body {
           display: grid;
           grid-template-columns: 1fr 148px 1fr;
@@ -254,20 +241,17 @@ function CompareCard({
           gap: 0;
           padding: 22px 2px 18px;
         }
-
         .period {
           border: none;
           border-radius: 8px;
           padding: 10px 2px;
         }
-
         .period h3 {
           text-align: center;
           margin: 0 0 10px;
           font-size: 16px;
           font-weight: 800;
         }
-
         .chart-row {
           position: relative;
           display: flex;
@@ -276,23 +260,19 @@ function CompareCard({
           min-height: 120px;
           margin-top: 20px;
         }
-
         .side-block {
           display: flex;
           align-items: center;
         }
-
         .connector {
           display: flex;
           align-items: center;
           flex-shrink: 0;
         }
-
         .connector .line {
           width: 8px;
           height: 2px;
         }
-
         .connector .dot {
           position: relative;
           z-index: 2;
@@ -302,79 +282,64 @@ function CompareCard({
           border: 1.5px solid #ffffff;
           flex-shrink: 0;
         }
-
         .connector.gray .line,
         .connector.gray .dot {
           background: ${GRAY};
         }
-
         .connector.gray .dot {
           margin-right: -10px;
         }
-
         .connector.blue .line,
         .connector.blue .dot {
           background: ${BLUE};
         }
-
         .connector.blue .dot {
           margin-left: -10px;
         }
-
         .side-label {
           font-size: 11px;
           line-height: 1.35;
           color: var(--muted);
           min-width: 60px;
         }
-
         .side-label span {
           display: block;
           color: inherit;
         }
-
         .side-label a {
           color: var(--accent);
           font-weight: 800;
           text-decoration: none;
         }
-
         .side-label.left a {
           color: var(--muted);
         }
-
         .side-label a:hover,
         .pill:hover {
           text-decoration: underline;
         }
-
         .side-label.left {
           text-align: right;
         }
-
         .side-label.right {
           text-align: left;
           color: var(--accent);
         }
-
         .center {
           text-align: center;
           position: relative;
         }
-
         .arrow-wrap {
           position: relative;
           width: 100%;
           height: 64px;
           margin: 18px auto 0;
         }
-
         .arrow {
           display: block;
           width: 100%;
           height: 64px;
         }
-
         .growth-text {
           position: absolute;
           top: 50%;
@@ -387,19 +352,16 @@ function CompareCard({
           white-space: nowrap;
           text-shadow: 0 1px 3px rgba(0,0,0,0.6);
         }
-
         .growth-text strong {
           color: #dc2626;
           font-size: 17px;
           margin: 0 0 0 3px;
         }
-
         .pill {
           display: flex;
           align-items: center;
           justify-content: center;
           width: 100%;
-          white-space: nowrap;
           margin: -4px auto 0;
           padding: 6px 8px;
           border-radius: 999px;
@@ -408,34 +370,26 @@ function CompareCard({
           text-decoration: none;
           text-align: center;
         }
-
         .pill.blue {
           background: ${BLUE};
           color: #111111;
         }
-
         .pill.gray {
           background: ${GRAY};
           color: #ffffff;
           margin-top: 8px;
         }
-
-        /* Below this container width there isn't room for [period][center][period] side by
-           side without shrinking text/donuts past readability ??stack them vertically instead
-           so nothing ever needs to be clipped or scrolled. */
         @container (max-width: 480px) {
           .body {
             grid-template-columns: 1fr;
             row-gap: 18px;
           }
         }
-
         @container (max-width: 380px) {
           .side-label {
             min-width: 56px;
             font-size: 11px;
           }
-
           .connector .line {
             width: 10px;
           }
@@ -453,7 +407,7 @@ export default function SegmentDashboard() {
       <StockWidget />
 
       <CompareCard
-        title="留ㅼ텧 (Revenue)"
+        title="매출 (Revenue)"
         metric="revenue"
         previousLabel={revenue.previousLabel}
         currentLabel={revenue.currentLabel}
@@ -464,7 +418,7 @@ export default function SegmentDashboard() {
       />
 
       <CompareCard
-        title="留ㅼ텧珥앹씠??(Gross Profit)"
+        title="매출총이익 (Gross Profit)"
         metric="grossProfit"
         previousLabel={grossProfit.previousLabel}
         currentLabel={grossProfit.currentLabel}
@@ -481,7 +435,6 @@ export default function SegmentDashboard() {
           gap: 24px;
           margin: 20px 0;
         }
-
         @media (max-width: 1600px) {
           .segment-dashboard {
             grid-template-columns: 1fr;
@@ -491,6 +444,3 @@ export default function SegmentDashboard() {
     </section>
   );
 }
-
-
-
