@@ -228,30 +228,25 @@ function VehicleCard({ v }: { v: (typeof VEHICLES)[0] }) {
       <div className="lineup-portrait">
         {v.modelUrl ? (
           /* 3D model viewer for 한빛-나노 */
-          <div style={{ position: "absolute", inset: 0, background: "#04080f" }}>
+          <div style={{ position: "absolute", inset: 0, background: "#04080f", overflow: "hidden" }}>
             <ModelViewer
-              url={v.modelUrl}
+              url={v.modelUrl!}
               width="100%"
               height="100%"
-              defaultRotationX={0}
-              defaultRotationY={15}
-              defaultZoom={1.2}
-              minZoomDistance={0.5}
-              maxZoomDistance={5}
+              defaultRotationX={-5}
+              defaultRotationY={20}
+              defaultZoom={2.5}
+              minZoomDistance={0.8}
+              maxZoomDistance={8}
               autoRotate={true}
-              autoRotateSpeed={0.3}
-              enableMouseParallax={false}
-              enableHoverRotation={true}
+              autoRotateSpeed={0.35}
               enableManualRotation={true}
               enableManualZoom={true}
-              ambientIntensity={0.5}
-              keyLightIntensity={1.2}
-              fillLightIntensity={0.6}
-              rimLightIntensity={1.0}
-              environmentPreset="night"
-              autoFrame={true}
-              fadeIn={true}
-              showScreenshotButton={false}
+              ambientIntensity={0.7}
+              keyLightIntensity={1.6}
+              fillLightIntensity={0.8}
+              rimLightIntensity={1.2}
+              environmentPreset="city"
             />
           </div>
         ) : (
@@ -329,3 +324,4 @@ export default function LineUpPage() {
     </main>
   );
 }
+
