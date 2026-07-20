@@ -18,14 +18,13 @@ export type FfRow =
   | { kind: "sep" };
 
 const E: FfCell = { text: "-" };
+const COL_W = 110; // px per data column
 
 function link(url: string, text: string) {
   return `${url}#:~:text=${encodeURIComponent(text)}`;
 }
 
-function VC({
-  data, neg, cls,
-}: { data: FfCell; neg?: boolean; cls?: string }) {
+function VC({ data, neg, cls }: { data: FfCell; neg?: boolean; cls?: string }) {
   const className = [cls, neg ? "fin-negative" : ""].filter(Boolean).join(" ") || undefined;
   if (!data.url || data.text === "-") return <td className={className}>{data.text}</td>;
   return (
@@ -37,6 +36,15 @@ function VC({
   );
 }
 
+// th helper with forced min-width
+function TH({ children, cls, w = COL_W }: { children: React.ReactNode; cls?: string; w?: number }) {
+  return (
+    <th className={cls} style={{ minWidth: w, width: w }}>
+      {children}
+    </th>
+  );
+}
+
 export default function FireflyFinancialTable({ rows }: { rows: FfRow[] }) {
   const [show24Q, setShow24Q] = useState(false);
   const [show25Q, setShow25Q] = useState(false);
@@ -44,45 +52,48 @@ export default function FireflyFinancialTable({ rows }: { rows: FfRow[] }) {
 
   return (
     <div className="card fin-card">
-      <table className="table fin-table">
+      <table className="table fin-table" style={{ tableLayout: "auto", width: "100%" }}>
+        <colgroup>
+          <col style={{ width: 240, minWidth: 240 }} />
+        </colgroup>
         <thead>
           <tr>
-            <th className="fin-label-header">항목</th>
+            <th className="fin-label-header" style={{ minWidth: 240, width: 240 }}>항목</th>
 
-            {/* FY 2024 + quarterly toggle */}
+            {/* ── FY 2024 + 분기 ── */}
             {show24Q && QS.map((q, i) => (
-              <th key={`24${q}`}
-                className={`fin-col-sep fin-quarter-col fin-hist-group${i === 0 ? " fin-hist-group-start" : ""}`}>
+              <TH key={`24${q}`}
+                cls={`fin-col-sep fin-quarter-col fin-hist-group${i === 0 ? " fin-hist-group-start" : ""}`}>
                 24Y {q}
-              </th>
+              </TH>
             ))}
-            <th className={`fin-col-sep fin-fy-col fin-fy-header${show24Q ? " fin-hist-group fin-hist-group-end" : ""}`}>
+            <TH w={140} cls={`fin-col-sep fin-fy-col fin-fy-header${show24Q ? " fin-hist-group fin-hist-group-end" : ""}`}>
               <div>FY 2024</div>
               <button type="button" className="fin-toggle-btn" onClick={() => setShow24Q(v => !v)}>
                 24Y 1Q~4Q {show24Q ? "접기" : "분기 보기"}
               </button>
-            </th>
+            </TH>
 
-            {/* FY 2025 + quarterly toggle */}
+            {/* ── FY 2025 + 분기 ── */}
             {show25Q && QS.map((q, i) => (
-              <th key={`25${q}`}
-                className={`fin-col-sep fin-quarter-col fin-hist-group${i === 0 ? " fin-hist-group-start" : ""}`}>
+              <TH key={`25${q}`}
+                cls={`fin-col-sep fin-quarter-col fin-hist-group${i === 0 ? " fin-hist-group-start" : ""}`}>
                 25Y {q}
-              </th>
+              </TH>
             ))}
-            <th className={`fin-col-sep fin-fy-col fin-fy-header${show25Q ? " fin-hist-group fin-hist-group-end" : ""}`}>
+            <TH w={140} cls={`fin-col-sep fin-fy-col fin-fy-header${show25Q ? " fin-hist-group fin-hist-group-end" : ""}`}>
               <div>FY 2025</div>
               <button type="button" className="fin-toggle-btn" onClick={() => setShow25Q(v => !v)}>
                 25Y 1Q~4Q {show25Q ? "접기" : "분기 보기"}
               </button>
-            </th>
+            </TH>
 
-            {/* Q1 2026 – highlight */}
-            <th className="fin-highlight-col">
+            {/* ── 26Q1 – highlight ── */}
+            <TH w={120} cls="fin-highlight-col">
               26Y 1Q <span className="fin-new-badge">New</span>
-            </th>
+            </TH>
 
-            <th className="fin-col-sep">전년 동기 대비</th>
+            <TH w={90} cls="fin-col-sep">전년 동기 대비</TH>
           </tr>
         </thead>
 
@@ -123,8 +134,8 @@ export default function FireflyFinancialTable({ rows }: { rows: FfRow[] }) {
 
                 <td className={`fin-col-sep fin-growth ${
                   row.growth?.startsWith("(") || row.growth?.startsWith("-")
-                    ? "fin-growth-up"   // red = worse
-                    : "fin-growth-down" // blue = better
+                    ? "fin-growth-up"
+                    : "fin-growth-down"
                 }`}>
                   {row.growth ?? ""}
                 </td>
@@ -134,7 +145,7 @@ export default function FireflyFinancialTable({ rows }: { rows: FfRow[] }) {
         </tbody>
       </table>
       <p style={{ fontSize: 11, color: "var(--muted)", padding: "8px 12px 4px", margin: 0 }}>
-        단위: 천 달러 ($ in thousands) · 출처: Firefly Aerospace SEC 공시 (10-K FY2025, 10-Q Q2/Q3 2025, Q1 2026) · 계산치(*) 포함
+        단위: 천 달러 ($ in thousands) · 출처: Firefly Aerospace SEC 공시 (10-K FY2025, 10-Q Q2/Q3 2025, Q1 2026) · * = 역산값
       </p>
     </div>
   );
