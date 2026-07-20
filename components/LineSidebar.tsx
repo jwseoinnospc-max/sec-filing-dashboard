@@ -1,5 +1,6 @@
 ﻿"use client";
 import { useRef, useState, useCallback, useEffect } from "react";
+import Link from "next/link";
 
 type Falloff = "linear" | "smooth" | "sharp";
 
@@ -11,6 +12,7 @@ const FALLOFF_CURVES: Record<Falloff, (p: number) => number> = {
 
 interface LineSidebarProps {
   items: string[];
+  hrefs?: string[];
   accentColor?: string;
   textColor?: string;
   markerColor?: string;
@@ -33,6 +35,7 @@ interface LineSidebarProps {
 
 export default function LineSidebar({
   items,
+  hrefs,
   accentColor = "#A855F7",
   textColor = "#c4c4c4",
   markerColor = "#6c6c6c",
@@ -122,8 +125,6 @@ export default function LineSidebar({
 
   useEffect(() => { startLoop(); }, [activeIndex, startLoop]);
   useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
-
-  // Sync active when defaultActive changes externally
   useEffect(() => { setActiveIndex(defaultActive); }, [defaultActive]);
 
   const navClass = [
@@ -150,21 +151,31 @@ export default function LineSidebar({
       } as React.CSSProperties}
     >
       <ul ref={listRef} className="line-sidebar__list" onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
-        {items.map((label, index) => (
-          <li
-            key={`${label}-${index}`}
-            ref={el => { itemRefs.current[index] = el; }}
-            className="line-sidebar__item"
-            aria-current={activeIndex === index ? "true" : undefined}
-            onClick={() => handleClick(index, label)}
-          >
-            {showMarker && <span className="line-sidebar__marker" aria-hidden="true" />}
+        {items.map((label, index) => {
+          const href = hrefs?.[index];
+          const inner = (
             <span className="line-sidebar__label">
               {showIndex && <span className="line-sidebar__index">{String(index + 1).padStart(2, "0")}</span>}
               <span className="line-sidebar__text">{label}</span>
             </span>
-          </li>
-        ))}
+          );
+          return (
+            <li
+              key={`${label}-${index}`}
+              ref={el => { itemRefs.current[index] = el; }}
+              className="line-sidebar__item"
+              aria-current={activeIndex === index ? "true" : undefined}
+              onClick={() => handleClick(index, label)}
+            >
+              {showMarker && <span className="line-sidebar__marker" aria-hidden="true" />}
+              {href ? (
+                <Link href={href} className="line-sidebar__link" onClick={() => handleClick(index, label)}>
+                  {inner}
+                </Link>
+              ) : inner}
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

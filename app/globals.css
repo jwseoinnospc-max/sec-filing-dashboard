@@ -546,3 +546,9 @@ body { padding-left: 186px; }
   .line-sidebar__item { display: flex; justify-content: center; }
   body { padding-left: 52px; }
 }
+
+.line-sidebar__link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+}
