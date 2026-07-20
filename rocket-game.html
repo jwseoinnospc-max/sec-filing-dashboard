@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>🚀 로켓 발사 게임</title>
+<title>🚀 INNOSPACE 한빛 발사 게임</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 100%; height: 100%; overflow: hidden; background: #05060a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif; -webkit-user-select: none; user-select: none; touch-action: none; }
   #glcanvas { display: block; width: 100vw; height: 100vh; }
 
-  .hud { position: fixed; color: #eaf2ff; text-shadow: 0 1px 3px rgba(0,0,0,.7); pointer-events: none; z-index: 10; }
+  .hud { position: fixed; color: #eaf2ff; text-shadow: 0 1px 3px rgba(0,0,0,.75); pointer-events: none; z-index: 10; }
   #stats { top: 14px; left: 14px; font-variant-numeric: tabular-nums; }
   #stats .big { font-size: 30px; font-weight: 700; letter-spacing: .5px; }
-  #stats .lbl { font-size: 11px; opacity: .65; letter-spacing: 1px; text-transform: uppercase; }
+  #stats .lbl { font-size: 11px; opacity: .65; letter-spacing: 1px; }
   #stats .row { margin-bottom: 10px; }
   #stats .val { font-size: 16px; font-weight: 600; }
 
@@ -20,29 +20,44 @@
   #best .lbl { font-size: 11px; opacity: .65; letter-spacing: 1px; }
   #best .val { font-size: 18px; font-weight: 700; }
 
-  #fuelwrap { bottom: 24px; left: 50%; transform: translateX(-50%); width: min(340px, 80vw); }
-  #fuelwrap .lbl { font-size: 11px; opacity: .8; margin-bottom: 4px; display:flex; justify-content: space-between; }
+  #brand { top: 12px; left: 50%; transform: translateX(-50%); text-align: center; }
+  #brand .co { font-size: 15px; font-weight: 800; letter-spacing: 3px; color: #6fd3ff; }
+  #brand .veh { font-size: 12px; opacity: .8; margin-top: 1px; }
+  #brand .site { font-size: 11px; opacity: .55; margin-top: 1px; }
+  #stagechip { display:inline-block; margin-top: 6px; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+               background: rgba(111,211,255,.16); border: 1px solid rgba(111,211,255,.4); color: #bfe9ff; }
+
+  #fuelwrap { bottom: 24px; left: 50%; transform: translateX(-50%); width: min(360px, 84vw); }
+  #fuelwrap .lbl { font-size: 11px; opacity: .85; margin-bottom: 4px; display:flex; justify-content: space-between; }
   #fueltrack { height: 12px; border-radius: 6px; background: rgba(255,255,255,.12); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); }
   #fuelbar { height: 100%; width: 100%; border-radius: 6px; background: linear-gradient(90deg,#ff5a3c,#ffb03a,#ffe66d); transition: width .08s linear; }
 
   #msg { top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; width: 92%; }
-  #msg h1 { font-size: clamp(26px, 7vw, 52px); font-weight: 800; letter-spacing: 1px; }
-  #msg p  { margin-top: 10px; font-size: clamp(13px, 3.4vw, 17px); opacity: .85; line-height: 1.6; }
-  #msg .key { display:inline-block; padding: 2px 9px; margin: 0 2px; border-radius: 6px; background: rgba(255,255,255,.15); font-weight: 700; font-size: .9em; }
+  #msg h1 { font-size: clamp(24px, 6.5vw, 48px); font-weight: 800; letter-spacing: 1px; }
+  #msg p  { margin-top: 10px; font-size: clamp(12.5px, 3.3vw, 16px); opacity: .88; line-height: 1.7; }
+  #msg .key { display:inline-block; padding: 2px 9px; margin: 0 2px; border-radius: 6px; background: rgba(255,255,255,.16); font-weight: 700; font-size: .9em; }
+  #msg .accent { color: #6fd3ff; }
 
-  /* touch controls */
   #touch { position: fixed; inset: 0; z-index: 9; display: none; }
-  .tbtn { position: fixed; bottom: 60px; width: 78px; height: 78px; border-radius: 50%; background: rgba(255,255,255,.10); border: 2px solid rgba(255,255,255,.25); color:#fff; font-size: 30px; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color: transparent; }
-  .tbtn:active { background: rgba(255,255,255,.28); }
-  #tleft { left: 22px; }
-  #tright { left: 116px; }
-  #tthrust { right: 22px; width: 96px; height: 96px; bottom: 52px; font-size: 34px; background: rgba(255,120,60,.22); border-color: rgba(255,150,90,.5); }
+  .tbtn { position: fixed; bottom: 60px; width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.10); border: 2px solid rgba(255,255,255,.25); color:#fff; font-size: 26px; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color: transparent; text-align:center; line-height:1.05; }
+  .tbtn:active { background: rgba(255,255,255,.30); }
+  .tbtn small { font-size: 11px; }
+  #tleft { left: 20px; } #tright { left: 108px; }
+  #tthrust { right: 20px; width: 94px; height: 94px; bottom: 52px; font-size: 32px; background: rgba(255,120,60,.22); border-color: rgba(255,150,90,.5); }
+  #tctx { right: 128px; width: 84px; height: 84px; bottom: 56px; font-size: 13px; font-weight:700; background: rgba(111,211,255,.20); border-color: rgba(111,211,255,.5); display:none; }
   #hint { bottom: 6px; left: 0; right: 0; text-align:center; font-size: 12px; opacity:.5; }
   @media (hover: none) and (pointer: coarse) { #touch { display: block; } #hint{ display:none; } }
 </style>
 </head>
 <body>
 <canvas id="glcanvas"></canvas>
+
+<div class="hud" id="brand">
+  <div class="co">INNOSPACE</div>
+  <div class="veh">한빛-나노 · HANBIT-Nano</div>
+  <div class="site">🛰 발사장: 브라질 알칸타라 우주센터</div>
+  <div><span id="stagechip">1단 · 하이브리드 엔진</span></div>
+</div>
 
 <div class="hud" id="stats">
   <div class="row"><div class="lbl">고도</div><div class="big" id="alt">0 m</div></div>
@@ -52,62 +67,42 @@
   <div class="lbl">최고 고도</div><div class="val" id="bestalt">0 m</div>
 </div>
 <div class="hud" id="fuelwrap">
-  <div class="lbl"><span>연료</span><span id="fueltxt">100%</span></div>
+  <div class="lbl"><span id="fuellabel">1단 연료</span><span id="fueltxt">100%</span></div>
   <div id="fueltrack"><div id="fuelbar"></div></div>
 </div>
-<div class="hud" id="msg">
-  <h1>🚀 로켓 발사</h1>
-  <p><span class="key">Space</span> 추진 · <span class="key">← →</span> 방향 조종<br>연료를 아껴 <b>카르만 라인(100km)</b>까지 도달하세요<br><br><b>아무 키나 눌러 시작</b></p>
-</div>
+<div class="hud" id="msg"></div>
 
 <div id="touch">
   <div class="tbtn" id="tleft">◀</div>
   <div class="tbtn" id="tright">▶</div>
   <div class="tbtn" id="tthrust">🔥</div>
+  <div class="tbtn" id="tctx"><span id="tctxlbl">단분리</span></div>
 </div>
-<div class="hud" id="hint">Space: 추진 · ←/→: 조종 · R: 재시작</div>
+<div class="hud" id="hint">Space: 추진 · ←/→: 조종 · S: 단분리 · E: 위성배치 · R: 재시작</div>
 
 <script>
 "use strict";
 /* ============================================================
-   순수 WebGL 3D 로켓 발사 게임 — 외부 의존성 없음
+   INNOSPACE 한빛-나노 발사 게임 — 순수 WebGL, 외부 의존성 없음
+   2단 발사체 · 단분리 · 위성 궤도 투입
    ============================================================ */
 const canvas = document.getElementById('glcanvas');
 const gl = canvas.getContext('webgl', { antialias: true, alpha: false });
 if (!gl) { document.body.innerHTML = '<p style="color:#fff;padding:20px">이 브라우저는 WebGL을 지원하지 않습니다.</p>'; throw new Error('no webgl'); }
 
-/* ---------- mat4 / vec3 헬퍼 (column-major) ---------- */
+/* ---------- mat4 / vec3 ---------- */
 const M = {
-  mul(a, b) {
-    const o = new Float32Array(16);
-    for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) {
-      let s = 0; for (let k = 0; k < 4; k++) s += a[k*4+r] * b[c*4+k];
-      o[c*4+r] = s;
-    }
-    return o;
-  },
-  perspective(fovy, aspect, near, far) {
-    const f = 1 / Math.tan(fovy/2), nf = 1/(near-far), o = new Float32Array(16);
-    o[0]=f/aspect; o[5]=f; o[10]=(far+near)*nf; o[11]=-1; o[14]=2*far*near*nf; return o;
-  },
-  lookAt(eye, ctr, up) {
-    const z = norm(sub(eye, ctr));
-    const x = norm(cross(up, z));
-    const y = cross(z, x);
-    return new Float32Array([
-      x[0], y[0], z[0], 0,
-      x[1], y[1], z[1], 0,
-      x[2], y[2], z[2], 0,
-      -dot(x,eye), -dot(y,eye), -dot(z,eye), 1
-    ]);
-  },
+  mul(a,b){ const o=new Float32Array(16); for(let c=0;c<4;c++)for(let r=0;r<4;r++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s;} return o; },
+  perspective(fovy,aspect,near,far){ const f=1/Math.tan(fovy/2),nf=1/(near-far),o=new Float32Array(16); o[0]=f/aspect;o[5]=f;o[10]=(far+near)*nf;o[11]=-1;o[14]=2*far*near*nf; return o; },
+  lookAt(eye,ctr,up){ const z=norm(sub(eye,ctr)),x=norm(cross(up,z)),y=cross(z,x);
+    return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0, -dot(x,eye),-dot(y,eye),-dot(z,eye),1]); },
   translation(x,y,z){ const o=ident(); o[12]=x;o[13]=y;o[14]=z; return o; },
+  rotX(a){ const c=Math.cos(a),s=Math.sin(a),o=ident(); o[5]=c;o[6]=s;o[9]=-s;o[10]=c; return o; },
   rotY(a){ const c=Math.cos(a),s=Math.sin(a),o=ident(); o[0]=c;o[2]=-s;o[8]=s;o[10]=c; return o; },
   rotZ(a){ const c=Math.cos(a),s=Math.sin(a),o=ident(); o[0]=c;o[1]=s;o[4]=-s;o[5]=c; return o; },
 };
 function ident(){ const o=new Float32Array(16); o[0]=o[5]=o[10]=o[15]=1; return o; }
 function sub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
-function add(a,b){ return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]; }
 function scaleV(a,s){ return [a[0]*s,a[1]*s,a[2]*s]; }
 function dot(a,b){ return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
 function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
@@ -118,421 +113,338 @@ function mix(a,b,t){ return a+(b-a)*t; }
 function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
 /* ---------- 셰이더 ---------- */
-function compile(type, src) {
-  const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-  return s;
-}
-function program(vs, fs) {
-  const p = gl.createProgram();
-  gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
-  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
-  return p;
-}
+function compile(t,src){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+function program(vs,fs){ const p=gl.createProgram(); gl.attachShader(p,compile(gl.VERTEX_SHADER,vs)); gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; }
 
 const litProg = program(`
   attribute vec3 aPos; attribute vec3 aNormal; attribute vec3 aColor;
-  uniform mat4 uMVP; uniform mat3 uNMat;
-  varying vec3 vColor; varying vec3 vN;
-  void main(){ gl_Position = uMVP * vec4(aPos,1.0); vN = normalize(uNMat*aNormal); vColor = aColor; }
-`, `
-  precision mediump float;
-  varying vec3 vColor; varying vec3 vN; uniform vec3 uLight;
-  void main(){
-    float d = max(dot(normalize(vN), normalize(uLight)), 0.0);
-    float l = 0.32 + 0.68*d;
-    gl_FragColor = vec4(vColor*l, 1.0);
-  }
-`);
+  uniform mat4 uMVP; uniform mat3 uNMat; varying vec3 vColor; varying vec3 vN;
+  void main(){ gl_Position=uMVP*vec4(aPos,1.0); vN=normalize(uNMat*aNormal); vColor=aColor; }`,`
+  precision mediump float; varying vec3 vColor; varying vec3 vN; uniform vec3 uLight;
+  void main(){ float d=max(dot(normalize(vN),normalize(uLight)),0.0); float l=0.32+0.68*d; gl_FragColor=vec4(vColor*l,1.0); }`);
 const flatProg = program(`
-  attribute vec3 aPos; attribute vec4 aColor;
-  uniform mat4 uMVP; uniform float uSize;
-  varying vec4 vColor;
-  void main(){ gl_Position = uMVP*vec4(aPos,1.0); gl_PointSize = uSize; vColor = aColor; }
-`, `
-  precision mediump float;
-  varying vec4 vColor; uniform float uRound;
-  void main(){
-    if (uRound > 0.5){ vec2 c = gl_PointCoord - vec2(0.5); if (dot(c,c) > 0.25) discard; }
-    gl_FragColor = vColor;
-  }
-`);
-const litU = {
-  uMVP: gl.getUniformLocation(litProg,'uMVP'),
-  uNMat: gl.getUniformLocation(litProg,'uNMat'),
-  uLight: gl.getUniformLocation(litProg,'uLight'),
-  aPos: gl.getAttribLocation(litProg,'aPos'),
-  aNormal: gl.getAttribLocation(litProg,'aNormal'),
-  aColor: gl.getAttribLocation(litProg,'aColor'),
-};
-const flatU = {
-  uMVP: gl.getUniformLocation(flatProg,'uMVP'),
-  uSize: gl.getUniformLocation(flatProg,'uSize'),
-  uRound: gl.getUniformLocation(flatProg,'uRound'),
-  aPos: gl.getAttribLocation(flatProg,'aPos'),
-  aColor: gl.getAttribLocation(flatProg,'aColor'),
-};
+  attribute vec3 aPos; attribute vec4 aColor; uniform mat4 uMVP; uniform float uSize; varying vec4 vColor;
+  void main(){ gl_Position=uMVP*vec4(aPos,1.0); gl_PointSize=uSize; vColor=aColor; }`,`
+  precision mediump float; varying vec4 vColor; uniform float uRound;
+  void main(){ if(uRound>0.5){ vec2 c=gl_PointCoord-vec2(0.5); if(dot(c,c)>0.25) discard; } gl_FragColor=vColor; }`);
+const litU={ uMVP:gl.getUniformLocation(litProg,'uMVP'), uNMat:gl.getUniformLocation(litProg,'uNMat'), uLight:gl.getUniformLocation(litProg,'uLight'),
+  aPos:gl.getAttribLocation(litProg,'aPos'), aNormal:gl.getAttribLocation(litProg,'aNormal'), aColor:gl.getAttribLocation(litProg,'aColor') };
+const flatU={ uMVP:gl.getUniformLocation(flatProg,'uMVP'), uSize:gl.getUniformLocation(flatProg,'uSize'), uRound:gl.getUniformLocation(flatProg,'uRound'),
+  aPos:gl.getAttribLocation(flatProg,'aPos'), aColor:gl.getAttribLocation(flatProg,'aColor') };
 
-/* ---------- 지오메트리 빌더 (position, normal, color) ---------- */
-function MeshBuilder() {
-  const pos=[], nrm=[], col=[];
-  return {
-    triN(a,na, b,nb, c,nc, color){
-      pos.push(a[0],a[1],a[2], b[0],b[1],b[2], c[0],c[1],c[2]);
-      nrm.push(na[0],na[1],na[2], nb[0],nb[1],nb[2], nc[0],nc[1],nc[2]);
-      for (let i=0;i<3;i++) col.push(color[0],color[1],color[2]);
-    },
-    triFlat(a,b,c, color){ const n = norm(cross(sub(b,a), sub(c,a))); this.triN(a,n,b,n,c,n,color); },
-    quadFlat(a,b,c,d, color){ this.triFlat(a,b,c,color); this.triFlat(a,c,d,color); },
-    cylinder(r, y0, y1, seg, color){
-      for (let i=0;i<seg;i++){
-        const t0=i/seg*Math.PI*2, t1=(i+1)/seg*Math.PI*2;
-        const c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1);
-        const p00=[r*c0,y0,r*s0], p01=[r*c0,y1,r*s0], p10=[r*c1,y0,r*s1], p11=[r*c1,y1,r*s1];
-        const n0=[c0,0,s0], n1=[c1,0,s1];
-        this.triN(p00,n0,p10,n1,p11,n1,color);
-        this.triN(p00,n0,p11,n1,p01,n0,color);
-      }
-    },
-    cone(rBot, y0, y1, seg, color){ // apex at y1, base radius rBot at y0
-      const h = y1-y0, slope = rBot/Math.hypot(rBot,h);
-      const ny = rBot/Math.hypot(rBot,h) * 0 + h/Math.hypot(rBot,h); // vertical comp of normal
-      for (let i=0;i<seg;i++){
-        const t0=i/seg*Math.PI*2, t1=(i+1)/seg*Math.PI*2, tm=(t0+t1)/2;
-        const c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1),cm=Math.cos(tm),sm=Math.sin(tm);
-        const b0=[rBot*c0,y0,rBot*s0], b1=[rBot*c1,y0,rBot*s1], apex=[0,y1,0];
-        const nb0=norm([slope*c0, ny, slope*s0]);
-        const nb1=norm([slope*c1, ny, slope*s1]);
-        const na =norm([slope*cm, ny, slope*sm]);
-        this.triN(b0,nb0, b1,nb1, apex,na, color);
-      }
-    },
-    box(cx,cy,cz, sx,sy,sz, color){
-      const x0=cx-sx/2,x1=cx+sx/2,y0=cy-sy/2,y1=cy+sy/2,z0=cz-sz/2,z1=cz+sz/2;
+/* ---------- 지오메트리 빌더 ---------- */
+function MeshBuilder(){
+  const pos=[],nrm=[],col=[];
+  const api={
+    triN(a,na,b,nb,c,nc,color){ pos.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]); nrm.push(na[0],na[1],na[2],nb[0],nb[1],nb[2],nc[0],nc[1],nc[2]); for(let i=0;i<3;i++)col.push(color[0],color[1],color[2]); },
+    triFlat(a,b,c,color){ const n=norm(cross(sub(b,a),sub(c,a))); api.triN(a,n,b,n,c,n,color); },
+    quadFlat(a,b,c,d,color){ api.triFlat(a,b,c,color); api.triFlat(a,c,d,color); },
+    cylinder(r,y0,y1,seg,color){ for(let i=0;i<seg;i++){ const t0=i/seg*6.2831853,t1=(i+1)/seg*6.2831853,c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1);
+      const p00=[r*c0,y0,r*s0],p01=[r*c0,y1,r*s0],p10=[r*c1,y0,r*s1],p11=[r*c1,y1,r*s1],n0=[c0,0,s0],n1=[c1,0,s1];
+      api.triN(p00,n0,p10,n1,p11,n1,color); api.triN(p00,n0,p11,n1,p01,n0,color); } },
+    frustum(rB,rT,y0,y1,seg,color){ const dr=rT-rB,dy=y1-y0; for(let i=0;i<seg;i++){ const t0=i/seg*6.2831853,t1=(i+1)/seg*6.2831853,c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1);
+      const pB0=[rB*c0,y0,rB*s0],pT0=[rT*c0,y1,rT*s0],pB1=[rB*c1,y0,rB*s1],pT1=[rT*c1,y1,rT*s1];
+      const n0=norm([dy*c0,-dr,dy*s0]),n1=norm([dy*c1,-dr,dy*s1]);
+      api.triN(pB0,n0,pB1,n1,pT1,n1,color); api.triN(pB0,n0,pT1,n1,pT0,n0,color); } },
+    cone(rB,y0,y1,seg,color){ const h=y1-y0,hyp=Math.hypot(rB,h),slope=rB/hyp,ny=h/hyp;
+      for(let i=0;i<seg;i++){ const t0=i/seg*6.2831853,t1=(i+1)/seg*6.2831853,tm=(t0+t1)/2,c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1),cm=Math.cos(tm),sm=Math.sin(tm);
+        api.triN([rB*c0,y0,rB*s0],norm([slope*c0,ny,slope*s0]),[rB*c1,y0,rB*s1],norm([slope*c1,ny,slope*s1]),[0,y1,0],norm([slope*cm,ny,slope*sm]),color); } },
+    box(cx,cy,cz,sx,sy,sz,color){ const x0=cx-sx/2,x1=cx+sx/2,y0=cy-sy/2,y1=cy+sy/2,z0=cz-sz/2,z1=cz+sz/2;
       const V=[[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]];
-      this.quadFlat(V[4],V[5],V[6],V[7],color); // top
-      this.quadFlat(V[3],V[2],V[1],V[0],color); // bottom
-      this.quadFlat(V[0],V[1],V[5],V[4],color); // front
-      this.quadFlat(V[2],V[3],V[7],V[6],color); // back
-      this.quadFlat(V[1],V[2],V[6],V[5],color); // right
-      this.quadFlat(V[3],V[0],V[4],V[7],color); // left
-    },
-    build(){ return { pos:new Float32Array(pos), nrm:new Float32Array(nrm), col:new Float32Array(col), count: pos.length/3 }; }
+      api.quadFlat(V[4],V[5],V[6],V[7],color); api.quadFlat(V[3],V[2],V[1],V[0],color); api.quadFlat(V[0],V[1],V[5],V[4],color);
+      api.quadFlat(V[2],V[3],V[7],V[6],color); api.quadFlat(V[1],V[2],V[6],V[5],color); api.quadFlat(V[3],V[0],V[4],V[7],color); },
+    build(){ return { pos:new Float32Array(pos),nrm:new Float32Array(nrm),col:new Float32Array(col),count:pos.length/3 }; }
   };
+  return api;
 }
-function makeGLMesh(data){
-  const b = { pos: gl.createBuffer(), nrm: gl.createBuffer(), col: gl.createBuffer(), count: data.count };
+function makeGLMesh(data){ const b={pos:gl.createBuffer(),nrm:gl.createBuffer(),col:gl.createBuffer(),count:data.count};
   gl.bindBuffer(gl.ARRAY_BUFFER,b.pos); gl.bufferData(gl.ARRAY_BUFFER,data.pos,gl.STATIC_DRAW);
   gl.bindBuffer(gl.ARRAY_BUFFER,b.nrm); gl.bufferData(gl.ARRAY_BUFFER,data.nrm,gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER,b.col); gl.bufferData(gl.ARRAY_BUFFER,data.col,gl.STATIC_DRAW);
-  return b;
-}
-function drawLit(mesh, model){
-  const mvp = M.mul(pv, model);
-  gl.useProgram(litProg);
-  gl.uniformMatrix4fv(litU.uMVP,false,mvp);
-  gl.uniformMatrix3fv(litU.uNMat,false,normalMat3(model));
-  gl.uniform3fv(litU.uLight, LIGHT);
+  gl.bindBuffer(gl.ARRAY_BUFFER,b.col); gl.bufferData(gl.ARRAY_BUFFER,data.col,gl.STATIC_DRAW); return b; }
+function drawLit(mesh,model){ const mvp=M.mul(pv,model); gl.useProgram(litProg);
+  gl.uniformMatrix4fv(litU.uMVP,false,mvp); gl.uniformMatrix3fv(litU.uNMat,false,normalMat3(model)); gl.uniform3fv(litU.uLight,LIGHT);
   gl.bindBuffer(gl.ARRAY_BUFFER,mesh.pos); gl.enableVertexAttribArray(litU.aPos); gl.vertexAttribPointer(litU.aPos,3,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ARRAY_BUFFER,mesh.nrm); gl.enableVertexAttribArray(litU.aNormal); gl.vertexAttribPointer(litU.aNormal,3,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ARRAY_BUFFER,mesh.col); gl.enableVertexAttribArray(litU.aColor); gl.vertexAttribPointer(litU.aColor,3,gl.FLOAT,false,0,0);
-  gl.drawArrays(gl.TRIANGLES,0,mesh.count);
-}
+  gl.drawArrays(gl.TRIANGLES,0,mesh.count); }
 
-/* ---------- 로켓 메쉬 ---------- */
-const WHITE=[0.90,0.91,0.94], RED=[0.86,0.16,0.16], DARK=[0.24,0.25,0.30], BLUE=[0.35,0.6,0.95];
-const R=1.2;
-const rb = MeshBuilder();
-rb.cone(R*0.9, 0.0, -1.4, 20, DARK);      // nozzle (아래로)
-rb.cylinder(R, 0.0, 6.2, 24, WHITE);       // body
-rb.cylinder(R*1.02, 3.4, 4.0, 24, BLUE);   // window band
-rb.cone(R, 6.2, 9.6, 24, RED);             // nose cone
-// fins x4
-for (let k=0;k<4;k++){
-  const a = k/4*Math.PI*2, ca=Math.cos(a), sa=Math.sin(a);
-  const inn=[R*ca,0.2,R*sa], base=[R*ca,2.6,R*sa], out=[(R+2.0)*ca,-0.2,(R+2.0)*sa];
-  const nrm1 = norm(cross(sub(base,inn),sub(out,inn)));
-  rb.triN(inn,nrm1,base,nrm1,out,nrm1,RED);
-  rb.triN(inn,scaleV(nrm1,-1),out,scaleV(nrm1,-1),base,scaleV(nrm1,-1),RED);
-}
-const rocketMesh = makeGLMesh(rb.build());
+/* ---------- 색상 (INNOSPACE 테마) ---------- */
+const WHITE=[0.92,0.93,0.96], NAVY=[0.10,0.16,0.32], CYAN=[0.20,0.72,0.95], DARK=[0.22,0.23,0.28],
+      GOLD=[0.92,0.75,0.22], PANEL=[0.10,0.22,0.55], SILVER=[0.78,0.80,0.85];
+
+/* ---------- 로켓 치수 ---------- */
+const R1=1.35, H1=7.0, R2=0.95, H2=4.5, STACK=H1+1.0;
+
+/* 1단: 하이브리드 엔진 + 동체 + 핀 (로컬 base y=0) */
+const s1=MeshBuilder();
+s1.frustum(R1*0.78,R1*0.42,-1.8,0.0,22,DARK);   // 엔진 노즐(벨)
+s1.cylinder(R1,0.0,H1,26,WHITE);                 // 1단 동체
+s1.cylinder(R1*1.012,0.5,1.1,26,NAVY);           // 하단 밴드
+s1.cylinder(R1*1.012,H1-2.6,H1-2.2,26,CYAN);     // 시안 스트라이프
+s1.frustum(R1,R2,H1,H1+1.0,26,NAVY);             // 인터스테이지 테이퍼
+for(let k=0;k<4;k++){ const a=k/4*6.2831853,ca=Math.cos(a),sa=Math.sin(a);
+  const inn=[R1*ca,0.3,R1*sa],base=[R1*ca,3.0,R1*sa],out=[(R1+2.1)*ca,-0.3,(R1+2.1)*sa];
+  const n=norm(cross(sub(base,inn),sub(out,inn)));
+  s1.triN(inn,n,base,n,out,n,NAVY); s1.triN(inn,scaleV(n,-1),out,scaleV(n,-1),base,scaleV(n,-1),NAVY); }
+const stage1Mesh=makeGLMesh(s1.build());
+
+/* 2단: 소형 엔진 + 동체 + 페어링 (로컬 base y=0) */
+const s2=MeshBuilder();
+s2.frustum(R2*0.72,R2*0.46,-0.7,0.0,20,DARK);    // 2단 엔진
+s2.cylinder(R2,0.0,H2,24,WHITE);                 // 2단 동체
+s2.cylinder(R2*1.015,0.3,0.7,24,NAVY);           // 밴드
+s2.cylinder(R2*1.015,H2*0.55,H2*0.55+0.4,24,CYAN);// 시안 스트라이프
+s2.cone(R2,H2,H2+2.7,24,NAVY);                   // 페어링(노즈)
+const stage2Mesh=makeGLMesh(s2.build());
+
+/* 위성 (payload) */
+const sat=MeshBuilder();
+sat.box(0,0,0, 1.0,1.2,1.0, SILVER);
+sat.box(0,0.1,0, 1.02,0.4,1.02, GOLD);
+sat.box(-1.35,0,0, 1.7,0.06,1.0, PANEL);         // 태양전지판
+sat.box(1.35,0,0, 1.7,0.06,1.0, PANEL);
+sat.box(-0.6,0,0, 0.5,0.06,0.12, SILVER);        // 지지대
+sat.box(0.6,0,0, 0.5,0.06,0.12, SILVER);
+const satMesh=makeGLMesh(sat.build());
 
 /* ---------- 지형 / 발사대 ---------- */
-const gb = MeshBuilder();
-gb.box(0,-1,0, 1600,2,1600, [0.10,0.13,0.11]);       // ground slab
-gb.box(0,0,0, 14,2,14, [0.30,0.31,0.36]);            // pad base
-gb.box(0,1.2,0, 9,0.5,9, [0.42,0.43,0.48]);          // pad top
-// launch tower
-gb.box(7,7,0, 1,16,1, [0.33,0.34,0.4]);
-gb.box(7,15,-2, 1,1,5, [0.33,0.34,0.4]);
-const groundMesh = makeGLMesh(gb.build());
+const gb=MeshBuilder();
+gb.box(0,-1,0, 1800,2,1800, [0.09,0.12,0.10]);
+gb.box(0,0,0, 16,2,16, [0.28,0.29,0.34]);
+gb.box(0,1.2,0, 10,0.5,10, [0.40,0.41,0.47]);
+gb.box(8,8,0, 1.1,18,1.1, [0.31,0.33,0.4]);      // 발사탑
+gb.box(8,17,-2, 1.1,1.1,5, [0.31,0.33,0.4]);
+gb.box(8,11,-1, 0.5,0.5,3, [0.5,0.35,0.15]);     // 연결 암
+const groundMesh=makeGLMesh(gb.build());
 
-/* ---------- 격자 라인 ---------- */
-const gridPos=[], gridCol=[];
-const G=800, step=25;
-for (let i=-G;i<=G;i+=step){
-  gridPos.push(i,0.05,-G, i,0.05,G, -G,0.05,i, G,0.05,i);
-  for (let j=0;j<4;j++) gridCol.push(0.22,0.28,0.34,0.5);
-}
-const gridBuf = { pos: gl.createBuffer(), col: gl.createBuffer(), count: gridPos.length/3 };
-gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.pos); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gridPos),gl.STATIC_DRAW);
-gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.col); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gridCol),gl.STATIC_DRAW);
+/* ---------- 격자 ---------- */
+const gpos=[],gcol=[]; const G=900,step=25;
+for(let i=-G;i<=G;i+=step){ gpos.push(i,0.05,-G,i,0.05,G,-G,0.05,i,G,0.05,i); for(let j=0;j<4;j++)gcol.push(0.20,0.30,0.34,0.5); }
+const gridBuf={pos:gl.createBuffer(),col:gl.createBuffer(),count:gpos.length/3};
+gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.pos); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gpos),gl.STATIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.col); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gcol),gl.STATIC_DRAW);
 
 /* ---------- 별 ---------- */
-const starPos=[], starCol=[], NSTARS=900;
-for (let i=0;i<NSTARS;i++){
-  const th=Math.random()*Math.PI*2, ph=Math.acos(Math.random()*2-1), r=1400+Math.random()*400;
-  const x=r*Math.sin(ph)*Math.cos(th), y=Math.abs(r*Math.cos(ph))*0.9+50, z=r*Math.sin(ph)*Math.sin(th);
-  starPos.push(x,y,z);
-  const b=0.6+Math.random()*0.4; starCol.push(b,b,b, 1.0);
-}
-const starBuf = { pos: gl.createBuffer(), col: gl.createBuffer(), count: NSTARS };
-gl.bindBuffer(gl.ARRAY_BUFFER,starBuf.pos); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(starPos),gl.STATIC_DRAW);
-gl.bindBuffer(gl.ARRAY_BUFFER,starBuf.col); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(starCol),gl.STATIC_DRAW);
+const spos=[],scol=[],NS=900;
+for(let i=0;i<NS;i++){ const th=Math.random()*6.283,ph=Math.acos(Math.random()*2-1),r=1500+Math.random()*400;
+  spos.push(r*Math.sin(ph)*Math.cos(th), Math.abs(r*Math.cos(ph))*0.9+60, r*Math.sin(ph)*Math.sin(th));
+  const b=0.6+Math.random()*0.4; scol.push(b,b,b,1.0); }
+const starBuf={pos:gl.createBuffer(),col:gl.createBuffer(),count:NS};
+gl.bindBuffer(gl.ARRAY_BUFFER,starBuf.pos); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(spos),gl.STATIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER,starBuf.col); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(scol),gl.STATIC_DRAW);
 
-/* ---------- 배기 파티클 ---------- */
-const MAXP = 400;
-const pPos = new Float32Array(MAXP*3), pCol = new Float32Array(MAXP*4);
-const parts = []; // {p:[x,y,z], v:[..], life, max}
-const pPosBuf = gl.createBuffer(), pColBuf = gl.createBuffer();
+/* ---------- 파티클 ---------- */
+const MAXP=460; const pPos=new Float32Array(MAXP*3),pCol=new Float32Array(MAXP*4); const parts=[];
+const pPosBuf=gl.createBuffer(),pColBuf=gl.createBuffer();
 
-/* ---------- 게임 상태 ---------- */
-const GRAV=9.8, THRUST=27, FUEL_MAX=100, BURN=6.8, MAX_TILT=0.62, ALT_SCALE=110, SPACE_UNITS=909;
-let state, keys={}, bestUnits=0;
+/* ---------- 물리 상수 ---------- */
+const GRAV=9.8, MAX_TILT=0.6, ALT_SCALE=110, SPACE_UNITS=909;
+const STG={ 1:{thrust:24, fuel:100, burn:6.4, exOff:1.7}, 2:{thrust:34, fuel:58, burn:6.0, exOff:0.55} };
+
+let state, keys={left:false,right:false,thrust:false}, T={left:false,right:false,thrust:false}, bestUnits=0;
 
 function reset(){
-  state = {
-    pos: [0, 1.0, 0], vel: [0,0,0],
-    tilt: 0, yaw: 0,
-    fuel: FUEL_MAX,
-    started: false, crashed: false, reachedSpace: false, landed: false,
-    cam: [0, 12, 42],
-    t: 0,
-  };
-  parts.length = 0;
+  state={ pos:[0,1.0,0], vel:[0,0,0], tilt:0, t:0, stage:1, fuel:STG[1].fuel,
+    jettison:null, satellite:null, started:false, crashed:false, reachedSpace:false, deployed:false, landed:false };
+  parts.length=0; bestUnits=0;
+  showStart();
 }
-reset();
+
+/* ---------- 메시지 ---------- */
+const msg=document.getElementById('msg');
+function hideMsg(){ msg.style.display='none'; }
+function showMsg(html){ msg.innerHTML=html; msg.style.display='block'; }
+function showStart(){ showMsg(
+  '<h1>🚀 <span class="accent">한빛-나노</span> 발사</h1>'+
+  '<p><b>INNOSPACE</b> 하이브리드 발사체를 궤도로!<br>'+
+  '<span class="key">Space</span> 추진 · <span class="key">← →</span> 조종 · <span class="key">S</span> 단분리 · <span class="key">E</span> 위성배치<br>'+
+  '1단 연소 후 <b class="accent">단 분리</b> → 2단 점화 → 우주에서 <b class="accent">위성 궤도 투입</b><br><br>'+
+  '<b>아무 키나 눌러 발사</b></p>'); }
 
 /* ---------- 입력 ---------- */
-const T = { left:false, right:false, thrust:false };
-function begin(){ if(!state.started && !state.crashed){ state.started = true; hide(msg);} }
-addEventListener('keydown', e=>{
-  if (e.repeat) return;
-  const k=e.key.toLowerCase();
-  if (k===' '||k==='arrowup'||k==='w'){ keys.thrust=true; begin(); e.preventDefault(); }
-  if (k==='arrowleft'||k==='a'){ keys.left=true; begin(); }
-  if (k==='arrowright'||k==='d'){ keys.right=true; begin(); }
-  if (k==='r'){ reset(); show(msgReset()); }
-});
-addEventListener('keyup', e=>{
-  const k=e.key.toLowerCase();
-  if (k===' '||k==='arrowup'||k==='w') keys.thrust=false;
-  if (k==='arrowleft'||k==='a') keys.left=false;
-  if (k==='arrowright'||k==='d') keys.right=false;
-});
-function bindTouch(el,prop){
-  el.addEventListener('touchstart',e=>{e.preventDefault(); T[prop]=true; begin();},{passive:false});
-  el.addEventListener('touchend',e=>{e.preventDefault(); T[prop]=false;},{passive:false});
-  el.addEventListener('touchcancel',e=>{T[prop]=false;});
-}
+function begin(){ if(!state.started && !state.crashed){ state.started=true; hideMsg(); } }
+addEventListener('keydown',e=>{ if(e.repeat)return; const k=e.key.toLowerCase();
+  if(k===' '||k==='arrowup'||k==='w'){ keys.thrust=true; begin(); e.preventDefault(); }
+  else if(k==='arrowleft'||k==='a'){ keys.left=true; begin(); }
+  else if(k==='arrowright'||k==='d'){ keys.right=true; begin(); }
+  else if(k==='s'||k==='arrowdown'){ separate(); }
+  else if(k==='e'||k==='enter'){ deploy(); }
+  else if(k==='r'){ reset(); } });
+addEventListener('keyup',e=>{ const k=e.key.toLowerCase();
+  if(k===' '||k==='arrowup'||k==='w') keys.thrust=false;
+  else if(k==='arrowleft'||k==='a') keys.left=false;
+  else if(k==='arrowright'||k==='d') keys.right=false; });
+function bindTouch(el,prop,fn){
+  el.addEventListener('touchstart',e=>{ e.preventDefault(); if(prop)T[prop]=true; begin(); if(fn)fn(); },{passive:false});
+  el.addEventListener('touchend',e=>{ e.preventDefault(); if(prop)T[prop]=false; },{passive:false});
+  el.addEventListener('touchcancel',()=>{ if(prop)T[prop]=false; }); }
 bindTouch(document.getElementById('tleft'),'left');
 bindTouch(document.getElementById('tright'),'right');
 bindTouch(document.getElementById('tthrust'),'thrust');
+bindTouch(document.getElementById('tctx'),null,()=>{ const s=state; if(s.reachedSpace&&!s.deployed) deploy(); else separate(); });
 
-const msg = document.getElementById('msg');
-function hide(el){ el.style.display='none'; }
-function show(html){ msg.innerHTML=html; msg.style.display='block'; }
-function msgReset(){ return '<h1>🚀 로켓 발사</h1><p><span class="key">Space</span> 추진 · <span class="key">← →</span> 방향 조종<br>연료를 아껴 <b>카르만 라인(100km)</b>까지<br><br><b>아무 키나 눌러 시작</b></p>'; }
+/* ---------- 게임 액션 ---------- */
+function up(){ return [-Math.sin(state.tilt), Math.cos(state.tilt), 0]; }
+
+function separate(){ const s=state;
+  if(!s.started || s.crashed || s.stage!==1 || s.jettison) return;
+  const u=up();
+  s.jettison={ pos:[s.pos[0],s.pos[1],s.pos[2]], vel:[s.vel[0]-u[0]*4,s.vel[1]-u[1]*4,s.vel[2]], angZ:s.tilt, angX:0, spinZ:(Math.random()-0.5)*3, spinX:(Math.random()-0.5)*4 };
+  // 2단이 제자리에 남도록 pos를 위로 이동
+  s.pos[0]+=u[0]*STACK; s.pos[1]+=u[1]*STACK;
+  s.stage=2; s.fuel=STG[2].fuel;
+  const nz=[s.pos[0]-u[0]*0.5,s.pos[1]-u[1]*0.5,s.pos[2]];
+  for(let i=0;i<26;i++) parts.push({p:[nz[0],nz[1],nz[2]],v:[(Math.random()-0.5)*16,(Math.random()-0.5)*10,(Math.random()-0.5)*16],life:0.5,max:0.5,kind:'puff'});
+  flashHint('2단 점화 🔥');
+}
+function deploy(){ const s=state;
+  if(!s.started || s.crashed || s.deployed || !s.reachedSpace) return;
+  const u=up(); const topLocal=(s.stage===1? STACK+H2 : H2)+1.6;
+  const p=[s.pos[0]+u[0]*topLocal, s.pos[1]+u[1]*topLocal, s.pos[2]];
+  s.satellite={ p, v:[s.vel[0]+u[0]*6,s.vel[1]+u[1]*6,s.vel[2]+2], ang:0, spin:0.5 };
+  s.deployed=true;
+  for(let i=0;i<30;i++) parts.push({p:[p[0],p[1],p[2]],v:[(Math.random()-0.5)*10,(Math.random()-0.5)*10,(Math.random()-0.5)*10],life:0.7,max:0.7,kind:'spark'});
+  showMsg('<h1>🛰️ <span class="accent">위성 궤도 투입 성공!</span></h1><p>한빛-나노가 위성을 우주에 배치했습니다 🎉<br>고도 <b>'+fmtAlt(s.pos[1])+'</b> · INNOSPACE 미션 성공<br><br><span class="key">R</span> 로 재발사</p>');
+}
+let hintTimer=0, hintText='';
+function flashHint(t){ hintText=t; hintTimer=1.6; }
 
 /* ---------- 물리 업데이트 ---------- */
-function update(dt){
-  const s = state;
-  s.t += dt;
-  const left = keys.left || T.left, right = keys.right || T.right;
-  const wantThrust = (keys.thrust || T.thrust) && s.fuel > 0 && !s.crashed;
+function update(dt){ const s=state; s.t+=dt;
+  const left=keys.left||T.left, right=keys.right||T.right;
+  const wantThrust=(keys.thrust||T.thrust) && s.fuel>0 && !s.crashed;
+  if(hintTimer>0) hintTimer-=dt;
 
-  if (s.started && !s.crashed){
-    // 조종 (틸트)
-    if (left)  s.tilt = clamp(s.tilt + 1.6*dt,  -MAX_TILT, MAX_TILT);
-    if (right) s.tilt = clamp(s.tilt - 1.6*dt,  -MAX_TILT, MAX_TILT);
-    if (!left && !right) s.tilt *= (1 - Math.min(1, 2.2*dt)); // 자동 복귀
+  if(s.started && !s.crashed){
+    if(left)  s.tilt=clamp(s.tilt+1.5*dt,-MAX_TILT,MAX_TILT);
+    if(right) s.tilt=clamp(s.tilt-1.5*dt,-MAX_TILT,MAX_TILT);
+    if(!left && !right) s.tilt*=(1-Math.min(1,2.0*dt));
 
-    // 로켓 로컬 up 벡터 (틸트 = Z축 회전)
-    const up = [ -Math.sin(s.tilt), Math.cos(s.tilt), 0 ];
-
-    // 가속도
+    const u=up(); const st=STG[s.stage];
     let ax=0, ay=-GRAV, az=0;
-    if (wantThrust){
-      ax += up[0]*THRUST; ay += up[1]*THRUST; az += up[2]*THRUST;
-      s.fuel = Math.max(0, s.fuel - BURN*dt);
-      spawnExhaust(s, up, dt);
-    }
-    // 공기저항
-    const v=s.vel; const drag=0.02;
-    ax -= v[0]*drag; ay -= v[1]*drag; az -= v[2]*drag;
-
+    if(wantThrust){ ax+=u[0]*st.thrust; ay+=u[1]*st.thrust; az+=u[2]*st.thrust; s.fuel=Math.max(0,s.fuel-st.burn*dt); spawnExhaust(s,u,st.exOff,dt); }
+    const v=s.vel,drag=0.02; ax-=v[0]*drag; ay-=v[1]*drag; az-=v[2]*drag;
     v[0]+=ax*dt; v[1]+=ay*dt; v[2]+=az*dt;
     s.pos[0]+=v[0]*dt; s.pos[1]+=v[1]*dt; s.pos[2]+=v[2]*dt;
 
-    // 지면 처리
-    if (s.pos[1] <= 1.0){
-      s.pos[1] = 1.0;
-      const impact = len(v);
-      const wasFlying = s.t > 0.4;
-      if (wasFlying && impact > 16){
-        crash(s);
-      } else {
-        v[0]=v[1]=v[2]=0;
-        if (wasFlying && !s.reachedSpace) s.landed = true;
-      }
-    }
-    // 우주 도달
-    if (!s.reachedSpace && s.pos[1] >= SPACE_UNITS){
-      s.reachedSpace = true;
-      show('<h1>🌌 우주 도달!</h1><p>카르만 라인(100km)을 돌파했습니다 🎉<br>계속 비행하거나 <span class="key">R</span> 로 재시작</p>');
-    }
-    if (s.pos[1] > bestUnits) bestUnits = s.pos[1];
-  }
-  updateExhaust(dt);
+    // 1단 연료 소진 시 자동 분리
+    if(s.stage===1 && s.fuel<=0 && s.started && s.t>0.5) separate();
 
-  // 카메라 추적 (부드럽게)
-  const target = [ s.pos[0], s.pos[1] + 12, s.pos[2] + 42 ];
-  const k = 1 - Math.pow(0.0001, dt);
+    if(s.pos[1]<=1.0){ s.pos[1]=1.0; const impact=len(v);
+      if(s.t>0.5 && impact>16){ crash(s); } else { v[0]=v[1]=v[2]=0; if(s.t>0.5 && !s.reachedSpace) s.landed=true; } }
+
+    if(!s.reachedSpace && s.pos[1]>=SPACE_UNITS){ s.reachedSpace=true;
+      if(!s.deployed) showMsg('<h1>🌌 우주 도달!</h1><p>카르만 라인(100km) 돌파 🎉<br><b class="accent">위성 배치</b> 준비 완료 — <span class="key">E</span> 를 눌러 궤도 투입</p>'); }
+    if(s.pos[1]>bestUnits) bestUnits=s.pos[1];
+  }
+
+  updateJettison(dt); updateSatellite(dt); updateParticles(dt);
+
+  const target=[s.pos[0], s.pos[1]+15, s.pos[2]+52];
+  const k=1-Math.pow(0.0001,dt);
+  s.cam=s.cam||[0,16,52];
   s.cam[0]=mix(s.cam[0],target[0],k); s.cam[1]=mix(s.cam[1],target[1],k); s.cam[2]=mix(s.cam[2],target[2],k);
 }
-
-function crash(s){
-  s.crashed = true;
-  for (let i=0;i<60;i++){
-    parts.push({ p:[s.pos[0], s.pos[1]+1, s.pos[2]],
-      v:[(Math.random()-0.5)*30,(Math.random())*24,(Math.random()-0.5)*30], life:1.2, max:1.2, boom:true });
-  }
-  show('<h1>💥 충돌!</h1><p>최고 고도 <b>'+fmtAlt(bestUnits)+'</b><br><span class="key">R</span> 키로 재시작</p>');
-}
-
-function spawnExhaust(s, up, dt){
-  const nozzle = [ s.pos[0]-up[0]*1.4, s.pos[1]-up[1]*1.4, s.pos[2]-up[2]*1.4 ];
-  const n = Math.min(8, Math.floor(60*dt)+2);
-  for (let i=0;i<n;i++){
-    if (parts.length>=MAXP) break;
-    const spread=1.2;
-    parts.push({
-      p:[nozzle[0]+(Math.random()-0.5)*spread, nozzle[1], nozzle[2]+(Math.random()-0.5)*spread],
-      v:[ -up[0]*24 + (Math.random()-0.5)*8, -up[1]*24 + (Math.random()-0.5)*6, -up[2]*24 + (Math.random()-0.5)*8 ],
-      life:0.55, max:0.55, boom:false
-    });
-  }
-}
-function updateExhaust(dt){
-  for (let i=parts.length-1;i>=0;i--){
-    const q=parts[i]; q.life-=dt;
-    if (q.life<=0){ parts.splice(i,1); continue; }
-    q.p[0]+=q.v[0]*dt; q.p[1]+=q.v[1]*dt; q.p[2]+=q.v[2]*dt;
-    if (q.boom){ q.v[1]-=30*dt; }
-  }
-}
+function crash(s){ s.crashed=true;
+  for(let i=0;i<70;i++) parts.push({p:[s.pos[0],s.pos[1]+2,s.pos[2]],v:[(Math.random()-0.5)*34,Math.random()*26,(Math.random()-0.5)*34],life:1.3,max:1.3,kind:'boom'});
+  showMsg('<h1>💥 발사 실패</h1><p>착지 속도가 너무 빨랐습니다<br>최고 고도 <b>'+fmtAlt(bestUnits)+'</b><br><br><span class="key">R</span> 로 재발사</p>'); }
+function updateJettison(dt){ const j=state.jettison; if(!j)return;
+  j.vel[1]-=GRAV*dt; const dr=0.03; j.vel[0]*=(1-dr*dt); j.vel[2]*=(1-dr*dt);
+  j.pos[0]+=j.vel[0]*dt; j.pos[1]+=j.vel[1]*dt; j.pos[2]+=j.vel[2]*dt;
+  j.angZ+=j.spinZ*dt; j.angX+=j.spinX*dt;
+  if(j.pos[1]<=1.0){ for(let i=0;i<24;i++) parts.push({p:[j.pos[0],1,j.pos[2]],v:[(Math.random()-0.5)*20,Math.random()*10,(Math.random()-0.5)*20],life:0.7,max:0.7,kind:'dust'}); state.jettison=null; } }
+function updateSatellite(dt){ const st=state.satellite; if(!st)return;
+  st.p[0]+=st.v[0]*dt; st.p[1]+=st.v[1]*dt; st.p[2]+=st.v[2]*dt; st.ang+=st.spin*dt;
+  st.v[0]*=(1-0.02*dt); st.v[1]*=(1-0.02*dt); }
+function spawnExhaust(s,u,off,dt){ const nz=[s.pos[0]-u[0]*off,s.pos[1]-u[1]*off,s.pos[2]-u[2]*off];
+  const n=Math.min(9,Math.floor(70*dt)+2); const sp=(s.stage===1?1.3:0.9);
+  for(let i=0;i<n;i++){ if(parts.length>=MAXP)break;
+    parts.push({p:[nz[0]+(Math.random()-0.5)*sp,nz[1],nz[2]+(Math.random()-0.5)*sp],
+      v:[-u[0]*26+(Math.random()-0.5)*8,-u[1]*26+(Math.random()-0.5)*6,-u[2]*26+(Math.random()-0.5)*8],life:0.55,max:0.55,kind:'flame'}); } }
+function updateParticles(dt){ for(let i=parts.length-1;i>=0;i--){ const q=parts[i]; q.life-=dt;
+  if(q.life<=0){ parts.splice(i,1); continue; }
+  q.p[0]+=q.v[0]*dt; q.p[1]+=q.v[1]*dt; q.p[2]+=q.v[2]*dt;
+  if(q.kind==='boom'||q.kind==='dust') q.v[1]-=30*dt; } }
 
 /* ---------- 렌더 ---------- */
-const LIGHT = norm([0.4, 0.9, 0.35]);
-let pv;
-function render(){
-  const s = state, alt01 = clamp(s.pos[1]/SPACE_UNITS, 0, 1);
-  // 하늘색: 지상 파랑 → 우주 검정
-  const sky = [ mix(0.42,0.02,alt01), mix(0.62,0.02,alt01), mix(0.85,0.05,alt01) ];
-  gl.clearColor(sky[0],sky[1],sky[2],1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.enable(gl.DEPTH_TEST);
+const LIGHT=norm([0.4,0.9,0.35]); let pv;
+function render(){ const s=state, alt01=clamp(s.pos[1]/SPACE_UNITS,0,1);
+  const sky=[mix(0.40,0.02,alt01),mix(0.60,0.02,alt01),mix(0.85,0.06,alt01)];
+  gl.clearColor(sky[0],sky[1],sky[2],1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST);
+  const proj=M.perspective(Math.PI/3.2, canvas.width/canvas.height, 0.5, 6000);
+  const view=M.lookAt(s.cam,[s.pos[0],s.pos[1]+5,s.pos[2]],[0,1,0]); pv=M.mul(proj,view);
 
-  const proj = M.perspective(Math.PI/3.2, canvas.width/canvas.height, 0.5, 5000);
-  const view = M.lookAt(s.cam, [s.pos[0], s.pos[1]+4, s.pos[2]], [0,1,0]);
-  pv = M.mul(proj, view);
-
-  // 별 (높이 올라갈수록 진하게)
-  const starAlpha = alt01;
-  if (starAlpha > 0.02) drawFlat(starBuf, gl.POINTS, 2.0, 1.0, starAlpha);
-
-  // 지형/발사대/로켓
+  if(alt01>0.02) drawFlat(starBuf,gl.POINTS,2.0,1.0,alt01);
   gl.disable(gl.BLEND);
-  drawLit(groundMesh, ident());
-  drawFlat(gridBuf, gl.LINES, 1.0, 0.0, 1.0 - alt01*0.8);
-  if (!s.crashed){
-    const model = M.mul(M.translation(s.pos[0],s.pos[1],s.pos[2]), M.mul(M.rotY(s.yaw), M.rotZ(s.tilt)));
-    drawLit(rocketMesh, model);
+  drawLit(groundMesh,ident());
+  drawFlat(gridBuf,gl.LINES,1.0,0.0,1.0-alt01*0.8);
+
+  if(!s.crashed || s.deployed){
+    const rot=M.mul(M.rotZ(s.tilt),ident());
+    const base=M.mul(M.translation(s.pos[0],s.pos[1],s.pos[2]),rot);
+    if(!s.crashed){
+      drawLit(stage2Mesh, s.stage===1 ? M.mul(base,M.translation(0,STACK,0)) : base);
+      if(s.stage===1) drawLit(stage1Mesh, base);
+    }
   }
+  if(s.jettison){ const j=s.jettison;
+    const m=M.mul(M.mul(M.translation(j.pos[0],j.pos[1],j.pos[2]),M.rotZ(j.angZ)),M.rotX(j.angX));
+    drawLit(stage1Mesh,m); }
+  if(s.satellite){ const st=s.satellite;
+    const m=M.mul(M.mul(M.translation(st.p[0],st.p[1],st.p[2]),M.rotY(st.ang)),M.rotZ(st.ang*0.6));
+    drawLit(satMesh,m); }
 
-  // 배기/폭발 파티클 (가산 혼합)
-  drawParticles(s);
+  drawParticles();
 }
-
-function drawFlat(buf, mode, size, round, alphaMul){
-  gl.useProgram(flatProg);
-  gl.uniformMatrix4fv(flatU.uMVP,false,pv);
-  gl.uniform1f(flatU.uSize,size);
-  gl.uniform1f(flatU.uRound,round);
-  if (alphaMul < 1){ gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); }
+function drawFlat(buf,mode,size,round,alphaMul){ gl.useProgram(flatProg);
+  gl.uniformMatrix4fv(flatU.uMVP,false,pv); gl.uniform1f(flatU.uSize,size); gl.uniform1f(flatU.uRound,round);
+  if(alphaMul<1){ gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA); }
   gl.bindBuffer(gl.ARRAY_BUFFER,buf.pos); gl.enableVertexAttribArray(flatU.aPos); gl.vertexAttribPointer(flatU.aPos,3,gl.FLOAT,false,0,0);
   gl.bindBuffer(gl.ARRAY_BUFFER,buf.col); gl.enableVertexAttribArray(flatU.aColor); gl.vertexAttribPointer(flatU.aColor,4,gl.FLOAT,false,0,0);
-  gl.drawArrays(mode,0,buf.count);
-  gl.disable(gl.BLEND);
-}
-function drawParticles(s){
-  const n = parts.length;
-  if (!n) return;
-  for (let i=0;i<n;i++){
-    const q=parts[i], t=q.life/q.max, o=i*3, o4=i*4;
-    pPos[o]=q.p[0]; pPos[o+1]=q.p[1]; pPos[o+2]=q.p[2];
-    if (q.boom){ pCol[o4]=1.0; pCol[o4+1]=0.4+0.4*t; pCol[o4+2]=0.1; pCol[o4+3]=t; }
-    else { pCol[o4]=1.0; pCol[o4+1]=0.55+0.4*t; pCol[o4+2]=0.15*t; pCol[o4+3]=t*0.9; }
-  }
+  gl.drawArrays(mode,0,buf.count); gl.disable(gl.BLEND); }
+function drawParticles(){ const n=parts.length; if(!n)return;
+  for(let i=0;i<n;i++){ const q=parts[i],t=q.life/q.max,o=i*3,o4=i*4; pPos[o]=q.p[0];pPos[o+1]=q.p[1];pPos[o+2]=q.p[2];
+    if(q.kind==='boom'){ pCol[o4]=1;pCol[o4+1]=0.35+0.4*t;pCol[o4+2]=0.08;pCol[o4+3]=t; }
+    else if(q.kind==='puff'){ pCol[o4]=0.9;pCol[o4+1]=0.9;pCol[o4+2]=0.95;pCol[o4+3]=t*0.8; }
+    else if(q.kind==='spark'){ pCol[o4]=0.5;pCol[o4+1]=0.85;pCol[o4+2]=1.0;pCol[o4+3]=t; }
+    else if(q.kind==='dust'){ pCol[o4]=0.55;pCol[o4+1]=0.5;pCol[o4+2]=0.4;pCol[o4+3]=t*0.7; }
+    else { pCol[o4]=1;pCol[o4+1]=0.6+0.35*t;pCol[o4+2]=0.2*t;pCol[o4+3]=t*0.9; } }
   gl.bindBuffer(gl.ARRAY_BUFFER,pPosBuf); gl.bufferData(gl.ARRAY_BUFFER,pPos.subarray(0,n*3),gl.DYNAMIC_DRAW);
   gl.bindBuffer(gl.ARRAY_BUFFER,pColBuf); gl.bufferData(gl.ARRAY_BUFFER,pCol.subarray(0,n*4),gl.DYNAMIC_DRAW);
-  gl.useProgram(flatProg);
-  gl.uniformMatrix4fv(flatU.uMVP,false,pv);
-  gl.uniform1f(flatU.uSize, 22.0);
-  gl.uniform1f(flatU.uRound, 1.0);
-  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE); gl.depthMask(false);
+  gl.useProgram(flatProg); gl.uniformMatrix4fv(flatU.uMVP,false,pv); gl.uniform1f(flatU.uSize,22.0); gl.uniform1f(flatU.uRound,1.0);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE); gl.depthMask(false);
   gl.enableVertexAttribArray(flatU.aPos); gl.bindBuffer(gl.ARRAY_BUFFER,pPosBuf); gl.vertexAttribPointer(flatU.aPos,3,gl.FLOAT,false,0,0);
   gl.enableVertexAttribArray(flatU.aColor); gl.bindBuffer(gl.ARRAY_BUFFER,pColBuf); gl.vertexAttribPointer(flatU.aColor,4,gl.FLOAT,false,0,0);
-  gl.drawArrays(gl.POINTS,0,n);
-  gl.depthMask(true); gl.disable(gl.BLEND);
-}
+  gl.drawArrays(gl.POINTS,0,n); gl.depthMask(true); gl.disable(gl.BLEND); }
 
 /* ---------- HUD ---------- */
-const elAlt=document.getElementById('alt'), elSpd=document.getElementById('spd'),
-      elBest=document.getElementById('bestalt'), elFuelBar=document.getElementById('fuelbar'),
-      elFuelTxt=document.getElementById('fueltxt');
-function fmtAlt(u){ const m=(u-1)*ALT_SCALE; return m>=1000 ? (m/1000).toFixed(1)+' km' : Math.max(0,Math.round(m))+' m'; }
-function hud(){
-  const s=state;
-  elAlt.textContent = fmtAlt(s.pos[1]);
-  elSpd.textContent = Math.round(len(s.vel)*ALT_SCALE/10) + ' m/s';
-  elBest.textContent = fmtAlt(bestUnits);
-  const f = Math.round(s.fuel);
-  elFuelBar.style.width = f+'%';
-  elFuelTxt.textContent = f+'%';
+const elAlt=document.getElementById('alt'),elSpd=document.getElementById('spd'),elBest=document.getElementById('bestalt'),
+      elFuelBar=document.getElementById('fuelbar'),elFuelTxt=document.getElementById('fueltxt'),elFuelLbl=document.getElementById('fuellabel'),
+      elChip=document.getElementById('stagechip'),tctx=document.getElementById('tctx'),tctxlbl=document.getElementById('tctxlbl');
+function fmtAlt(u){ const m=(u-1)*ALT_SCALE; return m>=1000?(m/1000).toFixed(1)+' km':Math.max(0,Math.round(m))+' m'; }
+function hud(){ const s=state;
+  elAlt.textContent=fmtAlt(s.pos[1]);
+  elSpd.textContent=Math.round(len(s.vel)*ALT_SCALE/10)+' m/s';
+  elBest.textContent=fmtAlt(bestUnits);
+  const f=Math.round(s.fuel); elFuelBar.style.width=f+'%'; elFuelTxt.textContent=f+'%';
+  elFuelLbl.textContent=(s.stage===1?'1단 연료':'2단 연료');
+  let chip = s.deployed?'위성 배치 완료 🛰':(s.stage===1?'1단 · 하이브리드 엔진':(s.reachedSpace?'우주 · 위성배치 대기':'2단 점화'));
+  if(hintTimer>0) chip=hintText;
+  elChip.textContent=chip;
+  // 터치 컨텍스트 버튼 라벨
+  if(s.reachedSpace && !s.deployed){ tctx.style.display='flex'; tctxlbl.textContent='위성배치'; }
+  else if(s.started && s.stage===1 && !s.crashed){ tctx.style.display='flex'; tctxlbl.textContent='단분리'; }
+  else tctx.style.display='none';
 }
 
-/* ---------- 리사이즈 ---------- */
-function resize(){
-  const dpr = Math.min(window.devicePixelRatio||1, 2);
-  canvas.width = Math.floor(innerWidth*dpr);
-  canvas.height = Math.floor(innerHeight*dpr);
-  gl.viewport(0,0,canvas.width,canvas.height);
-}
-addEventListener('resize', resize); resize();
-
-/* ---------- 메인 루프 ---------- */
-let last = performance.now();
-function frame(now){
-  let dt = (now-last)/1000; last=now;
-  dt = Math.min(dt, 0.05);
-  update(dt);
-  render();
-  hud();
-  requestAnimationFrame(frame);
-}
+/* ---------- 리사이즈 & 루프 ---------- */
+function resize(){ const dpr=Math.min(window.devicePixelRatio||1,2); canvas.width=Math.floor(innerWidth*dpr); canvas.height=Math.floor(innerHeight*dpr); gl.viewport(0,0,canvas.width,canvas.height); }
+addEventListener('resize',resize); resize();
+reset();
+let last=performance.now();
+function frame(now){ let dt=(now-last)/1000; last=now; dt=Math.min(dt,0.05); update(dt); render(); hud(); requestAnimationFrame(frame); }
 requestAnimationFrame(frame);
 </script>
 </body>
