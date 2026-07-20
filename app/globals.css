@@ -421,9 +421,9 @@ body.line-up-page::before {
 .lineup-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 52%; z-index: 3; background: linear-gradient(transparent, rgba(4,8,15,.9)); pointer-events: none; }
 .lineup-info { padding: 14px 16px 16px; border-top: 1px solid rgba(255,255,255,.06); }
 .lineup-name-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-.lineup-name { font-size: 18px; font-weight: 800; color: var(--lineup-accent, #38bdf8); letter-spacing: -0.01em; }
+.lineup-name { font-family: 'Courier New', monospace; font-size: 14px; font-weight: 700; color: var(--lineup-accent, #38bdf8); letter-spacing: 0.05em; }
 .lineup-status { font-size: 10px; font-weight: 700; padding: 2px 8px; border: 1px solid; border-radius: 999px; }
-.lineup-sub { font-size: 10px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 12px; }
+.lineup-sub { font-family: 'Courier New', monospace; font-size: 9px; color: var(--lineup-accent, #38bdf8); letter-spacing: 0.18em; opacity: 0.7; text-transform: uppercase; margin-bottom: 8px; }
 .lineup-specs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .lineup-spec { display: flex; align-items: baseline; font-size: 12px; }
 .lspec-key { color: var(--muted); width: 60px; flex-shrink: 0; font-size: 11px; }
@@ -433,6 +433,30 @@ body.line-up-page::before {
 .lspec-accent { color: var(--lineup-accent, #38bdf8) !important; font-weight: 700; }
 .lineup-spec-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
 
+/* ───────── StarCraft portrait extras ───────── */
+.lineup-scanlines {
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 4px);
+}
+.lineup-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40px; pointer-events: none; z-index: 3;
+  background: linear-gradient(transparent, rgba(10,14,28,0.9));
+}
+.sc-corner {
+  position: absolute; width: 10px; height: 10px; z-index: 4; pointer-events: none;
+  border-color: var(--lineup-accent, #38bdf8); border-style: solid; opacity: 0.7;
+}
+.sc-tl { top: 6px; left: 6px; border-width: 1.5px 0 0 1.5px; }
+.sc-tr { top: 6px; right: 6px; border-width: 1.5px 1.5px 0 0; }
+.sc-bl { bottom: 6px; left: 6px; border-width: 0 0 1.5px 1.5px; }
+.sc-br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
+.sc-badge {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
+  font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.12em;
+  color: var(--lineup-accent, #38bdf8); background: rgba(0,0,0,0.55);
+  border: 1px solid var(--lineup-accent, #38bdf8); border-radius: 2px;
+  padding: 2px 7px; text-transform: uppercase; white-space: nowrap;
+}
 /* ───────── LineSidebar base styles (from React Bits) ───────── */
 .line-sidebar {
   --accent-color: #38bdf8;
