@@ -66,47 +66,6 @@ function BacklogDonut({
   );
 }
 
-/* ─── Simple bar chart (inline SVG) ────────────────────────── */
-function SimpleBarChart({
-  data,
-}: {
-  data: { label: string; revenue: number; gpm: number | null }[];
-}) {
-  const maxRev = Math.max(...data.map((d) => d.revenue));
-  return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 140, padding: "0 4px" }}>
-        {data.map((d) => {
-          const barH = (d.revenue / maxRev) * 110;
-          return (
-            <div key={d.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <span style={{ fontSize: 10, color: "#94a3b8" }}>${d.revenue}M{d.gpm != null ? ` / ${d.gpm}%` : ""}</span>
-              <div
-                style={{
-                  width: "100%", height: barH, background: "#f97316",
-                  borderRadius: "4px 4px 0 0", opacity: 0.85,
-                  transition: "height .3s",
-                }}
-                title={`${d.label}: $${d.revenue}M`}
-              />
-              <span style={{ fontSize: 11, color: "#94a3b8" }}>{d.label}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Revenue estimate data ─────────────────────────────────── */
-const REVENUE_EST = [
-  { label: "2021", revenue: 40,  gpm: null },
-  { label: "2022", revenue: 80,  gpm: null },
-  { label: "2023", revenue: 130, gpm: null },
-  { label: "2024", revenue: 220, gpm: null },
-  { label: "2025E", revenue: 390, gpm: null },
-];
-
 /* ─── Launch history ────────────────────────────────────────── */
 const LAUNCHES = [
   { date: "2021-09", mission: "Alpha 1st Flight (FLTA001)", vehicle: "Alpha", result: "실패", color: "#ef4444" },
@@ -216,17 +175,7 @@ export default function FireflyDashboardPage() {
 
       {/* ── Revenue Trend ── */}
       <section className="main" style={{ marginTop: 24 }}>
-        <div className="trend-charts">
-          <div className="card">
-            <SectionTitle>연도별 매출 추정 (2021 → 2025E)</SectionTitle>
-            <p style={{ fontSize: 12, color: "#64748b", marginTop: -8, marginBottom: 12 }}>
-              ※ 비상장사 추정치 — 실제 수치 상이할 수 있음
-            </p>
-            <SimpleBarChart data={REVENUE_EST} />
-          </div>
-
-          {/* Launch History */}
-          <div className="card">
+        <div className="card" style={{ maxWidth: "100%" }}>
             <SectionTitle>발사 이력</SectionTitle>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
@@ -255,8 +204,7 @@ export default function FireflyDashboardPage() {
               </tbody>
             </table>
           </div>
-        </div>
-
+        
         {/* ── Contracts ── */}
         <div className="card" style={{ marginTop: 16 }}>
           <SectionTitle>주요 계약 현황</SectionTitle>
