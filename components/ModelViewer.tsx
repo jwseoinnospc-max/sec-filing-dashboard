@@ -25,6 +25,7 @@ function OBJModel({
   url,
   initPitch,
   initYaw,
+  initRoll,
   autoRotate,
   autoRotateSpeed,
   autoRotateAxis,
@@ -232,4 +233,5 @@ export default function ModelViewer({
     </div>
   );
 }
+
 
