@@ -36,7 +36,7 @@ function OBJModel({
   initYaw: number;
   autoRotate: boolean;
   autoRotateSpeed: number;
-  autoRotateAxis: "x" | "y";
+  autoRotateAxis: "x" | "y" | "z";
   enableManualRotation: boolean;
   onLoaded?: () => void;
 }) {
@@ -111,11 +111,9 @@ function OBJModel({
   useFrame((_, dt) => {
     let need = false;
     if (autoRotate) {
-      if (autoRotateAxis === "x") {
-        groupRef.current.rotation.x += autoRotateSpeed * dt;
-      } else {
-        groupRef.current.rotation.y += autoRotateSpeed * dt;
-      }
+      if (autoRotateAxis === "x") groupRef.current.rotation.x += autoRotateSpeed * dt;
+      else if (autoRotateAxis === "z") groupRef.current.rotation.z += autoRotateSpeed * dt;
+      else groupRef.current.rotation.y += autoRotateSpeed * dt;
       need = true;
     }
     groupRef.current.rotation.y += vel.current.x;
