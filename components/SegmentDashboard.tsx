@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { rklbQuarterData, growth, formatNumber } from "@/lib/rklbData";
 import StockWidget from "./StockWidget";
@@ -27,7 +27,7 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
   const launchPct = (data.launch / total) * 100;
   const holeInset = size * 0.25;
   // Center the blue (Launch) arc on the right-side leader line by starting the gradient
-  // half the arc's angle before it — this also centers the gray (Space Systems) arc on the left-side leader line.
+  // half the arc's angle before it ??this also centers the gray (Space Systems) arc on the left-side leader line.
   const startDeg = 90 - (launchPct / 100) * 360 / 2;
 
   return (
@@ -76,8 +76,8 @@ function Donut({ total, data, size }: { total: number; data: Segment; size: numb
   );
 }
 
-const MAX_DONUT_SIZE = 112;
-const MIN_DONUT_SIZE = 64;
+const MAX_DONUT_SIZE = 92;
+const MIN_DONUT_SIZE = 52;
 
 function donutSize(total: number, maxTotal: number) {
   const scaled = MAX_DONUT_SIZE * Math.sqrt(total / maxTotal);
@@ -116,7 +116,7 @@ function CompareCard({
   return (
     <section className="compare-card">
       <div className="title-bar">{title}</div>
-      <div className="unit">단위: 천 달러</div>
+      <div className="unit">?⑥쐞: 泥??щ윭</div>
 
       <div className="body">
         <div className="period">
@@ -155,29 +155,29 @@ function CompareCard({
 
         <div className="center">
           <div className="arrow-wrap">
-            <svg className="arrow" viewBox="0 0 160 80" preserveAspectRatio="none">
+            <svg className="arrow" viewBox="0 0 160 64" preserveAspectRatio="none">
               <defs>
                 <linearGradient id={`arrow-gradient-${metric}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor={LIGHT_BLUE} stopOpacity="0" />
                   <stop offset="100%" stopColor={LIGHT_BLUE} stopOpacity="1" />
                 </linearGradient>
               </defs>
-              <rect x="0" y="22" width="105" height="36" fill={`url(#arrow-gradient-${metric})`} />
-              <polygon points="100,0 160,40 100,80" fill={LIGHT_BLUE} />
+              <rect x="0" y="16" width="105" height="32" fill={`url(#arrow-gradient-${metric})`} />
+              <polygon points="100,0 160,32 100,64" fill={LIGHT_BLUE} />
             </svg>
             <div className="growth-text">
-              <span>전년 동기 대비</span>
+              <span>?꾨뀈 ?숆린 ?鍮?/span>
               <strong>{pct(totalGrowth)}</strong>
-              <span style={{ color: "#dc2626" }}>{totalGrowth >= 0 ? "↑" : "↓"}</span>
+              <span style={{ color: "#dc2626" }}>{totalGrowth >= 0 ? "?? : "??}</span>
             </div>
           </div>
 
           <a className="pill blue" href={sourceHref}>
-            전년 동기 대비 {pct(launchGrowth)} 증가
+            ?꾨뀈 ?숆린 ?鍮?{pct(launchGrowth)} 利앷?
           </a>
 
           <a className="pill gray" href={sourceHref}>
-            전년 동기 대비 {pct(systemsGrowth)} 증가
+            ?꾨뀈 ?숆린 ?鍮?{pct(systemsGrowth)} 利앷?
           </a>
         </div>
 
@@ -233,7 +233,7 @@ function CompareCard({
           border: none;
           color: #ffffff;
           text-align: center;
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 400;
           padding: 10px;
         }
@@ -242,14 +242,14 @@ function CompareCard({
           position: absolute;
           top: 45px;
           right: 14px;
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 800;
           color: var(--muted);
         }
 
         .body {
           display: grid;
-          grid-template-columns: 1fr 180px 1fr;
+          grid-template-columns: 1fr 148px 1fr;
           align-items: center;
           gap: 0;
           padding: 22px 2px 18px;
@@ -258,13 +258,13 @@ function CompareCard({
         .period {
           border: none;
           border-radius: 8px;
-          padding: 16px 4px;
+          padding: 10px 2px;
         }
 
         .period h3 {
           text-align: center;
           margin: 0 0 10px;
-          font-size: 20px;
+          font-size: 16px;
           font-weight: 800;
         }
 
@@ -273,7 +273,7 @@ function CompareCard({
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 150px;
+          min-height: 120px;
           margin-top: 20px;
         }
 
@@ -322,10 +322,10 @@ function CompareCard({
         }
 
         .side-label {
-          font-size: 12px;
+          font-size: 11px;
           line-height: 1.35;
           color: var(--muted);
-          min-width: 72px;
+          min-width: 60px;
         }
 
         .side-label span {
@@ -365,14 +365,14 @@ function CompareCard({
         .arrow-wrap {
           position: relative;
           width: 100%;
-          height: 80px;
+          height: 64px;
           margin: 18px auto 0;
         }
 
         .arrow {
           display: block;
           width: 100%;
-          height: 80px;
+          height: 64px;
         }
 
         .growth-text {
@@ -381,7 +381,7 @@ function CompareCard({
           left: 0;
           width: 100%;
           transform: translateY(-50%);
-          font-size: 13px;
+          font-size: 12px;
           color: #ffffff;
           font-weight: 700;
           white-space: nowrap;
@@ -390,7 +390,7 @@ function CompareCard({
 
         .growth-text strong {
           color: #dc2626;
-          font-size: 20px;
+          font-size: 17px;
           margin: 0 0 0 3px;
         }
 
@@ -401,9 +401,9 @@ function CompareCard({
           width: 100%;
           white-space: nowrap;
           margin: -4px auto 0;
-          padding: 8px 22px;
+          padding: 6px 8px;
           border-radius: 999px;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 400;
           text-decoration: none;
           text-align: center;
@@ -421,7 +421,7 @@ function CompareCard({
         }
 
         /* Below this container width there isn't room for [period][center][period] side by
-           side without shrinking text/donuts past readability — stack them vertically instead
+           side without shrinking text/donuts past readability ??stack them vertically instead
            so nothing ever needs to be clipped or scrolled. */
         @container (max-width: 480px) {
           .body {
@@ -453,7 +453,7 @@ export default function SegmentDashboard() {
       <StockWidget />
 
       <CompareCard
-        title="매출 (Revenue)"
+        title="留ㅼ텧 (Revenue)"
         metric="revenue"
         previousLabel={revenue.previousLabel}
         currentLabel={revenue.currentLabel}
@@ -464,7 +464,7 @@ export default function SegmentDashboard() {
       />
 
       <CompareCard
-        title="매출총이익 (Gross Profit)"
+        title="留ㅼ텧珥앹씠??(Gross Profit)"
         metric="grossProfit"
         previousLabel={grossProfit.previousLabel}
         currentLabel={grossProfit.currentLabel}
@@ -491,3 +491,5 @@ export default function SegmentDashboard() {
     </section>
   );
 }
+
+
