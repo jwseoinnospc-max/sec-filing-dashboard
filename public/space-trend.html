@@ -771,6 +771,8 @@ document.getElementById('nFilters').addEventListener('click',function(e){
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
   renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
+  // 큐레이션 뉴스를 즉시 표시 (RSS 로드 전 스켈레톤 대체)
+  renderTopNews();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
@@ -781,9 +783,6 @@ async function loadAll(){
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
     renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
-  }else{
-    document.getElementById('topNews').innerHTML='<div class="empty">뉴스를 불러오지 못했습니다.</div>';
-    document.getElementById('hotKw').innerHTML='<div class="empty">데이터 없음</div>';
   }
   var ok=lR.status==='fulfilled'&&nR.status==='fulfilled';
   setStatus(ok?'최근 업데이트: '+new Date().toLocaleString('ko-KR')+' KST':'일부 데이터를 불러오지 못했습니다.',!ok);
