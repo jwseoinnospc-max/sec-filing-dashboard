@@ -34,6 +34,7 @@ function OBJModel({
   url: string;
   initPitch: number;
   initYaw: number;
+  initRoll: number;
   autoRotate: boolean;
   autoRotateSpeed: number;
   autoRotateAxis: "x" | "y" | "z";
@@ -77,12 +78,12 @@ function OBJModel({
 
   useLayoutEffect(() => {
     if (!groupRef.current) return;
-    groupRef.current.rotation.set(initPitch, initYaw, 0);
+    groupRef.current.rotation.set(initPitch, initYaw, initRoll);
     if (!loadedRef.current) {
       loadedRef.current = true;
       onLoaded?.();
     }
-  }, [obj, initPitch, initYaw, onLoaded]);
+  }, [obj, initPitch, initYaw, initRoll, onLoaded]);
 
   // Manual drag rotation
   useEffect(() => {
@@ -137,6 +138,7 @@ export interface ModelViewerProps {
   height?: number | string;
   defaultRotationX?: number;
   defaultRotationY?: number;
+  defaultRotationZ?: number;
   defaultZoom?: number;
   minZoomDistance?: number;
   maxZoomDistance?: number;
@@ -161,6 +163,7 @@ export default function ModelViewer({
   height = 400,
   defaultRotationX = 0,
   defaultRotationY = 0,
+  defaultRotationZ = 0,
   defaultZoom = 2.5,
   minZoomDistance = 0.5,
   maxZoomDistance = 10,
@@ -178,6 +181,7 @@ export default function ModelViewer({
 }: ModelViewerProps) {
   const initPitch = deg2rad(defaultRotationX);
   const initYaw = deg2rad(defaultRotationY);
+  const initRoll = deg2rad(defaultRotationZ);
 
   return (
     <div style={{ width, height, position: "relative" }}>
@@ -207,6 +211,7 @@ export default function ModelViewer({
             url={url}
             initPitch={initPitch}
             initYaw={initYaw}
+            initRoll={initRoll}
             autoRotate={autoRotate}
             autoRotateSpeed={autoRotateSpeed}
             autoRotateAxis={autoRotateAxis}
@@ -227,3 +232,4 @@ export default function ModelViewer({
     </div>
   );
 }
+
