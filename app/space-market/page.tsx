@@ -4,6 +4,7 @@ import Link from "next/link";
 import { readFileSync } from "fs";
 import { join } from "path";
 import NavMenu from "@/components/NavMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
 import TopMoverRow, { type MoverItem } from "@/components/TopMoverRow";
@@ -190,6 +191,7 @@ export default async function SpaceMarketPage() {
       <section className="header">
         <div>
           <NavMenu />
+          <ThemeToggle />
           <h1>Space Market</h1>
           <p>우주 산업 대표 기업의 주가를 한 화면에서 확인합니다.</p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>

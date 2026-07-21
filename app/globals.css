@@ -9,6 +9,18 @@
   --good: #22c55e;
   --warn: #f59e0b;
 }
+/* Light theme */
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-2: #f1f5f9;
+  --text: #1e293b;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #38bdf8;
+  --good: #22c55e;
+  --warn: #f59e0b;
+}
 * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 body {
   margin: 0;
@@ -28,6 +40,34 @@ body::before {
 }
 body.space-trend-page::before { opacity: 0; }
 a { color: inherit; }
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.theme-toggle:hover {
+  background: var(--panel-2);
+  transform: scale(1.1);
+}
+.theme-toggle:active {
+  transform: scale(0.95);
+}
 .page { min-height: 100vh; padding: 13px 32px 32px; }
 .header { display: flex; justify-content: space-between; gap: 24px; align-items: stretch; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #ffffff; }
 .badge-row { display: flex; align-items: center; gap: 8px; height: 30px; margin-bottom: 14px; }
