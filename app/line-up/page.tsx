@@ -242,9 +242,7 @@ function drawTOverlay(ctx: CanvasRenderingContext2D, W: number, H: number, t: nu
 }
 
 function drawZ(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
-  const bg = ctx.createRadialGradient(W / 2, H * 0.55, 0, W / 2, H * 0.55, H);
-  bg.addColorStop(0, "#18082e"); bg.addColorStop(0.5, "#0c0420"); bg.addColorStop(1, "#060010");
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H * 0.41, p = 0.7 + 0.3 * Math.sin(t * 0.032);
   const halo = ctx.createRadialGradient(cx, cy, 28, cx, cy, 68);
   halo.addColorStop(0, "transparent");
@@ -274,9 +272,7 @@ function drawZ(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
 }
 
 function drawP(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, "#070410"); bg.addColorStop(0.5, "#110900"); bg.addColorStop(1, "#190f00");
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H * 0.4, p = 0.7 + 0.3 * Math.sin(t * 0.028);
   [54, 34].forEach((r, i) => {
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -341,11 +337,13 @@ function SCPortrait({ drawFn, blendMode = "normal" }: {
   );
 }
 
-/* ─── 나노 포트레이트: 3D 모델 + 캔버스 오버레이 ────────────── */
-function NanoPortrait() {
+/* ─── 3D 모델 + 캔버스 오버레이 포트레이트 (나노/마이크로/미니 공용) ─ */
+function ModelPortrait({ overlayFn }: {
+  overlayFn: (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
+}) {
   return (
     <>
-      {/* Layer 1: 3D OBJ 모델 */}
+      {/* Layer 1: 3D OBJ 모델 (세 카드 동일 각도/위치) */}
       <div style={{ position: "absolute", inset: 0, background: "#050c22" }}>
         <ModelViewer
           url="/models/rocket_nano.obj"
@@ -355,7 +353,6 @@ function NanoPortrait() {
           defaultRotationX={-90}
           defaultRotationY={0}
           defaultRotationZ={90}
-          
           enableManualRotation={true}
           enableManualZoom={true}
           minZoomDistance={1.0}
@@ -367,8 +364,8 @@ function NanoPortrait() {
           rimLightIntensity={0.8}
         />
       </div>
-      {/* Layer 2: SC 헥사 그리드 + 글로우 오버레이 (screen 블렌드) */}
-      <SCPortrait drawFn={drawTOverlay} blendMode="screen" />
+      {/* Layer 2: 팩션별 글로우 오버레이 (screen 블렌드) */}
+      <SCPortrait drawFn={overlayFn} blendMode="screen" />
     </>
   );
 }
@@ -503,9 +500,9 @@ export default function LineUpPage() {
   }, []);
 
   const portraits: React.ReactNode[] = [
-    <NanoPortrait key="nano" />,
-    <SCPortrait key="micro" drawFn={drawZ} />,
-    <SCPortrait key="mini"  drawFn={drawP} />,
+    <ModelPortrait key="nano"  overlayFn={drawTOverlay} />,
+    <ModelPortrait key="micro" overlayFn={drawZ} />,
+    <ModelPortrait key="mini"  overlayFn={drawP} />,
   ];
 
   return (
