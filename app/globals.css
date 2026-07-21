@@ -408,13 +408,13 @@ body.line-up-page::before {
 }
 .line-up-page-main { background: transparent; position: relative; }
 .line-up-page-main > *:not([style*="position: fixed"]) { position: relative; z-index: 1; }
-.lineup-grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px;
-  max-width: 1350px;
+.lineup-grid { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: center; gap: 24px;
+  max-width: 1350px; overflow-x: auto;
   margin-left: auto;
-  margin-right: auto; margin-top: 8px; }
-.lineup-grid > .lineup-card { flex: 0 0 calc((100% - 48px) / 3); min-width: 0; }
-/* 선택된 카드 + 패널 쌍: 카드 2칸 폭, 통째로 줄바꿈 */
-.lineup-grid > .lineup-pair { flex: 0 0 calc((100% - 48px) / 3 * 2 + 24px); min-width: 0; }
+  margin-right: auto; margin-top: 8px; padding-bottom: 4px; }
+.lineup-grid > .lineup-card { flex: 0 0 300px; min-width: 0; }
+/* 선택된 카드 + 패널 쌍: 카드 2칸 폭, 통째로 한 줄 유지 */
+.lineup-grid > .lineup-pair { flex: 0 0 624px; min-width: 0; }
 .lineup-pair { display: flex; gap: 24px; align-items: flex-start; }
 .lineup-pair > .lineup-card, .lineup-pair > .lineup-panel { flex: 1 1 0; min-width: 0; }
 .lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s; }
