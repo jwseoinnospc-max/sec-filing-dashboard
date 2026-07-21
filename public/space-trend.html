@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -216,8 +216,14 @@ a{color:inherit;text-decoration:none;}
 
 <div class="dashboard">
 
-  <!-- 최신 우주뉴스: 한 줄 5개 정사각형 카드 (대표사진 + 제목 + 요약) -->
-  <div id="newsHero" class="news-hero-grid"></div>
+  <!-- 최신 우주뉴스: 한 줄 5개 정사각형 카드 (내용 직접 입력) -->
+  <div id="newsHero" class="news-hero-grid">
+    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+  </div>
 
   <!-- ROW 1 -->
   <div class="row row-1">
@@ -297,27 +303,6 @@ a{color:inherit;text-decoration:none;}
 
   </div><!-- /row-3 -->
 
-  <!-- ROW 4: 최근 뉴스 -->
-  <div class="row" style="grid-template-columns:1fr;">
-    <div class="card">
-      <div class="card-header" style="flex-direction:column;align-items:flex-start;">
-        <span class="card-title" style="margin-bottom:8px;">최근 뉴스</span>
-        <div class="nf" id="nFilters">
-          <span class="ft active" data-c="전체">전체</span>
-          <span class="ft" data-c="Launch">Launch</span>
-          <span class="ft" data-c="Satellite">Satellite</span>
-          <span class="ft" data-c="Defense">Defense</span>
-          <span class="ft" data-c="Investment">Investment</span>
-          <span class="ft" data-c="Policy">Policy</span>
-          <span class="ft" data-c="Manufacturing">Manufacturing</span>
-          <span class="ft" data-c="AI">AI</span>
-          <span class="ft" data-c="M&A">M&amp;A</span>
-          <span class="sort-lbl">☰ 필터 &nbsp; 정렬: 최신순 ∨</span>
-        </div>
-      </div>
-      <div id="ntWrap"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
-    </div>
-  </div>
 
 </div><!-- /dashboard -->
 
@@ -533,6 +518,7 @@ function switchNewsTab(tab, btn){
 
 function renderTopNews(){
   var el=document.getElementById('topNews');
+  if(!el)return;
   var now=new Date();
 
   if(activeNewsTab==='kr'){
@@ -704,6 +690,7 @@ function renderDist(){
 
 /* ===== NEWS TABLE ===== */
 function renderNewsTable(){
+  if(!document.getElementById('ntWrap'))return;
   var filt=activeFilter==='전체'?allNews:allNews.filter(function(n){return n.cat===activeFilter;});
   var seen={};
   filt=filt.filter(function(n){var k=n.title.trim().slice(0,40);if(seen[k])return false;seen[k]=true;return true;});
@@ -716,7 +703,8 @@ function renderNewsTable(){
         '<td class="nt-src">'+n.source+'</td></tr>';
     }).join('')+'</tbody></table>';
 }
-document.getElementById('nFilters').addEventListener('click',function(e){
+var _nf=document.getElementById('nFilters');
+if(_nf)_nf.addEventListener('click',function(e){
   if(e.target.classList.contains('ft')){
     document.querySelectorAll('.ft').forEach(function(t){t.classList.remove('active');});
     e.target.classList.add('active');
@@ -774,7 +762,7 @@ function renderNewsHero(){
 /* ===== LOAD ALL ===== */
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
-  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();renderNewsHero();
+  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
@@ -784,7 +772,7 @@ async function loadAll(){
       var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
-    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();renderNewsHero();
+    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
   }
   var ok=lR.status==='fulfilled'&&nR.status==='fulfilled';
   setStatus(ok?'최근 업데이트: '+new Date().toLocaleString('ko-KR')+' KST':'일부 데이터를 불러오지 못했습니다.',!ok);
