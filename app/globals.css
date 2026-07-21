@@ -70,6 +70,11 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
 }
 
+/* Light theme — news translation (grayish) */
+:root[data-theme="light"] .space-stock-news-ko {
+  color: #94a3b8 !important;
+}
+
 /* Sidebar always dark (ignore light theme) */
 :root[data-theme="light"] .nav-sidebar {
   background: rgba(4, 8, 15, 0.78) !important;
