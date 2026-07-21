@@ -52,6 +52,7 @@ a{color:inherit;text-decoration:none;}
 .row-1{grid-template-columns:3fr 1fr 1.2fr;}
 .row-2{grid-template-columns:repeat(3,minmax(0,1fr));}
 .row-3{grid-template-columns:2fr 2.5fr 3fr 1.8fr;}
+.row-main{grid-template-columns:repeat(3,minmax(0,1fr));}
 
 /* Cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
@@ -225,8 +226,8 @@ a{color:inherit;text-decoration:none;}
     <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
   </div>
 
-  <!-- ROW 1 -->
-  <div class="row row-1">
+  <!-- 메인: 시장 보고서 · 발사 캘린더 · 주간 리포트 -->
+  <div class="row row-main">
 
     <!-- 시장 보고서 -->
     <div class="card">
@@ -236,11 +237,6 @@ a{color:inherit;text-decoration:none;}
       </div>
       <div id="reportList"></div>
     </div>
-
-  </div><!-- /row-1 -->
-
-  <!-- ROW 2 -->
-  <div class="row row-2">
 
     <!-- 발사 캘린더 -->
     <div class="card">
@@ -261,38 +257,6 @@ a{color:inherit;text-decoration:none;}
       </div>
     </div>
 
-  </div><!-- /row-2 -->
-
-  <!-- ROW 3 -->
-  <div class="row row-3">
-
-    <!-- 주요 기업 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">주요 기업</span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <div class="co-grid" id="coGrid"></div>
-    </div>
-
-    <!-- 계약 현황 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">계약 현황 <small>(주요 기관)</small></span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <table class="ct" id="ctTable"></table>
-    </div>
-
-    <!-- 투자 트래커 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">투자 트래커 <small>(최근 6개월)</small></span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <table class="tt" id="ttTable"></table>
-    </div>
-
     <!-- 주간 리포트 -->
     <div class="card">
       <div class="card-header">
@@ -301,7 +265,7 @@ a{color:inherit;text-decoration:none;}
       <div id="wrContent"></div>
     </div>
 
-  </div><!-- /row-3 -->
+  </div><!-- /row-main -->
 
 
 </div><!-- /dashboard -->
@@ -388,6 +352,7 @@ var COS=[
   {n:'Impulse',bg:'rgba(20,184,166,0.15)',c:'#2dd4bf'},
 ];
 function renderCompanies(){
+  if(!document.getElementById('coGrid'))return;
   document.getElementById('coGrid').innerHTML=COS.map(function(c){
     var ab=c.n.split(' ').map(function(w){return w[0];}).join('').slice(0,4).toUpperCase();
     return '<div class="co-card"><div class="co-logo" style="background:'+c.bg+';color:'+c.c+'">'+ab+'</div><div class="co-name">'+c.n+'</div></div>';
@@ -404,6 +369,7 @@ var CT_DATA=[
   {ag:'NRO',ic:'🛡️',l:2,s:1,d:8,o:6,t:17},
 ];
 function renderContract(){
+  if(!document.getElementById('ctTable'))return;
   document.getElementById('ctTable').innerHTML='<thead><tr><th>기관</th><th>🚀</th><th>🛰️</th><th>📋</th><th>📄</th><th>Total</th></tr></thead><tbody>'+
     CT_DATA.map(function(r){
       return '<tr><td><div class="ct-ag"><span>'+r.ic+'</span>'+r.ag+'</div></td><td>'+r.l+'</td><td>'+r.s+'</td><td>'+r.d+'</td><td>'+r.o+'</td><td class="ct-total">'+r.t+'</td></tr>';
@@ -422,6 +388,7 @@ var TT_DATA=[
   {co:'Quantum Space',ab:'QS',amt:'$1.2B',rnd:'SPAC',dt:'2026.06.08',u:'https://www.morningstar.com/news/pr-newswire/20260608da77885/quantum-space-a-leading-space-defense-and-orbital-mobility-company-to-go-public-via-merger-with-inflection-point-acquisition-corp-vi'},
 ];
 function renderTracker(){
+  if(!document.getElementById('ttTable'))return;
   document.getElementById('ttTable').innerHTML='<thead><tr><th>회사</th><th>금액</th><th>라운드</th><th>날짜</th></tr></thead><tbody>'+
     TT_DATA.map(function(r){
       var link=r.u?' onclick="window.open(\''+r.u+'\')" style="cursor:pointer"':'';
