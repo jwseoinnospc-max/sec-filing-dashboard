@@ -412,8 +412,8 @@ body.line-up-page::before {
   max-width: 1350px;
   margin-left: auto;
   margin-right: auto; margin-top: 8px; }
-.lineup-grid > .lineup-card { flex: 1 1 200px; min-width: 0; }
-.lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s, flex-basis .28s ease; }
+.lineup-grid > .lineup-card { flex: 0 0 calc((100% - 48px) / 3); min-width: 0; }
+.lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s; }
 .lineup-card-active { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.25)); }
 .lineup-card:hover { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.2)); transform: translateY(-5px); }
 .lineup-portrait {
@@ -476,15 +476,15 @@ body.line-up-page::before {
   box-shadow: 0 24px 80px rgba(0,0,0,0.6);
   font-family: 'Pretendard', -apple-system, sans-serif;
 }
-/* 카드 사이에 인라인으로 삽입되어 다른 카드를 밀어냄 */
+/* 카드 사이에 인라인으로 삽입 — 카드는 폭 유지, 뒤 카드는 다음 줄로 밀림 */
 .lineup-panel {
-  flex: 1 1 360px; min-width: 0;
-  align-self: stretch; max-height: 720px; overflow-y: auto;
-  animation: lineupPanelIn 0.3s cubic-bezier(0.2, 0.85, 0.25, 1);
+  flex: 0 0 calc((100% - 48px) / 3); min-width: 0;
+  align-self: flex-start; max-height: 720px; overflow-y: auto;
+  animation: lineupPanelIn 0.28s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
 @keyframes lineupPanelIn {
-  from { flex-basis: 0; opacity: 0; transform: scale(0.97); }
-  to   { flex-basis: 360px; opacity: 1; transform: none; }
+  from { opacity: 0; transform: translateX(-14px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
 }
 .lineup-modal-close {
   position: absolute; top: 16px; right: 16px; z-index: 2;
