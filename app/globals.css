@@ -11,24 +11,63 @@
 }
 /* Light theme */
 :root[data-theme="light"] {
-  --bg: #f5f7fa;
-  --panel: #ffffff;
-  --panel-2: #f1f5f9;
+  --bg: #f2f5f9;
+  --panel: #fcfdfe;
+  --panel-2: #eef4fa;
   --text: #1a202c;
   --muted: #64748b;
-  --line: #d1d5db;
+  --line: #d8e1eb;
   --accent: #0ea5e9;
   --good: #10b981;
   --warn: #f97316;
 }
-/* Override card backgrounds in light theme */
+
+/* Light theme — header gradient */
+:root[data-theme="light"] .header {
+  background: linear-gradient(135deg, #f7f9fc 0%, #eef4fa 100%);
+}
+
+/* Light theme — Top Mover container */
+:root[data-theme="light"] .top-mover-row {
+  background: #eaf3fb;
+  border-radius: 16px;
+  padding: 20px;
+}
+:root[data-theme="light"] .top-mover-card {
+  background: #ffffff !important;
+  border-color: #d8e1eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Light theme — card backgrounds & borders */
 :root[data-theme="light"] .card,
 :root[data-theme="light"] .space-stock-card,
 :root[data-theme="light"] .sector-index-card,
-:root[data-theme="light"] .top-mover-card,
 :root[data-theme="light"] .other-space-card {
   background: var(--panel) !important;
   border-color: var(--line) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Light theme — space-stock-card logo area backgrounds */
+:root[data-theme="light"] .space-stock-card[data-region="global"] .space-stock-logo-bg {
+  background: #f0f5ff !important; /* global */
+  padding: 8px 10px;
+  border-radius: 4px;
+}
+:root[data-theme="light"] .space-stock-card[data-region="domestic"] .space-stock-logo-bg {
+  background: #eff7fd !important; /* domestic */
+  padding: 8px 10px;
+  border-radius: 4px;
+}
+
+/* Dark theme — maintain original shadows */
+:root:not([data-theme="light"]) .card,
+:root:not([data-theme="light"]) .space-stock-card,
+:root:not([data-theme="light"]) .sector-index-card,
+:root:not([data-theme="light"]) .top-mover-card,
+:root:not([data-theme="light"]) .other-space-card {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
 }
 * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 body {
