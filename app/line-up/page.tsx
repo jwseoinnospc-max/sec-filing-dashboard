@@ -24,8 +24,8 @@ const VEHICLES = [
     status: "개발 중", statusColor: "#c47aff",
     payload: "~170 kg", altitude: "~500 km", diameter: "1.4 m", length: "22.5 m",
     prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: "Methane / LOx",
-    engines: "HyPER-25 · LiMER-3 · LiMEK-0.4",
-    highlight: "3단 구성 · 탑재중량 향상",
+    engines: "HyPER · LiMEX × 2 · LiMEK",
+    highlight: "2단 + 킥스테이지 · 탑재중량 향상",
     accentHex: "#8420cc", glowColor: "rgba(132,32,204,0.25)",
     stages: 3, faction: "z",
   },
@@ -34,7 +34,7 @@ const VEHICLES = [
     status: "개발 중", statusColor: "#ffc840",
     payload: "~1,300 kg", altitude: "~500 km", diameter: "3.7 m", length: "39.6 m",
     prop1: "Paraffin / LOx", prop2: "Paraffin / LOx", prop3: "Methane / LOx",
-    engines: "HyPER-25 × 2 · LiMER-3",
+    engines: "HyPER × 9 · LiMEx VAC × 2",
     highlight: "중형급 탑재중량 · 3단 구성",
     accentHex: "#c48600", glowColor: "rgba(196,134,0,0.25)",
     stages: 3, faction: "p",
@@ -93,31 +93,31 @@ const DETAILS: Record<string, VehicleDetail> = {
     overview: [
       { label: "LENGTH", value: "22.5 m" },
       { label: "DIAMETER", value: "1.4 m" },
-      { label: "LIFT-OFF WEIGHT", value: "TBD" },
-      { label: "STAGE", value: "3" },
+      { label: "LIFT-OFF WEIGHT", value: "19.7 t" },
+      { label: "STAGE", value: "2 + Kick stage" },
     ],
     payload: [
       { label: "NOMINAL PAYLOAD", value: "170 kg to 500 km SSO" },
       { label: "FAIRING DIAMETER", value: "1.4 m" },
-      { label: "FAIRING HEIGHT", value: "TBD" },
+      { label: "FAIRING HEIGHT", value: "2.1 m" },
     ],
     stages: [
       {
-        title: "THIRD STAGE",
+        title: "KICK STAGE",
         items: [
-          { label: "ENGINE", value: "LiMEK (ElecPump Cycle)" },
+          { label: "ENGINE", value: "LiMEK" },
           { label: "PROPELLANTS", value: "LOx & METHANE" },
-          { label: "THRUST", value: "TBD" },
-          { label: "BURN TIME", value: "TBD" },
+          { label: "THRUST", value: "4 kN" },
+          { label: "BURN TIME", value: "390 sec" },
         ],
       },
       {
         title: "SECOND STAGE",
         items: [
-          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "ENGINE", value: "LiMEX" },
           { label: "PROPELLANTS", value: "LOx & METHANE" },
-          { label: "THRUST", value: "29 kN" },
-          { label: "BURN TIME", value: "300 sec" },
+          { label: "THRUST", value: "29 kN × 2" },
+          { label: "BURN TIME", value: "250 sec" },
         ],
       },
       {
@@ -126,35 +126,35 @@ const DETAILS: Record<string, VehicleDetail> = {
           { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
           { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
           { label: "THRUST", value: "245 kN" },
-          { label: "BURN TIME", value: "150 sec" },
+          { label: "BURN TIME", value: "130 sec" },
         ],
       },
     ],
     components: [
-      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "LiMEK ENGINE",
-      "SECOND STAGE", "LiMER ENGINE", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
+      "FAIRING", "PAYLOAD ADAPTER", "LiMEK", "INTERSTAGE", "SECOND STAGE",
+      "LiMEX ENGINE × 2", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
     ],
   },
   mini: {
     overview: [
       { label: "LENGTH", value: "39.6 m" },
       { label: "DIAMETER", value: "3.7 m" },
-      { label: "LIFT-OFF WEIGHT", value: "TBD" },
+      { label: "LIFT-OFF WEIGHT", value: "146.5 t" },
       { label: "STAGE", value: "3" },
     ],
     payload: [
       { label: "NOMINAL PAYLOAD", value: "1,300 kg to 500 km SSO" },
       { label: "FAIRING DIAMETER", value: "3.7 m" },
-      { label: "FAIRING HEIGHT", value: "TBD" },
+      { label: "FAIRING HEIGHT", value: "9.0 m" },
     ],
     stages: [
       {
         title: "THIRD STAGE",
         items: [
-          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "ENGINE", value: "LiMEx VACUUM" },
           { label: "PROPELLANTS", value: "LOx & METHANE" },
-          { label: "THRUST", value: "29 kN" },
-          { label: "BURN TIME", value: "300 sec" },
+          { label: "THRUST", value: "29 kN × 2" },
+          { label: "BURN TIME", value: "350 sec" },
         ],
       },
       {
@@ -169,16 +169,16 @@ const DETAILS: Record<string, VehicleDetail> = {
       {
         title: "FIRST STAGE",
         items: [
-          { label: "ENGINE", value: "HyPER × 2 (ElecPump Cycle)" },
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
           { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
-          { label: "THRUST", value: "490 kN" },
-          { label: "BURN TIME", value: "150 sec" },
+          { label: "THRUST", value: "245 kN × 9" },
+          { label: "BURN TIME", value: "130 sec" },
         ],
       },
     ],
     components: [
-      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "SECOND STAGE",
-      "HyPER ENGINE", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE × 2",
+      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "LiMEx VACUUM ENGINE × 2",
+      "SECOND STAGE", "HyPER ENGINE", "FIRST STAGE", "HyPER ENGINE × 9",
     ],
   },
 };
