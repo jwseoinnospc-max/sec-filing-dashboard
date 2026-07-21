@@ -13,7 +13,7 @@ const VEHICLES = [
     id: "nano", name: "한빛-나노", sub: "HANBIT-NANO",
     status: "개발 중", statusColor: "#4db3ff",
     payload: "~90 kg", altitude: "~500 km", diameter: "1.4 m", length: "21.8 m",
-    prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: null,
+    prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: "",
     engines: "HyPER-25 · LiMER-3",
     highlight: "소형 위성 발사 목표 · 2단 구성",
     accentHex: "#0d6ef5", glowColor: "rgba(13,110,245,0.25)",
