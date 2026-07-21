@@ -291,20 +291,25 @@ function drawDecal(model){
   gl.drawArrays(gl.TRIANGLES,0,decalMesh.count); gl.disable(gl.BLEND);
 }
 
-/* ---------- 하늘 방해물 (드리프트로 회피) ---------- */
+/* ---------- 하늘 방해물 = 위성 (드리프트로 회피) ---------- */
 const ob=MeshBuilder();
-(function(){ const r=3.0, C=[0.34,0.22,0.18], C2=[0.5,0.16,0.12];
-  const V=[[0,r,0],[0,-r,0],[r,0,0],[-r,0,0],[0,0,r],[0,0,-r]];
-  const F=[[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,4,2],[1,3,4],[1,5,3],[1,2,5]];
-  F.forEach((f,i)=>ob.triFlat(V[f[0]],V[f[1]],V[f[2]], i%2?C2:C));
-  ob.box(0,0,0, r*1.3,0.5,0.5, C2); ob.box(0,0,0, 0.5,0.5,r*1.3, C2);  // 경고 스파이크
+(function(){ const BODY=[0.56,0.58,0.63], FOIL=[0.86,0.70,0.26], SPANEL=[0.09,0.21,0.52], BEACON=[0.95,0.16,0.12], ANT=[0.72,0.74,0.78];
+  ob.box(0,0,0, 1.8,2.0,1.8, BODY);            // 본체
+  ob.box(0,0,0, 1.86,0.7,1.86, FOIL);          // 금박 밴드
+  ob.box(-2.35,0,0, 2.9,0.12,1.7, SPANEL);     // 좌 태양전지판
+  ob.box(2.35,0,0, 2.9,0.12,1.7, SPANEL);      // 우 태양전지판
+  ob.box(-1.05,0,0, 0.5,0.14,0.22, BODY);      // 지지대
+  ob.box(1.05,0,0, 0.5,0.14,0.22, BODY);
+  ob.box(0,1.35,0, 0.5,0.5,0.5, BEACON);       // 붉은 경고등
+  ob.box(0,1.85,0, 0.12,0.5,0.12, ANT);        // 안테나
+  ob.box(0,-1.2,0, 0.9,0.12,0.9, BODY);        // 하부 접시
 })();
 const obstacleMesh=makeGLMesh(ob.build());
 const OB_R=3.0, OB_HIT=OB_R+1.0;   // 충돌 반경 4.0 (중심 통과 불가 → 좌우로 살짝 피해야 함)
 // 비행경로 근처에 좌우 교차 배치 · 고도가 높을수록 간격을 넓혀 회피 가능하게
 const OBSTACLES=[];
 (function(){ const xs=[3.4,-3.5,3.3,-3.6,3.4,-3.3,3.5], ys=[48,104,164,228,296,368,444];
-  for(let i=0;i<ys.length;i++) OBSTACLES.push({x:xs[i], y:ys[i], z:0, ang:Math.random()*TAU, spin:0.5+Math.random()}); })();
+  for(let i=0;i<ys.length;i++) OBSTACLES.push({x:xs[i], y:ys[i], z:0, ang:Math.random()*TAU, spin:0.2+Math.random()*0.35}); })();
 
 /* ---------- 구름 (원근 소프트 포인트) ---------- */
 const clPos=[], clCol=[];
@@ -379,7 +384,7 @@ function showStart(){ showMsg(
   '<h1>🚀 <span class="accent">한빛-나노</span> 발사</h1>'+
   '<p><b>INNOSPACE</b> 하이브리드 발사체를 궤도로!<br>'+
   '<span class="key">Space</span> 추진 · <span class="key">← →</span> 조종 · <span class="key">S</span> 단분리 · <span class="key">E</span> 위성배치<br>'+
-  '하늘의 <b class="accent">방해물(운석)</b>을 ← → 로 피하세요! 부딪히면 폭발 💥<br>'+
+  '궤도의 <b class="accent">위성</b>을 ← → 로 피하세요! 부딪히면 폭발 💥<br>'+
   '1단 분리 → 2단 점화 → 우주에서 <b class="accent">위성 궤도 투입</b><br><br>'+
   '<b>아무 키나 눌러 발사</b></p>'); }
 
@@ -479,7 +484,7 @@ function boom(s,n){ for(let i=0;i<n;i++) parts.push({p:[s.pos[0],s.pos[1]+2,s.po
 function crash(s){ s.crashed=true; boom(s,70);
   showMsg('<h1>💥 발사 실패</h1><p>착지 속도가 너무 빨랐습니다<br>최고 고도 <b>'+fmtAlt(bestUnits)+'</b><br><br><span class="key">R</span> 로 재발사</p>'); }
 function crashObstacle(s){ s.crashed=true; boom(s,90);
-  showMsg('<h1>💥 방해물 충돌!</h1><p>하늘의 장애물에 부딪혀 미션 실패<br>최고 고도 <b>'+fmtAlt(bestUnits)+'</b><br><br><span class="key">R</span> 로 재발사</p>'); }
+  showMsg('<h1>💥 위성 충돌!</h1><p>궤도의 위성에 부딪혀 미션 실패<br>최고 고도 <b>'+fmtAlt(bestUnits)+'</b><br><br><span class="key">R</span> 로 재발사</p>'); }
 function updateJettison(dt){ const j=state.jettison; if(!j)return;
   j.vel[1]-=GRAV*dt; const dr=0.03; j.vel[0]*=(1-dr*dt); j.vel[2]*=(1-dr*dt);
   j.pos[0]+=j.vel[0]*dt; j.pos[1]+=j.vel[1]*dt; j.pos[2]+=j.vel[2]*dt;
