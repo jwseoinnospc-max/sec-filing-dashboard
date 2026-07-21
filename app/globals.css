@@ -963,6 +963,10 @@ body { padding-left: 216px; }
   white-space: nowrap;
 }
 
+.unified-nav-item--active {
+  --eff: 1 !important;
+}
+
 .unified-nav-item--active .uni-label {
   color: #38bdf8;
 }
