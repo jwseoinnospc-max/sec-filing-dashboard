@@ -536,19 +536,25 @@ export default function LineUpPage() {
       </section>
 
       <div className="lineup-grid">
-        {VEHICLES.map((v, i) => (
-          <Fragment key={v.id}>
+        {VEHICLES.map((v, i) => {
+          const card = (
             <VehicleCard
               v={v}
               portrait={portraits[i]}
               active={selectedId === v.id}
               onOpen={() => setSelectedId((cur) => (cur === v.id ? null : v.id))}
             />
-            {selectedId === v.id && (
+          );
+          // 선택 시 카드+패널을 한 쌍으로 묶어 항상 함께 줄바꿈되게 함
+          return selectedId === v.id ? (
+            <div key={v.id} className="lineup-pair">
+              {card}
               <VehiclePanel v={v} onClose={() => setSelectedId(null)} />
-            )}
-          </Fragment>
-        ))}
+            </div>
+          ) : (
+            <Fragment key={v.id}>{card}</Fragment>
+          );
+        })}
       </div>
     </main>
   );

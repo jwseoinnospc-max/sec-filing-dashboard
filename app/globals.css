@@ -413,6 +413,10 @@ body.line-up-page::before {
   margin-left: auto;
   margin-right: auto; margin-top: 8px; }
 .lineup-grid > .lineup-card { flex: 0 0 calc((100% - 48px) / 3); min-width: 0; }
+/* 선택된 카드 + 패널 쌍: 카드 2칸 폭, 통째로 줄바꿈 */
+.lineup-grid > .lineup-pair { flex: 0 0 calc((100% - 48px) / 3 * 2 + 24px); min-width: 0; }
+.lineup-pair { display: flex; gap: 24px; align-items: flex-start; }
+.lineup-pair > .lineup-card, .lineup-pair > .lineup-panel { flex: 1 1 0; min-width: 0; }
 .lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s; }
 .lineup-card-active { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.25)); }
 .lineup-card:hover { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.2)); transform: translateY(-5px); }
@@ -431,7 +435,11 @@ body.line-up-page::before {
 .lspec-key { color: var(--muted); width: 76px; flex-shrink: 0; font-size: 13px; }
 .lspec-val { color: var(--text); font-size: 14px; line-height: 1.4; }
 .lineup-highlight { font-size: 13px; color: var(--lineup-accent, #38bdf8); border-left: 2px solid var(--lineup-accent, #38bdf8); padding-left: 8px; opacity: .85; line-height: 1.5; }
-@media (max-width: 1100px) { .lineup-grid > .lineup-card, .lineup-grid > .lineup-panel { flex: 1 1 100%; } .lineup-portrait { aspect-ratio: 16/9; } }
+@media (max-width: 1100px) {
+  .lineup-grid > .lineup-card, .lineup-grid > .lineup-pair { flex: 1 1 100%; }
+  .lineup-pair { flex-direction: column; }
+  .lineup-portrait { aspect-ratio: 16/9; }
+}
 .lspec-accent { color: var(--lineup-accent, #38bdf8) !important; font-weight: 700; }
 .lineup-spec-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
 
@@ -476,9 +484,9 @@ body.line-up-page::before {
   box-shadow: 0 24px 80px rgba(0,0,0,0.6);
   font-family: 'Pretendard', -apple-system, sans-serif;
 }
-/* 카드 사이에 인라인으로 삽입 — 카드는 폭 유지, 뒤 카드는 다음 줄로 밀림 */
+/* 선택 카드 오른쪽에 붙는 패널 (폭은 .lineup-pair가 제어) */
 .lineup-panel {
-  flex: 0 0 calc((100% - 48px) / 3); min-width: 0;
+  min-width: 0;
   align-self: flex-start; max-height: 720px; overflow-y: auto;
   animation: lineupPanelIn 0.28s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
