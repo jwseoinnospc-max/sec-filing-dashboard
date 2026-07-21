@@ -452,11 +452,94 @@ body.line-up-page::before {
 .sc-br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
 .sc-badge {
   position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none;
-  font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.12em;
+  font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
   color: var(--lineup-accent, #38bdf8); background: rgba(0,0,0,0.55);
   border: 1px solid var(--lineup-accent, #38bdf8); border-radius: 2px;
   padding: 2px 7px; text-transform: uppercase; white-space: nowrap;
 }
+/* ───────── Line-Up card hint + detail modal ───────── */
+.lineup-more {
+  margin-top: 12px; font-size: 11px; font-weight: 600;
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  color: var(--lineup-accent, #38bdf8); opacity: 0.7;
+  letter-spacing: 0.02em; transition: opacity 0.18s;
+}
+.lineup-card:hover .lineup-more { opacity: 1; }
+
+.lineup-modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(2, 6, 16, 0.78); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  animation: lineupFade 0.18s ease;
+}
+@keyframes lineupFade { from { opacity: 0; } to { opacity: 1; } }
+.lineup-modal {
+  position: relative; width: min(880px, 96vw); max-height: 88vh; overflow-y: auto;
+  background: rgba(12, 17, 30, 0.98); border: 1px solid rgba(255,255,255,0.09);
+  border-top: 3px solid var(--lineup-accent, #38bdf8);
+  border-radius: 16px; padding: 28px 30px 30px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  animation: lineupPop 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes lineupPop { from { transform: translateY(12px) scale(0.98); opacity: 0; } to { transform: none; opacity: 1; } }
+.lineup-modal-close {
+  position: absolute; top: 16px; right: 16px; z-index: 2;
+  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted); font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.lineup-modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.lineup-modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; padding-bottom: 18px; margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lineup-modal-name { font-size: 26px; font-weight: 800; color: var(--lineup-accent, #38bdf8); letter-spacing: -0.01em; }
+.lineup-modal-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+.lineup-modal-badge {
+  flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 999px;
+  color: var(--lineup-accent, #38bdf8); border: 1px solid var(--lineup-accent, #38bdf8);
+  background: rgba(56,189,248,0.08); margin-right: 40px; white-space: nowrap;
+}
+.lineup-modal-body {
+  display: grid; grid-template-columns: 1.6fr 1fr; gap: 28px;
+}
+.lineup-modal-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; align-content: start; }
+.lspec-block h4 {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--lineup-accent, #38bdf8); margin: 0 0 8px;
+  padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lspec-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  font-size: 13px; padding: 4px 0;
+}
+.lspec-row span { color: var(--muted); font-size: 11.5px; letter-spacing: 0.02em; flex-shrink: 0; }
+.lspec-row b { color: var(--text); font-weight: 600; text-align: right; }
+.lineup-modal-components {
+  border-left: 1px solid rgba(255,255,255,0.08); padding-left: 26px;
+}
+.lineup-modal-components h4 {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--lineup-accent, #38bdf8); margin: 0 0 12px;
+}
+.lineup-modal-components ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lineup-modal-components li {
+  display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text);
+}
+.lcomp-num {
+  font-size: 10px; font-weight: 700; color: var(--lineup-accent, #38bdf8);
+  background: rgba(56,189,248,0.1); border-radius: 4px; padding: 3px 6px;
+  font-variant-numeric: tabular-nums; flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  .lineup-modal-body { grid-template-columns: 1fr; gap: 20px; }
+  .lineup-modal-specs { grid-template-columns: 1fr; }
+  .lineup-modal-components { border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; }
+}
+
 /* ───────── LineSidebar base styles (from React Bits) ───────── */
 .line-sidebar {
   --accent-color: #38bdf8;

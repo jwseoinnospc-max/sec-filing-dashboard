@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import NavMenu from "@/components/NavMenu";
 import SideRays from "@/components/SideRays";
@@ -40,6 +40,148 @@ const VEHICLES = [
     stages: 3, faction: "p",
   },
 ];
+
+/* ─── Detail specs (모달용) ─────────────────────────────────── */
+type SpecItem = { label: string; value: string };
+type StageSpec = { title: string; items: SpecItem[] };
+type VehicleDetail = {
+  overview: SpecItem[];
+  payload: SpecItem[];
+  stages: StageSpec[];
+  components: string[];
+};
+
+const DETAILS: Record<string, VehicleDetail> = {
+  nano: {
+    overview: [
+      { label: "LENGTH", value: "21.8 m" },
+      { label: "DIAMETER", value: "1.4 m" },
+      { label: "LIFT-OFF WEIGHT", value: "18.8 t" },
+      { label: "STAGE", value: "2" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "90 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "1.4 m" },
+      { label: "FAIRING HEIGHT", value: "2.1 m" },
+    ],
+    stages: [
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN" },
+          { label: "BURN TIME", value: "300 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "SECOND STAGE", "LiMER ENGINE",
+      "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
+    ],
+  },
+  micro: {
+    overview: [
+      { label: "LENGTH", value: "22.5 m" },
+      { label: "DIAMETER", value: "1.4 m" },
+      { label: "LIFT-OFF WEIGHT", value: "TBD" },
+      { label: "STAGE", value: "3" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "170 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "1.4 m" },
+      { label: "FAIRING HEIGHT", value: "TBD" },
+    ],
+    stages: [
+      {
+        title: "THIRD STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMEK (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "TBD" },
+          { label: "BURN TIME", value: "TBD" },
+        ],
+      },
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN" },
+          { label: "BURN TIME", value: "300 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "LiMEK ENGINE",
+      "SECOND STAGE", "LiMER ENGINE", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
+    ],
+  },
+  mini: {
+    overview: [
+      { label: "LENGTH", value: "39.6 m" },
+      { label: "DIAMETER", value: "3.7 m" },
+      { label: "LIFT-OFF WEIGHT", value: "TBD" },
+      { label: "STAGE", value: "3" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "1,300 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "3.7 m" },
+      { label: "FAIRING HEIGHT", value: "TBD" },
+    ],
+    stages: [
+      {
+        title: "THIRD STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN" },
+          { label: "BURN TIME", value: "300 sec" },
+        ],
+      },
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER × 2 (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "490 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "SECOND STAGE",
+      "HyPER ENGINE", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE × 2",
+    ],
+  },
+};
 
 /* ─── Canvas helpers ────────────────────────────────────────── */
 function hexPath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
@@ -234,14 +376,23 @@ function NanoPortrait() {
 /* ─── Vehicle card ──────────────────────────────────────────── */
 type DrawFn = (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
 
-function VehicleCard({ v, portrait }: {
+function VehicleCard({ v, portrait, onOpen }: {
   v: typeof VEHICLES[0];
   portrait: React.ReactNode;
+  onOpen: () => void;
 }) {
+  const downRef = useRef<{ x: number; y: number } | null>(null);
   return (
     <div
       className={`lineup-card sc-card sc-${v.faction}`}
-      style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor } as React.CSSProperties}
+      style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor, cursor: "pointer" } as React.CSSProperties}
+      onPointerDown={(e) => { downRef.current = { x: e.clientX, y: e.clientY }; }}
+      onPointerUp={(e) => {
+        const d = downRef.current; downRef.current = null;
+        if (!d) return;
+        // 드래그(회전)와 클릭 구분: 6px 미만 이동만 클릭으로 처리
+        if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) onOpen();
+      }}
     >
       <div className="lineup-portrait">
         {portrait}
@@ -269,6 +420,76 @@ function VehicleCard({ v, portrait }: {
           <div className="lineup-spec"><span className="lspec-key">엔진</span><span className="lspec-val">{v.engines}</span></div>
         </div>
         <div className="lineup-highlight">{v.highlight}</div>
+        <div className="lineup-more">상세 스펙 보기 →</div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Vehicle detail modal ──────────────────────────────────── */
+function VehicleModal({ v, onClose }: { v: typeof VEHICLES[0]; onClose: () => void }) {
+  const d = DETAILS[v.id];
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+
+  if (!d) return null;
+
+  return (
+    <div className="lineup-modal-overlay" onClick={onClose}>
+      <div
+        className="lineup-modal"
+        style={{ "--lineup-accent": v.accentHex } as React.CSSProperties}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="lineup-modal-close" onClick={onClose} aria-label="닫기">✕</button>
+
+        <div className="lineup-modal-head">
+          <div>
+            <div className="lineup-modal-name">{v.name}</div>
+            <div className="lineup-modal-sub">{v.sub}</div>
+          </div>
+          <span className="lineup-modal-badge">{v.status}</span>
+        </div>
+
+        <div className="lineup-modal-body">
+          <div className="lineup-modal-specs">
+            <section className="lspec-block">
+              <h4>OVERVIEW</h4>
+              {d.overview.map((s) => (
+                <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+              ))}
+            </section>
+
+            <section className="lspec-block">
+              <h4>PAYLOAD</h4>
+              {d.payload.map((s) => (
+                <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+              ))}
+            </section>
+
+            {d.stages.map((st) => (
+              <section key={st.title} className="lspec-block">
+                <h4>{st.title}</h4>
+                {st.items.map((s) => (
+                  <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+                ))}
+              </section>
+            ))}
+          </div>
+
+          <div className="lineup-modal-components">
+            <h4>COMPONENTS</h4>
+            <ol>
+              {d.components.map((c, i) => (
+                <li key={c + i}><span className="lcomp-num">{String(i + 1).padStart(2, "0")}</span>{c}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -276,6 +497,8 @@ function VehicleCard({ v, portrait }: {
 
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function LineUpPage() {
+  const [selected, setSelected] = useState<typeof VEHICLES[0] | null>(null);
+
   useEffect(() => {
     document.body.classList.add("line-up-page");
     return () => document.body.classList.remove("line-up-page");
@@ -316,9 +539,11 @@ export default function LineUpPage() {
 
       <div className="lineup-grid">
         {VEHICLES.map((v, i) => (
-          <VehicleCard key={v.id} v={v} portrait={portraits[i]} />
+          <VehicleCard key={v.id} v={v} portrait={portraits[i]} onOpen={() => setSelected(v)} />
         ))}
       </div>
+
+      {selected && <VehicleModal v={selected} onClose={() => setSelected(null)} />}
     </main>
   );
 }
