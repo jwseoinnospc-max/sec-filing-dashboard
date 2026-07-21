@@ -11,15 +11,24 @@
 }
 /* Light theme */
 :root[data-theme="light"] {
-  --bg: #f8fafc;
+  --bg: #f5f7fa;
   --panel: #ffffff;
   --panel-2: #f1f5f9;
-  --text: #1e293b;
+  --text: #1a202c;
   --muted: #64748b;
-  --line: #e2e8f0;
-  --accent: #38bdf8;
-  --good: #22c55e;
-  --warn: #f59e0b;
+  --line: #d1d5db;
+  --accent: #0ea5e9;
+  --good: #10b981;
+  --warn: #f97316;
+}
+/* Override card backgrounds in light theme */
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .space-stock-card,
+:root[data-theme="light"] .sector-index-card,
+:root[data-theme="light"] .top-mover-card,
+:root[data-theme="light"] .other-space-card {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
 }
 * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 body {
@@ -41,32 +50,25 @@ body::before {
 body.space-trend-page::before { opacity: 0; }
 a { color: inherit; }
 
-/* Theme Toggle */
-.theme-toggle {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 100;
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  background: var(--panel);
+/* Theme Toggle — Inline (in header) */
+.theme-toggle-inline {
+  background: transparent;
   border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 12px;
   color: var(--text);
-  font-size: 24px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
 }
-.theme-toggle:hover {
+.theme-toggle-inline:hover {
   background: var(--panel-2);
-  transform: scale(1.1);
+  border-color: var(--accent);
 }
-.theme-toggle:active {
-  transform: scale(0.95);
+.theme-toggle-inline:active {
+  opacity: 0.8;
 }
 .page { min-height: 100vh; padding: 13px 32px 32px; }
 .header { display: flex; justify-content: space-between; gap: 24px; align-items: stretch; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #ffffff; }

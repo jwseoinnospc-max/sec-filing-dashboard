@@ -27,11 +27,11 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="theme-toggle"
-      title={theme === "dark" ? "라이트 모드" : "다크 모드"}
+      className="theme-toggle-inline"
+      title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
       aria-label={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {theme === "dark" ? "☀️ 라이트모드" : "🌙 다크모드"}
     </button>
   );
 }

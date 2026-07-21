@@ -191,8 +191,10 @@ export default async function SpaceMarketPage() {
       <section className="header">
         <div>
           <NavMenu />
-          <ThemeToggle />
-          <h1>Space Market</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "8px" }}>
+            <h1 style={{ margin: 0 }}>Space Market</h1>
+            <ThemeToggle />
+          </div>
           <p>우주 산업 대표 기업의 주가를 한 화면에서 확인합니다.</p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>
         </div>
