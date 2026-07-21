@@ -10,8 +10,8 @@ type GroupItem = { type: "group"; label: string; basePath: string; children: { l
 type NavItem   = LinkItem | GroupItem;
 
 const NAV_ITEMS: NavItem[] = [
-  { type: "link",  label: "Line-Up",           href: "/line-up" },
-  { type: "link",  label: "Space Trend",        href: "/space-trend" },
+  { type: "link",  label: "Line-Up (Test)",     href: "/line-up" },
+  { type: "link",  label: "Space Trend (Test)", href: "/space-trend" },
   { type: "link",  label: "Space Market",       href: "/space-market" },
   {
     type: "group", label: "Rocket Lab",          basePath: "/rocketlab",
