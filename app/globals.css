@@ -29,7 +29,7 @@
 
 /* Light theme — Top Mover container */
 :root[data-theme="light"] .top-mover-row {
-  background: #eaf3fb;
+  background: #f5fafe;
   border-radius: 16px;
   padding: 20px;
 }
