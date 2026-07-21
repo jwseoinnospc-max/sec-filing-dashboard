@@ -681,7 +681,7 @@ if(_nf)_nf.addEventListener('click',function(e){
 });
 
 /* ===== 최신 뉴스 히어로 카드 (5열 정사각형: 대표사진+제목+요약) ===== */
-var HERO_N=10;
+var HERO_N=5;
 function heroSplit(title){
   var t=(title||'').trim(),i=t.indexOf('—');
   if(i<0)i=t.indexOf(' - ');
@@ -729,7 +729,7 @@ function renderNewsHero(){
 /* ===== LOAD ALL ===== */
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
-  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
+  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();renderNewsHero();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
@@ -739,7 +739,7 @@ async function loadAll(){
       var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
-    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
+    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();renderNewsHero();
   }
   var ok=lR.status==='fulfilled'&&nR.status==='fulfilled';
   setStatus(ok?'최근 업데이트: '+new Date().toLocaleString('ko-KR')+' KST':'일부 데이터를 불러오지 못했습니다.',!ok);
