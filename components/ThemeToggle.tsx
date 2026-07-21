@@ -31,7 +31,7 @@ export default function ThemeToggle() {
       title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
       aria-label={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
     >
-      {theme === "dark" ? "☀️ 라이트모드" : "🌙 다크모드"}
+      {theme === "dark" ? "🌙 다크모드" : "☀️ 라이트모드"}
     </button>
   );
 }
