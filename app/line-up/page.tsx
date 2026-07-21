@@ -418,7 +418,6 @@ function VehicleCard({ v, portrait, onOpen, active }: {
           <div className="lineup-spec"><span className="lspec-key">엔진</span><span className="lspec-val">{v.engines}</span></div>
         </div>
         <div className="lineup-highlight">{v.highlight}</div>
-        <div className="lineup-more">상세 스펙 보기 →</div>
       </div>
     </div>
   );
