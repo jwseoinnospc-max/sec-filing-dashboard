@@ -408,11 +408,13 @@ body.line-up-page::before {
 }
 .line-up-page-main { background: transparent; position: relative; }
 .line-up-page-main > *:not([style*="position: fixed"]) { position: relative; z-index: 1; }
-.lineup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+.lineup-grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px;
   max-width: 1350px;
   margin-left: auto;
   margin-right: auto; margin-top: 8px; }
-.lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s; }
+.lineup-grid > .lineup-card { flex: 1 1 200px; min-width: 0; }
+.lineup-card { display: flex; flex-direction: column; background: rgba(10,14,28,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; transition: border-color .22s, box-shadow .22s, transform .22s, flex-basis .28s ease; }
+.lineup-card-active { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.25)); }
 .lineup-card:hover { border-color: var(--lineup-accent, #38bdf8); box-shadow: 0 8px 40px var(--lineup-glow, rgba(56,189,248,0.2)); transform: translateY(-5px); }
 .lineup-portrait {
   aspect-ratio: 3 / 4;
@@ -429,7 +431,7 @@ body.line-up-page::before {
 .lspec-key { color: var(--muted); width: 76px; flex-shrink: 0; font-size: 13px; }
 .lspec-val { color: var(--text); font-size: 14px; line-height: 1.4; }
 .lineup-highlight { font-size: 13px; color: var(--lineup-accent, #38bdf8); border-left: 2px solid var(--lineup-accent, #38bdf8); padding-left: 8px; opacity: .85; line-height: 1.5; }
-@media (max-width: 1100px) { .lineup-grid { grid-template-columns: 1fr; } .lineup-portrait { aspect-ratio: 16/9; } }
+@media (max-width: 1100px) { .lineup-grid > .lineup-card, .lineup-grid > .lineup-panel { flex: 1 1 100%; } .lineup-portrait { aspect-ratio: 16/9; } }
 .lspec-accent { color: var(--lineup-accent, #38bdf8) !important; font-weight: 700; }
 .lineup-spec-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
 
@@ -466,27 +468,24 @@ body.line-up-page::before {
 }
 .lineup-card:hover .lineup-more { opacity: 1; }
 
-.lineup-modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(2, 6, 16, 0.42);
-  animation: lineupFade 0.16s ease;
-}
-@keyframes lineupFade { from { opacity: 0; } to { opacity: 1; } }
 .lineup-modal {
+  position: relative;
   background: rgba(12, 17, 30, 0.98); border: 1px solid rgba(255,255,255,0.09);
   border-top: 3px solid var(--lineup-accent, #38bdf8);
   border-radius: 16px; padding: 24px 26px 26px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.6);
   font-family: 'Pretendard', -apple-system, sans-serif;
-  animation: lineupPop 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
-/* 카드 오른쪽에 앵커링되는 팝업 */
-.lineup-modal-anchored {
-  position: fixed; z-index: 1001;
-  width: 420px; max-width: calc(100vw - 24px);
-  max-height: 86vh; overflow-y: auto;
+/* 카드 사이에 인라인으로 삽입되어 다른 카드를 밀어냄 */
+.lineup-panel {
+  flex: 1 1 360px; min-width: 0;
+  align-self: stretch; max-height: 720px; overflow-y: auto;
+  animation: lineupPanelIn 0.3s cubic-bezier(0.2, 0.85, 0.25, 1);
 }
-@keyframes lineupPop { from { transform: translateX(-10px) scale(0.98); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes lineupPanelIn {
+  from { flex-basis: 0; opacity: 0; transform: scale(0.97); }
+  to   { flex-basis: 360px; opacity: 1; transform: none; }
+}
 .lineup-modal-close {
   position: absolute; top: 16px; right: 16px; z-index: 2;
   width: 32px; height: 32px; border-radius: 8px; cursor: pointer;

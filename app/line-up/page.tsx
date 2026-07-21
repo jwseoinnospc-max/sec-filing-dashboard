@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import dynamic from "next/dynamic";
 import NavMenu from "@/components/NavMenu";
 import SideRays from "@/components/SideRays";
@@ -376,24 +376,23 @@ function NanoPortrait() {
 /* ─── Vehicle card ──────────────────────────────────────────── */
 type DrawFn = (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
 
-function VehicleCard({ v, portrait, onOpen }: {
+function VehicleCard({ v, portrait, onOpen, active }: {
   v: typeof VEHICLES[0];
   portrait: React.ReactNode;
-  onOpen: (anchor: DOMRect) => void;
+  onOpen: () => void;
+  active?: boolean;
 }) {
   const downRef = useRef<{ x: number; y: number } | null>(null);
   return (
     <div
-      className={`lineup-card sc-card sc-${v.faction}`}
+      className={`lineup-card sc-card sc-${v.faction}${active ? " lineup-card-active" : ""}`}
       style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor, cursor: "pointer" } as React.CSSProperties}
       onPointerDown={(e) => { downRef.current = { x: e.clientX, y: e.clientY }; }}
       onPointerUp={(e) => {
         const d = downRef.current; downRef.current = null;
         if (!d) return;
         // 드래그(회전)와 클릭 구분: 6px 미만 이동만 클릭으로 처리
-        if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) {
-          onOpen(e.currentTarget.getBoundingClientRect());
-        }
+        if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) onOpen();
       }}
     >
       <div className="lineup-portrait">
@@ -428,11 +427,9 @@ function VehicleCard({ v, portrait, onOpen }: {
   );
 }
 
-/* ─── Vehicle detail modal (카드 오른쪽에 앵커링) ─────────────── */
-function VehicleModal({ v, anchor, onClose }: { v: typeof VEHICLES[0]; anchor: DOMRect; onClose: () => void }) {
+/* ─── Vehicle detail panel (카드 사이에 인라인 삽입) ───────────── */
+function VehiclePanel({ v, onClose }: { v: typeof VEHICLES[0]; onClose: () => void }) {
   const d = DETAILS[v.id];
-  const modalRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -440,37 +437,14 @@ function VehicleModal({ v, anchor, onClose }: { v: typeof VEHICLES[0]; anchor: D
     return () => { document.removeEventListener("keydown", onKey); };
   }, [onClose]);
 
-  // 카드 오른쪽에 배치 (뷰포트를 벗어나면 클램프)
-  useEffect(() => {
-    const el = modalRef.current; if (!el) return;
-    const gap = 12, margin = 12;
-    const w = el.offsetWidth, h = el.offsetHeight;
-    let left = anchor.right + gap;
-    if (left + w > window.innerWidth - margin) {
-      left = Math.max(margin, window.innerWidth - w - margin);
-    }
-    let top = anchor.top;
-    if (top + h > window.innerHeight - margin) {
-      top = Math.max(margin, window.innerHeight - h - margin);
-    }
-    setPos({ left, top });
-  }, [anchor]);
-
   if (!d) return null;
 
   return (
-    <div className="lineup-modal-overlay" onClick={onClose}>
-      <div
-        ref={modalRef}
-        className="lineup-modal lineup-modal-anchored"
-        style={{
-          "--lineup-accent": v.accentHex,
-          left: pos?.left, top: pos?.top,
-          visibility: pos ? "visible" : "hidden",
-        } as React.CSSProperties}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="lineup-modal-close" onClick={onClose} aria-label="닫기">✕</button>
+    <div
+      className="lineup-modal lineup-panel"
+      style={{ "--lineup-accent": v.accentHex } as React.CSSProperties}
+    >
+      <button className="lineup-modal-close" onClick={onClose} aria-label="닫기">✕</button>
 
         <div className="lineup-modal-head">
           <div>
@@ -516,13 +490,12 @@ function VehicleModal({ v, anchor, onClose }: { v: typeof VEHICLES[0]; anchor: D
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function LineUpPage() {
-  const [selected, setSelected] = useState<{ v: typeof VEHICLES[0]; anchor: DOMRect } | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.classList.add("line-up-page");
@@ -564,11 +537,19 @@ export default function LineUpPage() {
 
       <div className="lineup-grid">
         {VEHICLES.map((v, i) => (
-          <VehicleCard key={v.id} v={v} portrait={portraits[i]} onOpen={(anchor) => setSelected({ v, anchor })} />
+          <Fragment key={v.id}>
+            <VehicleCard
+              v={v}
+              portrait={portraits[i]}
+              active={selectedId === v.id}
+              onOpen={() => setSelectedId((cur) => (cur === v.id ? null : v.id))}
+            />
+            {selectedId === v.id && (
+              <VehiclePanel v={v} onClose={() => setSelectedId(null)} />
+            )}
+          </Fragment>
         ))}
       </div>
-
-      {selected && <VehicleModal v={selected.v} anchor={selected.anchor} onClose={() => setSelected(null)} />}
     </main>
   );
 }
