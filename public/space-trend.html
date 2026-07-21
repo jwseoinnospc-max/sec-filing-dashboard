@@ -729,7 +729,7 @@ function renderNewsHero(){
 /* ===== LOAD ALL ===== */
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
-  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();renderNewsHero();
+  renderCompanies();renderContract();renderTracker();renderInvest();renderReports();renderWeekly();renderCal();
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
