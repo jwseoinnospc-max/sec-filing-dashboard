@@ -69,6 +69,22 @@
 :root:not([data-theme="light"]) .other-space-card {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
 }
+
+/* Sidebar always dark (ignore light theme) */
+:root[data-theme="light"] .nav-sidebar {
+  background: rgba(4, 8, 15, 0.78) !important;
+  border-right-color: rgba(255, 255, 255, 0.05) !important;
+  color: #94a3b8 !important;
+}
+:root[data-theme="light"] .nav-sidebar .unified-nav-list,
+:root[data-theme="light"] .nav-sidebar .uni-label,
+:root[data-theme="light"] .nav-sidebar .uni-marker {
+  color: #94a3b8 !important;
+}
+:root[data-theme="light"] .nav-sidebar .unified-nav-item--active .uni-label,
+:root[data-theme="light"] .nav-sidebar .unified-nav-item--active .uni-marker {
+  color: #38bdf8 !important;
+}
 * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
 body {
   margin: 0;
