@@ -45,6 +45,7 @@
   #tleft { left: 20px; } #tright { left: 108px; }
   #tthrust { right: 20px; width: 94px; height: 94px; bottom: 52px; font-size: 32px; background: rgba(255,120,60,.22); border-color: rgba(255,150,90,.5); }
   #tctx { right: 128px; width: 84px; height: 84px; bottom: 56px; font-size: 13px; font-weight:700; background: rgba(111,211,255,.20); border-color: rgba(111,211,255,.5); display:none; }
+  #minimap { top: 74px; right: 14px; border-radius: 10px; }
   #hint { bottom: 6px; left: 0; right: 0; text-align:center; font-size: 12px; opacity:.5; }
   @media (hover: none) and (pointer: coarse) { #touch { display: block; } #hint{ display:none; } }
 </style>
@@ -70,6 +71,7 @@
   <div class="lbl"><span id="fuellabel">1단 연료</span><span id="fueltxt">100%</span></div>
   <div id="fueltrack"><div id="fuelbar"></div></div>
 </div>
+<canvas class="hud" id="minimap" width="150" height="200"></canvas>
 <div class="hud" id="msg"></div>
 
 <div id="touch">
@@ -170,33 +172,41 @@ function drawLit(mesh,model){ const mvp=M.mul(pv,model); gl.useProgram(litProg);
   gl.bindBuffer(gl.ARRAY_BUFFER,mesh.col); gl.enableVertexAttribArray(litU.aColor); gl.vertexAttribPointer(litU.aColor,3,gl.FLOAT,false,0,0);
   gl.drawArrays(gl.TRIANGLES,0,mesh.count); }
 
-/* ---------- 색상 (INNOSPACE 테마) ---------- */
-const WHITE=[0.92,0.93,0.96], NAVY=[0.10,0.16,0.32], CYAN=[0.20,0.72,0.95], DARK=[0.22,0.23,0.28],
-      GOLD=[0.92,0.75,0.22], PANEL=[0.10,0.22,0.55], SILVER=[0.78,0.80,0.85];
+/* ---------- 색상 (INNOSPACE 한빛-나노 실물 참고) ---------- */
+const WHITE=[0.90,0.91,0.94], NAVY=[0.09,0.15,0.34], CHAR=[0.11,0.12,0.16], DARK=[0.17,0.18,0.22],
+      SILVER=[0.74,0.77,0.82], GOLD=[0.92,0.75,0.22], PANEL=[0.10,0.22,0.55],
+      REDF=[0.80,0.15,0.18], BLUEF=[0.11,0.24,0.55];
+const TAU=6.2831853;
 
-/* ---------- 로켓 치수 ---------- */
-const R1=1.35, H1=7.0, R2=0.95, H2=4.5, STACK=H1+1.0;
+/* 세로 스트라이프가 있는 실린더 (한쪽 면만 다른 색) */
+function stripeCyl(mb,r,y0,y1,seg,base,stripe,center,half){
+  for(let i=0;i<seg;i++){ const t0=i/seg*TAU,t1=(i+1)/seg*TAU,tm=(t0+t1)/2;
+    const dd=Math.abs((((tm-center)%TAU)+TAU+Math.PI)%TAU-Math.PI);
+    const col=dd<half?stripe:base;
+    const c0=Math.cos(t0),s0=Math.sin(t0),c1=Math.cos(t1),s1=Math.sin(t1);
+    const p00=[r*c0,y0,r*s0],p01=[r*c0,y1,r*s0],p10=[r*c1,y0,r*s1],p11=[r*c1,y1,r*s1],n0=[c0,0,s0],n1=[c1,0,s1];
+    mb.triN(p00,n0,p10,n1,p11,n1,col); mb.triN(p00,n0,p11,n1,p01,n0,col); }
+}
 
-/* 1단: 하이브리드 엔진 + 동체 + 핀 (로컬 base y=0) */
+/* ---------- 로켓 치수 (슬림한 2단 실루엣) ---------- */
+const R1=1.15, H1=9.0, R2=0.90, H2=4.2, INTER=1.1, STACK=H1+INTER+0.3;
+
+/* 1단: HyPER 엔진 + 흰 동체(세로 네이비 스트라이프) + 블랙 인터스테이지 */
 const s1=MeshBuilder();
-s1.frustum(R1*0.78,R1*0.42,-1.8,0.0,22,DARK);   // 엔진 노즐(벨)
-s1.cylinder(R1,0.0,H1,26,WHITE);                 // 1단 동체
-s1.cylinder(R1*1.012,0.5,1.1,26,NAVY);           // 하단 밴드
-s1.cylinder(R1*1.012,H1-2.6,H1-2.2,26,CYAN);     // 시안 스트라이프
-s1.frustum(R1,R2,H1,H1+1.0,26,NAVY);             // 인터스테이지 테이퍼
-for(let k=0;k<4;k++){ const a=k/4*6.2831853,ca=Math.cos(a),sa=Math.sin(a);
-  const inn=[R1*ca,0.3,R1*sa],base=[R1*ca,3.0,R1*sa],out=[(R1+2.1)*ca,-0.3,(R1+2.1)*sa];
-  const n=norm(cross(sub(base,inn),sub(out,inn)));
-  s1.triN(inn,n,base,n,out,n,NAVY); s1.triN(inn,scaleV(n,-1),out,scaleV(n,-1),base,scaleV(n,-1),NAVY); }
+s1.frustum(R1*0.72,R1*0.46,-1.9,0.0,24,DARK);           // HyPER 엔진 노즐
+s1.cone(R1,-0.2,-1.9,24,CHAR);                          // 엔진 하단 커버(어둡게)
+stripeCyl(s1,R1,0.0,H1,30,WHITE,NAVY,0.0,1.15);         // 동체 + 우측 세로 네이비 스트라이프
+s1.cylinder(R1*1.006,H1,H1+INTER,30,CHAR);              // 인터스테이지(블랙)
 const stage1Mesh=makeGLMesh(s1.build());
 
-/* 2단: 소형 엔진 + 동체 + 페어링 (로컬 base y=0) */
+/* 2단: LiMER 엔진 + 흰 동체(태극기) + 페이로드 어댑터 + 다크 페어링 */
 const s2=MeshBuilder();
-s2.frustum(R2*0.72,R2*0.46,-0.7,0.0,20,DARK);    // 2단 엔진
-s2.cylinder(R2,0.0,H2,24,WHITE);                 // 2단 동체
-s2.cylinder(R2*1.015,0.3,0.7,24,NAVY);           // 밴드
-s2.cylinder(R2*1.015,H2*0.55,H2*0.55+0.4,24,CYAN);// 시안 스트라이프
-s2.cone(R2,H2,H2+2.7,24,NAVY);                   // 페어링(노즈)
+s2.frustum(R2*0.6,R2*0.4,-0.8,0.0,20,DARK);             // LiMER 엔진
+s2.cylinder(R2,0.0,H2,26,WHITE);                        // 2단 동체
+s2.box(0,H2*0.78,R2*0.99, 0.62,0.34,0.03, REDF);        // 태극기(홍)
+s2.box(0,H2*0.78-0.33,R2*0.99, 0.62,0.34,0.03, BLUEF);  // 태극기(청)
+s2.cylinder(R2*1.01,H2,H2+0.5,26,SILVER);              // 페이로드 어댑터
+s2.cone(R2,H2+0.5,H2+0.5+2.6,26,CHAR);                 // 페어링(다크 차콜)
 const stage2Mesh=makeGLMesh(s2.build());
 
 /* 위성 (payload) */
@@ -209,19 +219,30 @@ sat.box(-0.6,0,0, 0.5,0.06,0.12, SILVER);        // 지지대
 sat.box(0.6,0,0, 0.5,0.06,0.12, SILVER);
 const satMesh=makeGLMesh(sat.build());
 
-/* ---------- 지형 / 발사대 ---------- */
+/* ---------- 지형: 바다 + 육지 (해안 발사장, 알칸타라 컨셉) + 발사대 ---------- */
+const OCEAN=[0.07,0.34,0.54], SHORE=[0.16,0.55,0.62], LAND=[0.21,0.41,0.17], LAND2=[0.16,0.33,0.13], SAND=[0.70,0.63,0.45];
 const gb=MeshBuilder();
-gb.box(0,-1,0, 1800,2,1800, [0.09,0.12,0.10]);
-gb.box(0,0,0, 16,2,16, [0.28,0.29,0.34]);
-gb.box(0,1.2,0, 10,0.5,10, [0.40,0.41,0.47]);
-gb.box(8,8,0, 1.1,18,1.1, [0.31,0.33,0.4]);      // 발사탑
-gb.box(8,17,-2, 1.1,1.1,5, [0.31,0.33,0.4]);
-gb.box(8,11,-1, 0.5,0.5,3, [0.5,0.35,0.15]);     // 연결 암
+gb.box(0,-0.9,0, 6000,1.0,6000, OCEAN);           // 넓은 바다 (수면 y=-0.4)
+gb.box(0,-0.62,-120, 1600,0.5,240, SHORE);        // 얕은 연안(청록, top -0.37)
+gb.box(0,-0.4,230, 820,0.8,540, LAND);            // 육지 반도 (z:-40~500)
+gb.box(-190,-0.38,300, 260,0.76,300, LAND2);      // 숲/지형 패치
+gb.box(210,-0.38,180, 220,0.76,360, LAND2);
+gb.box(0,-0.34,-30, 840,0.72,40, SAND);           // 해안선 백사장 (바로 앞이 바다)
+gb.box(-430,-0.5,-360, 180,1.0,150, LAND);        // 먼 섬
+gb.box(500,-0.55,-580, 250,1.1,200, LAND);
+gb.box(90,-0.55,-880, 340,1.1,250, LAND);
+gb.box(0,0,0, 16,2,16, [0.30,0.31,0.36]);         // 발사 콘크리트
+gb.box(0,1.2,0, 10,0.5,10, [0.42,0.43,0.49]);
+gb.box(8,8,0, 1.1,18,1.1, [0.33,0.35,0.42]);      // 발사탑
+gb.box(8,17,-2, 1.1,1.1,5, [0.33,0.35,0.42]);
+gb.box(8,11,-1, 0.5,0.5,3, [0.5,0.35,0.15]);      // 연결 암
 const groundMesh=makeGLMesh(gb.build());
 
-/* ---------- 격자 ---------- */
-const gpos=[],gcol=[]; const G=900,step=25;
-for(let i=-G;i<=G;i+=step){ gpos.push(i,0.05,-G,i,0.05,G,-G,0.05,i,G,0.05,i); for(let j=0;j<4;j++)gcol.push(0.20,0.30,0.34,0.5); }
+/* ---------- 격자 (육지 위에만) ---------- */
+const gpos=[],gcol=[];
+function gline(x0,z0,x1,z1){ gpos.push(x0,0.06,z0, x1,0.06,z1); gcol.push(0.34,0.48,0.26,0.30, 0.34,0.48,0.26,0.30); }
+for(let x=-400;x<=400;x+=40) gline(x,-20,x,500);
+for(let z=-20;z<=500;z+=40) gline(-400,z,400,z);
 const gridBuf={pos:gl.createBuffer(),col:gl.createBuffer(),count:gpos.length/3};
 gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.pos); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gpos),gl.STATIC_DRAW);
 gl.bindBuffer(gl.ARRAY_BUFFER,gridBuf.col); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(gcol),gl.STATIC_DRAW);
@@ -241,7 +262,7 @@ const pPosBuf=gl.createBuffer(),pColBuf=gl.createBuffer();
 
 /* ---------- 물리 상수 ---------- */
 const GRAV=9.8, MAX_TILT=0.6, ALT_SCALE=110, SPACE_UNITS=909;
-const STG={ 1:{thrust:24, fuel:100, burn:6.4, exOff:1.7}, 2:{thrust:34, fuel:58, burn:6.0, exOff:0.55} };
+const STG={ 1:{thrust:24, fuel:100, burn:6.4, exOff:1.95}, 2:{thrust:34, fuel:58, burn:6.0, exOff:0.85} };
 
 let state, keys={left:false,right:false,thrust:false}, T={left:false,right:false,thrust:false}, bestUnits=0;
 
@@ -342,9 +363,9 @@ function update(dt){ const s=state; s.t+=dt;
 
   updateJettison(dt); updateSatellite(dt); updateParticles(dt);
 
-  const target=[s.pos[0], s.pos[1]+15, s.pos[2]+52];
+  const target=[s.pos[0], s.pos[1]+24, s.pos[2]+48];
   const k=1-Math.pow(0.0001,dt);
-  s.cam=s.cam||[0,16,52];
+  s.cam=s.cam||[0,24,48];
   s.cam[0]=mix(s.cam[0],target[0],k); s.cam[1]=mix(s.cam[1],target[1],k); s.cam[2]=mix(s.cam[2],target[2],k);
 }
 function crash(s){ s.crashed=true;
@@ -374,7 +395,7 @@ function render(){ const s=state, alt01=clamp(s.pos[1]/SPACE_UNITS,0,1);
   const sky=[mix(0.40,0.02,alt01),mix(0.60,0.02,alt01),mix(0.85,0.06,alt01)];
   gl.clearColor(sky[0],sky[1],sky[2],1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST);
   const proj=M.perspective(Math.PI/3.2, canvas.width/canvas.height, 0.5, 6000);
-  const view=M.lookAt(s.cam,[s.pos[0],s.pos[1]+5,s.pos[2]],[0,1,0]); pv=M.mul(proj,view);
+  const view=M.lookAt(s.cam,[s.pos[0],s.pos[1]+4,s.pos[2]],[0,1,0]); pv=M.mul(proj,view);
 
   if(alt01>0.02) drawFlat(starBuf,gl.POINTS,2.0,1.0,alt01);
   gl.disable(gl.BLEND);
@@ -439,12 +460,48 @@ function hud(){ const s=state;
   else tctx.style.display='none';
 }
 
+/* ---------- 미니맵 (측면 궤적: 고도 + 좌우 드리프트) ---------- */
+const mm=document.getElementById('minimap'), mctx=mm.getContext('2d');
+const MM_W=mm.width, MM_H=mm.height, MM_MAXKM=120;
+function altKmOf(u){ return (u-1)*ALT_SCALE/1000; }
+function mmAltY(km){ const y0=MM_H-16, y1=14; return y0+(y1-y0)*clamp(km/MM_MAXKM,0,1); }
+function mmX(px){ return MM_W/2 + clamp(px/7, -(MM_W/2-16), MM_W/2-16); }
+function drawMinimap(){ const s=state, c=mctx;
+  c.clearRect(0,0,MM_W,MM_H);
+  c.fillStyle='rgba(6,12,22,0.60)'; c.beginPath(); c.roundRect(0,0,MM_W,MM_H,10); c.fill();
+  c.strokeStyle='rgba(255,255,255,0.10)'; c.lineWidth=1; c.stroke();
+  // 제목
+  c.fillStyle='rgba(180,210,240,0.65)'; c.font='700 10px sans-serif'; c.textAlign='left'; c.fillText('궤적 · MINI MAP', 9, 15);
+  // 고도 눈금
+  c.textAlign='right'; c.font='9px sans-serif';
+  for(let km=0;km<=MM_MAXKM;km+=30){ const y=mmAltY(km); c.strokeStyle='rgba(255,255,255,0.07)'; c.beginPath(); c.moveTo(10,y); c.lineTo(MM_W-10,y); c.stroke();
+    c.fillStyle='rgba(150,175,205,0.55)'; c.fillText(km+'km', MM_W-8, y-2); }
+  // 바다/육지 (하단)
+  const yg=mmAltY(0);
+  c.fillStyle='#0e4b6b'; c.fillRect(8,yg,MM_W-16,MM_H-yg-6);            // 바다
+  c.fillStyle='#2b5a24'; c.fillRect(MM_W/2-26,yg,52,MM_H-yg-6);        // 육지(발사장)
+  c.fillStyle='#a8975f'; c.fillRect(MM_W/2-26,yg,52,2);                // 해안선
+  // 카르만 라인
+  const yk=mmAltY(100); c.strokeStyle='rgba(120,200,255,0.75)'; c.setLineDash([4,3]); c.beginPath(); c.moveTo(10,yk); c.lineTo(MM_W-10,yk); c.stroke(); c.setLineDash([]);
+  c.fillStyle='rgba(150,210,255,0.9)'; c.textAlign='left'; c.font='700 9px sans-serif'; c.fillText('카르만 100km', 12, yk-3);
+  // 낙하하는 1단
+  if(s.jettison){ const jx=mmX(s.jettison.pos[0]), jy=mmAltY(altKmOf(s.jettison.pos[1])); c.fillStyle='rgba(150,160,175,0.85)'; c.fillRect(jx-2,jy-2,4,4); }
+  // 위성
+  if(s.satellite){ const px=mmX(s.satellite.p[0]), py=mmAltY(altKmOf(s.satellite.p[1])); c.fillStyle='#6fd3ff'; c.beginPath(); c.arc(px,py,3.5,0,TAU); c.fill(); }
+  // 로켓 (현재 위치)
+  if(!s.crashed){ const rx=mmX(s.pos[0]), ry=mmAltY(altKmOf(s.pos[1]));
+    c.fillStyle = s.stage===1 ? '#ffd24a' : '#ff7a3c';
+    c.save(); c.translate(rx,ry); c.beginPath(); c.moveTo(0,-6); c.lineTo(4,4); c.lineTo(-4,4); c.closePath(); c.fill(); c.restore();
+    c.strokeStyle='rgba(255,255,255,0.5)'; c.lineWidth=1; c.beginPath(); c.moveTo(rx,ry+4); c.lineTo(rx,yg); c.stroke();
+  } else { c.fillStyle='#ff5544'; c.textAlign='center'; c.font='700 11px sans-serif'; c.fillText('✕', mmX(s.pos[0]), mmAltY(altKmOf(bestUnits))); }
+}
+
 /* ---------- 리사이즈 & 루프 ---------- */
 function resize(){ const dpr=Math.min(window.devicePixelRatio||1,2); canvas.width=Math.floor(innerWidth*dpr); canvas.height=Math.floor(innerHeight*dpr); gl.viewport(0,0,canvas.width,canvas.height); }
 addEventListener('resize',resize); resize();
 reset();
 let last=performance.now();
-function frame(now){ let dt=(now-last)/1000; last=now; dt=Math.min(dt,0.05); update(dt); render(); hud(); requestAnimationFrame(frame); }
+function frame(now){ let dt=(now-last)/1000; last=now; dt=Math.min(dt,0.05); update(dt); render(); hud(); drawMinimap(); requestAnimationFrame(frame); }
 requestAnimationFrame(frame);
 </script>
 </body>
