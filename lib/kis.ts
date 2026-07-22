@@ -53,9 +53,8 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
   lastAttemptAt = Date.now();
 
   try {
-    
-    // an error response (e.g. KIS's "1 token/minute" rate-limit reply) for the full revalidate
-    // window, locking in a failure.
+    // POST 요청은 Next가 캐시하지 않음. no-store를 명시하면 라우트가 강제로 동적이 되어
+    // 페이지 ISR 캐싱이 꺼지므로 캐시 옵션을 두지 않음(토큰은 KV/메모리로 별도 캐시됨).
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -63,8 +62,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         grant_type: "client_credentials",
         appkey: appKey,
         appsecret: appSecret
-      }),
-      cache: "no-store"
+      })
     });
 
     const data = await res.json();
@@ -203,6 +201,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
 
   try {
     const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
+    // 재시도(토큰 갱신) 시엔 캐시 버스트로 새 응답을 받도록 함
+    if (forceRefresh) query.set("_cb", String(Date.now()));
     const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-price?${query.toString()}`, {
       headers: {
         authorization: `Bearer ${token}`,
@@ -211,7 +211,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
         tr_id: "FHKST01010100",
         custtype: "P"
       },
-      cache: "no-store"
+      // KIS는 15분 지연 시세 → 900초 캐시로 라우트를 정적(ISR) 캐싱 가능하게 함
+      next: { revalidate: 900 }
     });
 
     // KIS sometimes returns 200 with rt_cd:"1" for auth errors instead of HTTP 401.
@@ -280,6 +281,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
       FID_PERIOD_DIV_CODE: "D",
       FID_ORG_ADJ_PRC: "0"
     });
+    if (forceRefresh) query.set("_cb", String(Date.now()));
     const res = await fetch(
       `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?${query.toString()}`,
       {
@@ -290,7 +292,8 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
           tr_id: "FHKST03010100",
           custtype: "P"
         },
-        cache: "no-store"
+        // 일봉도 900초 캐시 (당일 데이터는 15분 지연)
+        next: { revalidate: 900 }
       }
     );
 
