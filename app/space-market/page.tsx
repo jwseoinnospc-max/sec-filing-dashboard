@@ -1,6 +1,7 @@
 export const revalidate = 900; // KIS 15분 지연 기준 — 15분마다 1회만 재생성
 
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { readFileSync } from "fs";
 import { join } from "path";
 import NavMenu from "@/components/NavMenu";
@@ -114,22 +115,34 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
+// 시장 데이터 로딩 전체를 900초 캐시.
+// KIS의 no-store fetch(401 재시도용)는 그대로 두되 결과만 캐시해, 15분에 한 번만
+// 실제 API를 호출하고 나머지 요청은 캐시 데이터를 즉시 반환 → 로딩 대폭 단축.
+const loadMarketData = unstable_cache(
+  async () => {
+    // 해외/국내 주식·뉴스를 모두 병렬로 로드
+    const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
+      // 해외 4개사: 전부 병렬
+      Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
+      // 국내 12개사: KIS 초당 제한 고려해 4개사씩 배치 병렬 (현재가+일봉 동시)
+      mapWithConcurrency(DOMESTIC_COMPANIES, 4, async (c) => {
+        const [price, history] = await Promise.all([
+          getDomesticPrice(c.code),
+          getDomesticDailyHistory(c.code),
+        ]);
+        return { price, history };
+      }),
+      Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
+      Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
+    ]);
+    return { nasdaqResults, domesticData, nasdaqNews, domesticNews };
+  },
+  ["space-market-data-v1"],
+  { revalidate: 900 }
+);
+
 export default async function SpaceMarketPage() {
-  // 해외/국내 주식·뉴스를 모두 병렬로 로드 (기존엔 순차 실행이라 로딩이 매우 느렸음)
-  const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
-    // 해외 4개사: 전부 병렬
-    Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
-    // 국내 12개사: KIS 초당 제한 고려해 4개사씩 배치 병렬 (현재가+일봉 동시)
-    mapWithConcurrency(DOMESTIC_COMPANIES, 4, async (c) => {
-      const [price, history] = await Promise.all([
-        getDomesticPrice(c.code),
-        getDomesticDailyHistory(c.code),
-      ]);
-      return { price, history };
-    }),
-    Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
-    Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
-  ]);
+  const { nasdaqResults, domesticData, nasdaqNews, domesticNews } = await loadMarketData();
 
   const domesticPrices: (KisDomesticPrice | null)[] = domesticData.map((d) => d.price);
   const domesticHistory: (KisDailyBar[] | null)[] = domesticData.map((d) => d.history);
