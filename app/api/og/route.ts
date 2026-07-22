@@ -45,8 +45,9 @@ export async function GET(req: NextRequest) {
     clearTimeout(timer);
     if (!res.ok) return NextResponse.json(empty, { headers: cacheHeaders() });
 
-    // 헤드 부분만 읽어 og 태그 파싱 (본문 전체는 불필요)
-    const html = (await res.text()).slice(0, 120_000);
+    // 한국 뉴스 사이트(nate·mk 등)는 EUC-KR로 서빙 → 올바른 charset으로 디코딩해야 한글이 깨지지 않음
+    const buf = await res.arrayBuffer();
+    const html = decodeHtml(buf, res.headers.get("content-type")).slice(0, 120_000);
 
     const pick = (names: string[]): string | null => {
       for (const name of names) {
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
     };
 
     let image = pick(["og:image", "og:image:url", "twitter:image", "twitter:image:src"]);
-    const description = pick(["og:description", "twitter:description", "description"]);
+    const description = cleanText(pick(["og:description", "twitter:description", "description"]));
 
     // 상대경로 이미지 → 절대경로
     if (image && !/^https?:\/\//i.test(image)) {
@@ -136,6 +137,37 @@ async function resolveGoogleNews(articleUrl: string): Promise<string | null> {
 
 const BROWSER_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+
+// 응답 바이트를 올바른 charset으로 디코딩 (Content-Type 헤더 → <meta charset> → UTF-8 순)
+function decodeHtml(buf: ArrayBuffer, contentType: string | null): string {
+  let charset = (contentType?.match(/charset=["']?([\w-]+)/i)?.[1] || "").toLowerCase();
+  if (!charset) {
+    // 헤더에 charset이 없으면 ASCII로 앞부분만 읽어 meta 태그에서 탐지
+    const head = new TextDecoder("ascii").decode(new Uint8Array(buf).slice(0, 2048));
+    charset = (
+      head.match(/<meta[^>]+charset=["']?([\w-]+)/i)?.[1] ||
+      head.match(/content=["'][^"']*charset=([\w-]+)/i)?.[1] ||
+      "utf-8"
+    ).toLowerCase();
+  }
+  // UTF-8 별칭 정규화
+  if (/^utf-?8$/.test(charset)) charset = "utf-8";
+  try {
+    return new TextDecoder(charset, { fatal: false }).decode(buf);
+  } catch {
+    return new TextDecoder("utf-8", { fatal: false }).decode(buf);
+  }
+}
+
+// 설명 텍스트 정리: 깨진 문자(replacement) 제거, 공백 정규화
+function cleanText(s: string | null): string | null {
+  if (!s) return s;
+  const cleaned = s
+    .replace(/�/g, "") // U+FFFD replacement character 제거
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || null;
+}
 
 function cacheHeaders() {
   return {

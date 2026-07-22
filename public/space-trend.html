@@ -746,7 +746,7 @@ function renderNewsHero(){
         var box=document.getElementById('nhcImg'+idx);
         if(box){var img=new Image();img.onload=function(){var f=box.querySelector('.nhc-fallback');if(f)f.style.display='none';box.insertBefore(img,box.firstChild);};img.onerror=function(){};img.src=o.image;}
       }
-      if(o&&o.description){
+      if(o&&o.description&&o.description.indexOf('�')<0){
         var d=document.getElementById('nhcDesc'+idx),s=heroSplit(n.title);
         if(d&&(!s.d||s.d.length<12))d.textContent=o.description;
       }
