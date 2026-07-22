@@ -304,6 +304,32 @@ function classify(t){
   for(var r of CATS)for(var k of r.k)if(tl.includes(k))return r.c;
   return 'Other';
 }
+
+/* ===== 우주산업 관련성 필터 =====
+   'rocket launch' 등이 K-pop 투어명·게임 등에 걸려 들어오는 오탐을 제거 */
+// 확실한 우주 도메인 용어 (있으면 노이즈가 섞여도 통과)
+var HARD_SPACE=['nasa','spacex','스페이스x','starship','스타십','falcon','팰컨','starlink','스타링크',
+  'blue origin','블루오리진','rocket lab','로켓랩','firefly','isro','jaxa','esa','arianespace','ula',
+  '위성','satellite','인공위성','발사체','launch vehicle','spacecraft','우주선','우주정거장','iss',
+  '궤도','orbit','누리호','나로','한화에어로','한화시스템','kari','항우연','우주항공청','우주청',
+  'artemis','아르테미스','constellation','군집위성','정지궤도','저궤도','deep space','nuri','soyuz','소유스',
+  'stratolaunch','스트라토런치','blue ghost','virgin galactic','sierra space','relativity space',
+  '우주산업','우주항공','항공우주','우주개발','우주탐사','달 탐사','화성 탐사','재사용 로켓','액체엔진'];
+// 넓은 우주 관련 용어 (최소 하나는 있어야 통과)
+var SPACE_TERMS=HARD_SPACE.concat(['rocket','로켓','launch','발사','우주','space','mission','liftoff',
+  'lift-off','lift off','payload','탑재체','추진','engine','엔진','moon','달','mars','화성','astronaut','우주비행사']);
+// 비-우주 노이즈 (엔터·게임·스포츠 등)
+var NOISE_TERMS=['qwer','콘서트','투어','앨범','뮤직비디오','뮤비',' mv','아이돌','팬미팅','데뷔','컴백',
+  '걸그룹','보이그룹','신곡','음원','무대','뮤지컬','concert','tour','band','album','k-pop','kpop',
+  '게임','드라마','예능','굿즈','티켓','예매','웹툰','축구','야구','농구','골프','배구','e스포츠'];
+function isSpaceRelated(title){
+  var t=(title||'').toLowerCase();
+  var hard=HARD_SPACE.some(function(k){return t.includes(k);});
+  // 노이즈가 있는데 확실한 우주 용어가 없으면 제외
+  if(!hard&&NOISE_TERMS.some(function(k){return t.includes(k);}))return false;
+  // 최소 하나의 우주 관련 용어 필요
+  return SPACE_TERMS.some(function(k){return t.includes(k);});
+}
 function catBadge(c){
   var m={Launch:'bl',Satellite:'bs',Defense:'bd',Investment:'bi','M&A':'bm',Policy:'bp',Manufacturing:'bp',AI:'ba',Other:'bo'};
   return '<span class="badge '+(m[c]||'bo')+'">'+c+'</span>';
@@ -737,7 +763,7 @@ async function loadAll(){
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
   else if(document.getElementById('launchSched'))document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
   if(nR.status==='fulfilled'){
-    allNews=nR.value.map(function(it){
+    allNews=nR.value.filter(function(it){return isSpaceRelated(it.title);}).map(function(it){
       var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
