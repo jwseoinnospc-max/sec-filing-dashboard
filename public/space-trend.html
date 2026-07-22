@@ -733,25 +733,41 @@ function renderNewsHero(){
         '<div class="nhc-fallback">'+emoji+'</div>'+
       '</div>'+
       '<div class="nhc-body">'+
-        '<div class="nhc-title">'+s.h+'</div>'+
+        '<div class="nhc-title" id="nhcTitle'+idx+'">'+s.h+'</div>'+
         '<div class="nhc-desc" id="nhcDesc'+idx+'">'+(s.d||'')+'</div>'+
         '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src">'+src+'</span></div>'+
       '</div>'+
     '</div>';
   }).join('');
   list.forEach(function(n,idx){
+    // 제목이 영어면 한국어로 번역해 표시
+    var s0=heroSplit(n.title);
+    translateEl(document.getElementById('nhcTitle'+idx),s0.h);
     if(!n.link)return;
     fetch('/api/og?url='+encodeURIComponent(n.link)).then(function(r){return r.json();}).then(function(o){
       if(o&&o.image){
         var box=document.getElementById('nhcImg'+idx);
         if(box){var img=new Image();img.onload=function(){var f=box.querySelector('.nhc-fallback');if(f)f.style.display='none';box.insertBefore(img,box.firstChild);};img.onerror=function(){};img.src=o.image;}
       }
-      if(o&&o.description&&o.description.indexOf('�')<0){
-        var d=document.getElementById('nhcDesc'+idx),s=heroSplit(n.title);
-        if(d&&(!s.d||s.d.length<12))d.textContent=o.description;
-      }
+      var d=document.getElementById('nhcDesc'+idx),s=heroSplit(n.title);
+      var descText=(o&&o.description&&o.description.indexOf('�')<0&&(!s.d||s.d.length<12))?o.description:s.d;
+      if(d&&descText)translateEl(d,descText);
     }).catch(function(){});
   });
+}
+
+/* ===== 번역 ===== */
+// 한글이 없고 알파벳이 있으면 영어(외국어)로 간주
+function isForeign(t){return t&&!/[가-힣]/.test(t)&&/[a-zA-Z]/.test(t);}
+var _trCache={};
+function translateEl(el,text){
+  if(!el||!text)return;
+  if(!isForeign(text)){el.textContent=text;return;}
+  if(_trCache[text]){el.textContent=_trCache[text];return;}
+  fetch('/api/translate?q='+encodeURIComponent(text)).then(function(r){return r.json();}).then(function(o){
+    var out=(o&&o.text)?o.text:text;
+    _trCache[text]=out;el.textContent=out;
+  }).catch(function(){});
 }
 
 /* ===== LOAD ALL ===== */
@@ -764,7 +780,8 @@ async function loadAll(){
   else if(document.getElementById('launchSched'))document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
   if(nR.status==='fulfilled'){
     allNews=nR.value.filter(function(it){return isSpaceRelated(it.title);}).map(function(it){
-      var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
+      var src=it.source||'';
+      if(!src){try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
     renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
