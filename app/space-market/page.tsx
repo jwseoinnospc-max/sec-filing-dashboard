@@ -90,29 +90,49 @@ const DOMESTIC_COMPANIES = [
 ];
 
 async function loadOverseasStock(symbol: string) {
-  const price = await fetchYahooPrice(symbol);
-  const profile = await getProfile(symbol);
-  const valuation = await getValuation(symbol);
+  // 3개 호출을 병렬로 — 서로 의존성이 없음
+  const [price, profile, valuation] = await Promise.all([
+    fetchYahooPrice(symbol),
+    getProfile(symbol),
+    getValuation(symbol),
+  ]);
   return { price, profile, valuation };
 }
 
+// 배열을 concurrency 크기 배치로 나눠 병렬 실행 (KIS 초당 요청 제한 완화용)
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const settled = await Promise.all(batch.map((it, j) => fn(it, i + j)));
+    settled.forEach((r, j) => { results[i + j] = r; });
+  }
+  return results;
+}
+
 export default async function SpaceMarketPage() {
-  const nasdaqResults: Awaited<ReturnType<typeof loadOverseasStock>>[] = [];
-  for (const company of NASDAQ_COMPANIES) {
-    nasdaqResults.push(await loadOverseasStock(company.symbol));
-  }
-
-  const domesticPrices: (KisDomesticPrice | null)[] = [];
-  const domesticHistory: (KisDailyBar[] | null)[] = [];
-  for (const company of DOMESTIC_COMPANIES) {
-    domesticPrices.push(await getDomesticPrice(company.code));
-    domesticHistory.push(await getDomesticDailyHistory(company.code));
-  }
-
-  const [nasdaqNews, domesticNews] = await Promise.all([
+  // 해외/국내 주식·뉴스를 모두 병렬로 로드 (기존엔 순차 실행이라 로딩이 매우 느렸음)
+  const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
+    // 해외 4개사: 전부 병렬
+    Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
+    // 국내 12개사: KIS 초당 제한 고려해 4개사씩 배치 병렬 (현재가+일봉 동시)
+    mapWithConcurrency(DOMESTIC_COMPANIES, 4, async (c) => {
+      const [price, history] = await Promise.all([
+        getDomesticPrice(c.code),
+        getDomesticDailyHistory(c.code),
+      ]);
+      return { price, history };
+    }),
     Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
     Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
   ]);
+
+  const domesticPrices: (KisDomesticPrice | null)[] = domesticData.map((d) => d.price);
+  const domesticHistory: (KisDailyBar[] | null)[] = domesticData.map((d) => d.history);
 
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
