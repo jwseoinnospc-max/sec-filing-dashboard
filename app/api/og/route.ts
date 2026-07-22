@@ -19,14 +19,25 @@ export async function GET(req: NextRequest) {
 
   const empty = { image: null as string | null, description: null as string | null };
 
+  // Google News RSS 링크는 리다이렉트 스텁이라 og 태그가 없음 → 실제 기사 URL로 먼저 해석
+  if (target.hostname.endsWith("news.google.com") && target.pathname.includes("/articles/")) {
+    const real = await resolveGoogleNews(target.toString());
+    if (real) {
+      try {
+        target = new URL(real);
+      } catch {
+        /* 해석 실패 시 원래 URL 유지 */
+      }
+    }
+  }
+
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 6000);
     const res = await fetch(target.toString(), {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; SpaceTrendBot/1.0; +https://isd-innospc.vercel.app)",
-        Accept: "text/html",
+        "User-Agent": BROWSER_UA,
+        Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",
       signal: ctrl.signal,
@@ -70,6 +81,61 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(empty, { headers: cacheHeaders() });
   }
 }
+
+// Google News RSS article URL → 실제 기사 URL (batchexecute API)
+async function resolveGoogleNews(articleUrl: string): Promise<string | null> {
+  try {
+    const id = articleUrl.match(/\/articles\/([^?]+)/)?.[1];
+    if (!id) return null;
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const page = await fetch(articleUrl, {
+      headers: { "User-Agent": BROWSER_UA },
+      signal: ctrl.signal,
+    });
+    const html = await page.text();
+    clearTimeout(timer);
+
+    const sig = html.match(/data-n-a-sg="([^"]+)"/)?.[1];
+    const ts = html.match(/data-n-a-ts="([^"]+)"/)?.[1];
+    if (!sig || !ts) return null;
+
+    const inner = JSON.stringify([
+      "garturlreq",
+      [["X", "X", ["X", "X"], null, null, 1, 1, "US:en", null, 1, null, null, null, null, null, 0, 1],
+        "X", "X", 1, [1, 1, 1], 1, 1, null, 0, 0, null, 0],
+      id, ts, sig,
+    ]);
+    const payload = [[["Fbv4je", inner, null, "generic"]]];
+    const body = "f.req=" + encodeURIComponent(JSON.stringify(payload));
+
+    const ctrl2 = new AbortController();
+    const timer2 = setTimeout(() => ctrl2.abort(), 5000);
+    const res = await fetch("https://news.google.com/_/DotsSplashUi/data/batchexecute", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        "User-Agent": BROWSER_UA,
+      },
+      body,
+      signal: ctrl2.signal,
+    });
+    const text = await res.text();
+    clearTimeout(timer2);
+
+    const urls = text.match(/https?:\/\/[^"]+/g) || [];
+    const real = urls
+      .map((u) => u.split(/[\\"]/)[0])
+      .find((u) => !/google\.com|gstatic|googleapis/.test(u));
+    return real || null;
+  } catch {
+    return null;
+  }
+}
+
+const BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
 function cacheHeaders() {
   return {

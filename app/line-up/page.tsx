@@ -397,7 +397,6 @@ function VehicleCard({ v, portrait, onOpen, active }: {
         <div className="lineup-scanlines" />
         <div className="lineup-fade" />
         <span className="sc-corner sc-tl" /><span className="sc-corner sc-tr" />
-        <span className="sc-corner sc-bl" /><span className="sc-corner sc-br" />
         <div className="sc-badge">{v.status}</div>
       </div>
       <div className="lineup-info">

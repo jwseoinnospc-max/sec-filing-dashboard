@@ -517,6 +517,7 @@ function renderTopNews(){
 function renderHotKW(){
   var kws=extractKW(allNews);
   var el=document.getElementById('hotKw');
+  if(!el)return;
   if(!kws.length){el.innerHTML='<div class="empty">데이터 없음</div>';return;}
   var fIcons=['🔥','🔥','🔥','','','','',''];
   el.innerHTML=kws.map(function(k,i){
@@ -528,6 +529,7 @@ function renderHotKW(){
 /* ===== INVEST (real 2026 data, deduped) ===== */
 function renderInvest(){
   var el=document.getElementById('investList');
+  if(!el)return;
   var seen={};
   var items=TT_DATA.filter(function(r){
     if(seen[r.co])return false;seen[r.co]=true;return true;
@@ -558,6 +560,7 @@ async function loadLaunches(){
 }
 function renderLaunchSched(){
   var el=document.getElementById('launchSched');
+  if(!el)return;
   if(!launches.length){el.innerHTML='<div class="empty">발사 일정 없음 (15회/시 제한)</div>';return;}
   var MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   el.innerHTML=launches.slice(0,4).map(function(l){
@@ -701,7 +704,6 @@ function renderNewsHero(){
     var emoji=EMOJIS[n.cat]||'🛰️';
     return '<div class="nhc" onclick="window.open(\''+(n.link||'#').replace(/\'/g,'\\\'')+'\')">'+
       '<div class="nhc-img" id="nhcImg'+idx+'">'+
-        '<span class="nhc-cat">'+emoji+' '+(n.cat||'News')+'</span>'+
         '<div class="nhc-fallback">'+emoji+'</div>'+
       '</div>'+
       '<div class="nhc-body">'+
@@ -733,14 +735,15 @@ async function loadAll(){
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
-  else document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
+  else if(document.getElementById('launchSched'))document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
   if(nR.status==='fulfilled'){
     allNews=nR.value.map(function(it){
       var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
-    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();renderNewsHero();
+    renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
   }
+  renderNewsHero();
   var ok=lR.status==='fulfilled'&&nR.status==='fulfilled';
   setStatus(ok?'최근 업데이트: '+new Date().toLocaleString('ko-KR')+' KST':'일부 데이터를 불러오지 못했습니다.',!ok);
 }
