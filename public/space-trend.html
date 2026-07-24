@@ -35,7 +35,11 @@ a{color:inherit;text-decoration:none;}
 .row-portrait{grid-template-columns:repeat(3,1fr);}
 .portrait-card{aspect-ratio:1/1;display:flex;flex-direction:column;}
 
-/* News hero grid — 한 줄 5개, 정사각형 카드 */
+/* News hero — 글로벌/국내 2줄, 각 줄 5개 정사각형 카드 */
+.news-hero{display:flex;flex-direction:column;gap:16px;}
+.nh-row-label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.nh-row-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.nh-row-label .nh-flag{font-size:15px;}
 .news-hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
 .nhc{aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;}
 .nhc:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,0.4);}
@@ -217,13 +221,10 @@ a{color:inherit;text-decoration:none;}
 
 <div class="dashboard">
 
-  <!-- 최신 우주뉴스: 한 줄 5개 정사각형 카드 (내용 직접 입력) -->
-  <div id="newsHero" class="news-hero-grid">
-    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
-    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
-    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
-    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
-    <div class="nhc"><div class="nhc-img"></div><div class="nhc-body"><div class="nhc-title"></div><div class="nhc-desc"></div><div class="nhc-meta"></div></div></div>
+  <!-- 최신 우주뉴스: 글로벌/국내 2줄, 각 줄 5개 정사각형 카드 -->
+  <div id="newsHero" class="news-hero">
+    <div class="nh-row-label"><span class="nh-flag">🌐</span> 글로벌</div>
+    <div class="news-hero-grid"><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div></div>
   </div>
 
   <!-- 메인: 시장 보고서 · 발사 캘린더 · 주간 리포트 -->
@@ -717,43 +718,67 @@ function heroSplit(title){
   if(i>0)return{h:t.slice(0,i).trim(),d:t.slice(i+1).replace(/^[-—\s]+/,'').trim()};
   return{h:t,d:''};
 }
+// 국내(한국) 우주 뉴스 판별 키워드
+var DOMESTIC_KEYS=['이노스페이스','innospace','누리호','나로','한화에어로','한화시스템','한국항공우주','kai',
+  '쎄트렉','컨텍','contec','인텔리안','intellian','우주항공청','kasa','kari','항우연','nglv','차세대발사체',
+  '페리지','perigee','한빛','kompsat','다목적실용위성','천리안','도요샛','우주청','ap위성','나라스페이스',
+  'naraspace','켄코아','kencoa','lig넥스원','현대로템','대한민국','국내','한국항공','스페이스파이오니어',
+  '중형위성','코오롱','kolon spaceworks','korea.net','한국형','국산 발사체','제주'];
+function newsRegion(n){
+  if(n._region)return n._region;
+  var t=((n.title||'')+' '+(n.source||'')).toLowerCase();
+  return DOMESTIC_KEYS.some(function(k){return t.indexOf(k)>=0;})?'domestic':'global';
+}
+function heroDedupTop(pool,limit){
+  var seen={},list=[];
+  pool.forEach(function(n){var k=(n.title||'').trim().slice(0,40);if(!k||seen[k])return;seen[k]=true;list.push(n);});
+  list.sort(function(a,b){return new Date(b.pubDate||0)-new Date(a.pubDate||0);});
+  return list.slice(0,limit);
+}
+function heroCardHtml(n,id){
+  var s=heroSplit(n.title);
+  var src=n.source||'';if(!src){try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}}
+  var emoji=EMOJIS[n.cat]||'🛰️';
+  return '<div class="nhc" onclick="window.open(\''+(n.link||'#').replace(/\'/g,'\\\'')+'\')">'+
+    '<div class="nhc-img" id="nhcImg'+id+'">'+
+      '<div class="nhc-fallback">'+emoji+'</div>'+
+    '</div>'+
+    '<div class="nhc-body">'+
+      '<div class="nhc-title" id="nhcTitle'+id+'">'+s.h+'</div>'+
+      '<div class="nhc-desc" id="nhcDesc'+id+'">'+(s.d||'')+'</div>'+
+      '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src">'+src+'</span></div>'+
+    '</div>'+
+  '</div>';
+}
+function heroHydrate(n,id){
+  var s0=heroSplit(n.title);
+  translateEl(document.getElementById('nhcTitle'+id),s0.h);
+  if(!n.link)return;
+  fetch('/api/og?url='+encodeURIComponent(n.link)).then(function(r){return r.json();}).then(function(o){
+    if(o&&o.image){
+      var box=document.getElementById('nhcImg'+id);
+      if(box){var img=new Image();img.onload=function(){var f=box.querySelector('.nhc-fallback');if(f)f.style.display='none';box.insertBefore(img,box.firstChild);};img.onerror=function(){};img.src=o.image;}
+    }
+    var d=document.getElementById('nhcDesc'+id),s=heroSplit(n.title);
+    var descText=(o&&o.description&&o.description.indexOf('�')<0&&(!s.d||s.d.length<12))?o.description:s.d;
+    if(d&&descText)translateEl(d,descText);
+  }).catch(function(){});
+}
 function renderNewsHero(){
   var el=document.getElementById('newsHero');if(!el)return;
-  var merged=CURATED_NEWS.concat(KR_NEWS).concat(allNews||[]);
-  var seen={},list=[];
-  merged.forEach(function(n){var k=(n.title||'').trim().slice(0,40);if(!k||seen[k])return;seen[k]=true;list.push(n);});
-  list.sort(function(a,b){return new Date(b.pubDate||0)-new Date(a.pubDate||0);});
-  list=list.slice(0,HERO_N);
-  el.innerHTML=list.map(function(n,idx){
-    var s=heroSplit(n.title);
-    var src=n.source||'';if(!src){try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}}
-    var emoji=EMOJIS[n.cat]||'🛰️';
-    return '<div class="nhc" onclick="window.open(\''+(n.link||'#').replace(/\'/g,'\\\'')+'\')">'+
-      '<div class="nhc-img" id="nhcImg'+idx+'">'+
-        '<div class="nhc-fallback">'+emoji+'</div>'+
-      '</div>'+
-      '<div class="nhc-body">'+
-        '<div class="nhc-title" id="nhcTitle'+idx+'">'+s.h+'</div>'+
-        '<div class="nhc-desc" id="nhcDesc'+idx+'">'+(s.d||'')+'</div>'+
-        '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src">'+src+'</span></div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  list.forEach(function(n,idx){
-    // 제목이 영어면 한국어로 번역해 표시
-    var s0=heroSplit(n.title);
-    translateEl(document.getElementById('nhcTitle'+idx),s0.h);
-    if(!n.link)return;
-    fetch('/api/og?url='+encodeURIComponent(n.link)).then(function(r){return r.json();}).then(function(o){
-      if(o&&o.image){
-        var box=document.getElementById('nhcImg'+idx);
-        if(box){var img=new Image();img.onload=function(){var f=box.querySelector('.nhc-fallback');if(f)f.style.display='none';box.insertBefore(img,box.firstChild);};img.onerror=function(){};img.src=o.image;}
-      }
-      var d=document.getElementById('nhcDesc'+idx),s=heroSplit(n.title);
-      var descText=(o&&o.description&&o.description.indexOf('�')<0&&(!s.d||s.d.length<12))?o.description:s.d;
-      if(d&&descText)translateEl(d,descText);
-    }).catch(function(){});
-  });
+  // 글로벌/국내 풀 구성 (CURATED=글로벌, KR_NEWS=국내로 고정, RSS는 키워드로 분류)
+  var globalPool=CURATED_NEWS.map(function(n){return Object.assign({_region:'global'},n);});
+  var domesticPool=KR_NEWS.map(function(n){return Object.assign({_region:'domestic'},n);});
+  (allNews||[]).forEach(function(n){(newsRegion(n)==='domestic'?domesticPool:globalPool).push(n);});
+  var globalList=heroDedupTop(globalPool,HERO_N);
+  var domesticList=heroDedupTop(domesticPool,HERO_N);
+  function rowHtml(label,flag,items,prefix){
+    return '<div class="nh-row-label"><span class="nh-flag">'+flag+'</span> '+label+'</div>'+
+      '<div class="news-hero-grid">'+items.map(function(n,i){return heroCardHtml(n,prefix+i);}).join('')+'</div>';
+  }
+  el.innerHTML=rowHtml('글로벌','🌐',globalList,'g')+rowHtml('국내','🇰🇷',domesticList,'d');
+  globalList.forEach(function(n,i){heroHydrate(n,'g'+i);});
+  domesticList.forEach(function(n,i){heroHydrate(n,'d'+i);});
 }
 
 /* ===== 번역 ===== */
