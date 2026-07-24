@@ -100,19 +100,32 @@ async function loadOverseasStock(symbol: string) {
   return { price, profile, valuation };
 }
 
-// 배열을 concurrency 크기 배치로 나눠 병렬 실행 (KIS 초당 요청 제한 완화용)
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// 배열을 concurrency 크기 배치로 나눠 병렬 실행 (KIS 초당 요청 제한 완화용).
+// batchDelayMs: 배치 사이 지연 — KIS 초당 거래건수 초과(EGW00201) 방지.
 async function mapWithConcurrency<T, R>(
   items: T[],
   concurrency: number,
-  fn: (item: T, index: number) => Promise<R>
+  fn: (item: T, index: number) => Promise<R>,
+  batchDelayMs = 0
 ): Promise<R[]> {
   const results: R[] = new Array(items.length);
   for (let i = 0; i < items.length; i += concurrency) {
     const batch = items.slice(i, i + concurrency);
     const settled = await Promise.all(batch.map((it, j) => fn(it, i + j)));
     settled.forEach((r, j) => { results[i + j] = r; });
+    if (batchDelayMs && i + concurrency < items.length) await sleep(batchDelayMs);
   }
   return results;
+}
+
+// KIS 조회가 null이면 잠시 후 1회 재시도 (초당 제한 등 일시적 실패 대비)
+async function withRetry<R>(fn: () => Promise<R | null>, delayMs = 400): Promise<R | null> {
+  const first = await fn();
+  if (first != null) return first;
+  await sleep(delayMs);
+  return fn();
 }
 
 // 시장 데이터 로딩 전체를 900초 캐시.
@@ -124,14 +137,20 @@ const loadMarketData = unstable_cache(
     const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
       // 해외 4개사: 전부 병렬
       Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
-      // 국내 12개사: KIS 초당 제한 고려해 4개사씩 배치 병렬 (현재가+일봉 동시)
-      mapWithConcurrency(DOMESTIC_COMPANIES, 4, async (c) => {
-        const [price, history] = await Promise.all([
-          getDomesticPrice(c.code),
-          getDomesticDailyHistory(c.code),
-        ]);
-        return { price, history };
-      }),
+      // 국내 12개사: KIS 초당 제한(EGW00201) 방지 위해 2개사씩 배치 + 배치 간 250ms 지연.
+      // null 실패 시 1회 재시도. (페이지는 캐시되므로 재생성 속도보다 안정성 우선)
+      mapWithConcurrency(
+        DOMESTIC_COMPANIES,
+        2,
+        async (c) => {
+          const [price, history] = await Promise.all([
+            withRetry(() => getDomesticPrice(c.code)),
+            withRetry(() => getDomesticDailyHistory(c.code)),
+          ]);
+          return { price, history };
+        },
+        250
+      ),
       Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
       Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
     ]);

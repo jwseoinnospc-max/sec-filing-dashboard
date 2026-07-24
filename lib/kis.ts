@@ -2,6 +2,14 @@
 // Docs: https://apiportal.koreainvestment.com
 const KIS_BASE = "https://openapi.koreainvestment.com:9443";
 
+const kisSleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// KIS "초당 거래건수를 초과하였습니다" 응답 (rt_cd:"1", msg_cd:"EGW00201")
+function isRateLimited(data: unknown): boolean {
+  const msg = (data as { msg_cd?: string; msg1?: string })?.msg_cd ?? "";
+  const txt = (data as { msg1?: string })?.msg1 ?? "";
+  return /EGW00201/.test(msg) || /초당\s*거래건수/.test(txt);
+}
+
 type TokenCache = { accessToken: string; expiresAt: number };
 let tokenCache: TokenCache | null = null;
 // Dedupe concurrent token requests within this instance: KIS rate-limits token issuance to
@@ -193,7 +201,7 @@ export type KisDomesticPrice = {
   bps: number | null;
 };
 
-async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promise<KisDomesticPrice | null> {
+async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAttempt = 0): Promise<KisDomesticPrice | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -201,8 +209,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
 
   try {
     const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
-    // 재시도(토큰 갱신) 시엔 캐시 버스트로 새 응답을 받도록 함
-    if (forceRefresh) query.set("_cb", String(Date.now()));
+    // 토큰 갱신·rate-limit 재시도 시엔 캐시 버스트로 새 응답을 받도록 함
+    if (forceRefresh || rateAttempt > 0) query.set("_cb", String(Date.now()));
     const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-price?${query.toString()}`, {
       headers: {
         authorization: `Bearer ${token}`,
@@ -222,9 +230,14 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
     }
 
     const data = await res.json();
-    // EGW001xx / EGW002xx = token invalid/expired — retry with a fresh token.
-    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
-      return fetchDomesticPriceOnce(code, true);
+    // 초당 거래건수 초과 → 토큰은 그대로 두고 잠시 후 재시도 (토큰 재발급은 1분당 1회라 낭비 금지)
+    if (data?.rt_cd !== "0" && isRateLimited(data) && rateAttempt < 3) {
+      await kisSleep(400 * (rateAttempt + 1));
+      return fetchDomesticPriceOnce(code, forceRefresh, rateAttempt + 1);
+    }
+    // EGW001xx = token invalid/expired — retry with a fresh token.
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW001/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticPriceOnce(code, true, rateAttempt);
     }
 
     const output = data?.output;
@@ -262,7 +275,7 @@ function formatDate(d: Date) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false): Promise<KisDailyBar[] | null> {
+async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0): Promise<KisDailyBar[] | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -281,7 +294,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
       FID_PERIOD_DIV_CODE: "D",
       FID_ORG_ADJ_PRC: "0"
     });
-    if (forceRefresh) query.set("_cb", String(Date.now()));
+    if (forceRefresh || rateAttempt > 0) query.set("_cb", String(Date.now()));
     const res = await fetch(
       `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?${query.toString()}`,
       {
@@ -303,8 +316,14 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
     }
 
     const data = await res.json();
-    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
-      return fetchDomesticDailyHistoryOnce(code, true);
+    // 초당 거래건수 초과 → 토큰 유지, 잠시 후 재시도
+    if (data?.rt_cd !== "0" && isRateLimited(data) && rateAttempt < 3) {
+      await kisSleep(400 * (rateAttempt + 1));
+      return fetchDomesticDailyHistoryOnce(code, forceRefresh, rateAttempt + 1);
+    }
+    // EGW001xx = token invalid/expired — retry with a fresh token.
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW001/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticDailyHistoryOnce(code, true, rateAttempt);
     }
 
     const rows = data?.output2;
