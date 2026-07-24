@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "unsupported protocol" }, { status: 400 });
   }
 
-  const empty = { image: null as string | null, description: null as string | null };
+  const empty = { image: null as string | null, description: null as string | null, source: null as string | null };
 
   // Google News RSS 링크는 리다이렉트 스텁이라 og 태그가 없음 → 실제 기사 URL로 먼저 해석
   if (target.hostname.endsWith("news.google.com") && target.pathname.includes("/articles/")) {
@@ -68,6 +68,12 @@ export async function GET(req: NextRequest) {
     let image = pick(["og:image", "og:image:url", "twitter:image", "twitter:image:src"]);
     const description = cleanText(pick(["og:description", "twitter:description", "description"]));
 
+    // 원문 언론사: og:site_name 우선, 없으면 최종 리다이렉트된 도메인(포털이 아닌 실제 기사 출처)
+    let finalHost = target.hostname;
+    try { finalHost = new URL(res.url).hostname; } catch { /* keep */ }
+    const source = cleanText(pick(["og:site_name", "twitter:site", "application-name"]))
+      || prettyHost(finalHost);
+
     // 상대경로 이미지 → 절대경로
     if (image && !/^https?:\/\//i.test(image)) {
       try {
@@ -77,7 +83,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ image, description }, { headers: cacheHeaders() });
+    return NextResponse.json({ image, description, source }, { headers: cacheHeaders() });
   } catch {
     return NextResponse.json(empty, { headers: cacheHeaders() });
   }
@@ -137,6 +143,42 @@ async function resolveGoogleNews(articleUrl: string): Promise<string | null> {
 
 const BROWSER_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+
+// 도메인 → 보기 좋은 출처명 (www./m. 제거, 알려진 매체는 한글명)
+function prettyHost(host: string): string {
+  const h = host.replace(/^(www|m|amp|news)\./, "");
+  const KNOWN: Record<string, string> = {
+    "yna.co.kr": "연합뉴스",
+    "yonhapnews.co.kr": "연합뉴스",
+    "khan.co.kr": "경향신문",
+    "chosun.com": "조선일보",
+    "joongang.co.kr": "중앙일보",
+    "donga.com": "동아일보",
+    "hani.co.kr": "한겨레",
+    "mk.co.kr": "매일경제",
+    "hankyung.com": "한국경제",
+    "sedaily.com": "서울경제",
+    "edaily.co.kr": "이데일리",
+    "mt.co.kr": "머니투데이",
+    "zdnet.co.kr": "지디넷코리아",
+    "etnews.com": "전자신문",
+    "dt.co.kr": "디지털타임스",
+    "newsis.com": "뉴시스",
+    "news1.kr": "뉴스1",
+    "kari.re.kr": "한국항공우주연구원",
+    "spacenews.com": "SpaceNews",
+    "space.com": "Space.com",
+    "spaceflightnow.com": "Spaceflight Now",
+    "nasaspaceflight.com": "NASASpaceflight",
+    "reuters.com": "Reuters",
+    "bloomberg.com": "Bloomberg",
+    "cnbc.com": "CNBC",
+    "theverge.com": "The Verge",
+    "techcrunch.com": "TechCrunch",
+    "arstechnica.com": "Ars Technica",
+  };
+  return KNOWN[h] || h;
+}
 
 // 응답 바이트를 올바른 charset으로 디코딩 (Content-Type 헤더 → <meta charset> → UTF-8 순)
 function decodeHtml(buf: ArrayBuffer, contentType: string | null): string {

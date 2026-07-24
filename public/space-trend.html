@@ -41,8 +41,13 @@ a{color:inherit;text-decoration:none;}
 .nh-row-label::after{content:'';flex:1;height:1px;background:var(--border);}
 .nh-row-label .nh-flag{font-size:15px;}
 .news-hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-.nhc{aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;}
+.nhc{--glow-x:50%;--glow-y:50%;--glow-intensity:0;--glow-radius:220px;--bento-rgb:96,165,250;position:relative;aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;transform-style:preserve-3d;}
 .nhc:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+/* MagicBento: 커서 근접 시 빛나는 테두리 글로우 */
+.nhc::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2px;background:radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),rgba(var(--bento-rgb),calc(var(--glow-intensity)*0.9)) 0%,rgba(var(--bento-rgb),calc(var(--glow-intensity)*0.35)) 35%,transparent 65%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none;opacity:var(--glow-intensity);transition:opacity .25s ease;z-index:6;}
+.nhc .particle{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(var(--bento-rgb),1);box-shadow:0 0 6px rgba(var(--bento-rgb),0.7);pointer-events:none;z-index:7;}
+/* 커서를 따라다니는 글로벌 스포트라이트 */
+.bento-spotlight{position:fixed;width:700px;height:700px;border-radius:50%;pointer-events:none;z-index:3;opacity:0;transform:translate(-50%,-50%);mix-blend-mode:screen;background:radial-gradient(circle,rgba(96,165,250,0.12) 0%,rgba(96,165,250,0.06) 18%,rgba(96,165,250,0.03) 34%,transparent 62%);}
 .nhc-img{position:relative;width:100%;height:50%;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#1e3a5f,#0f172a);}
 .nhc-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .nhc-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;opacity:0.9;}
@@ -746,10 +751,13 @@ function heroCardHtml(n,id){
     '<div class="nhc-body">'+
       '<div class="nhc-title" id="nhcTitle'+id+'">'+s.h+'</div>'+
       '<div class="nhc-desc" id="nhcDesc'+id+'">'+(s.d||'')+'</div>'+
-      '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src">'+src+'</span></div>'+
+      '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src" id="nhcSrc'+id+'">'+src+'</span></div>'+
     '</div>'+
   '</div>';
 }
+// 원문이 아닌 포털·집계 사이트 (여기 해당하면 og로 해석된 원문 출처로 교체)
+var PORTAL_SRC=['네이트','nate','다음','daum','줌','zum','google news','news.google','msn','네이버','naver'];
+function isPortalSrc(s){var t=(s||'').toLowerCase();return !s||PORTAL_SRC.some(function(p){return t.indexOf(p)>=0;});}
 function heroHydrate(n,id){
   var s0=heroSplit(n.title);
   translateEl(document.getElementById('nhcTitle'+id),s0.h);
@@ -762,6 +770,11 @@ function heroHydrate(n,id){
     var d=document.getElementById('nhcDesc'+id),s=heroSplit(n.title);
     var descText=(o&&o.description&&o.description.indexOf('�')<0&&(!s.d||s.d.length<12))?o.description:s.d;
     if(d&&descText)translateEl(d,descText);
+    // 포털·집계 사이트면 og로 해석된 원문 출처로 교체
+    if(o&&o.source&&isPortalSrc(n.source)){
+      var srcEl=document.getElementById('nhcSrc'+id);
+      if(srcEl)srcEl.textContent=o.source;
+    }
   }).catch(function(){});
 }
 function renderNewsHero(){
@@ -779,6 +792,83 @@ function renderNewsHero(){
   el.innerHTML=rowHtml('글로벌','🌐',globalList,'g')+rowHtml('국내','🇰🇷',domesticList,'d');
   globalList.forEach(function(n,i){heroHydrate(n,'g'+i);});
   domesticList.forEach(function(n,i){heroHydrate(n,'d'+i);});
+  initBentoCards();
+}
+
+/* ===== MagicBento 카드 효과 (스포트라이트·글로우·파티클·마그네티즘·클릭 리플) ===== */
+var _bentoSpotlight=null,_bentoMoveBound=false;
+function initBentoCards(){
+  if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)return; // 모바일 제외
+  var section=document.getElementById('newsHero');if(!section)return;
+  var G=window.gsap;
+  if(!_bentoSpotlight){var s=document.createElement('div');s.className='bento-spotlight';document.body.appendChild(s);_bentoSpotlight=s;}
+  // 글로벌 mousemove: 카드 근접 글로우 + 스포트라이트 (1회만 바인딩)
+  if(!_bentoMoveBound){
+    _bentoMoveBound=true;
+    var radius=260,proximity=radius*0.5,fade=radius*0.75;
+    document.addEventListener('mousemove',function(e){
+      var cards=section.querySelectorAll('.nhc');if(!cards.length)return;
+      var rect=section.getBoundingClientRect();
+      var inside=e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom;
+      if(!inside){if(G)G.to(_bentoSpotlight,{opacity:0,duration:0.3});cards.forEach(function(c){c.style.setProperty('--glow-intensity','0');});return;}
+      var minD=Infinity;
+      cards.forEach(function(card){
+        var r=card.getBoundingClientRect();
+        var cx=r.left+r.width/2,cy=r.top+r.height/2;
+        var d=Math.max(0,Math.hypot(e.clientX-cx,e.clientY-cy)-Math.max(r.width,r.height)/2);
+        minD=Math.min(minD,d);
+        var gi=d<=proximity?1:(d<=fade?(fade-d)/(fade-proximity):0);
+        card.style.setProperty('--glow-x',(((e.clientX-r.left)/r.width)*100)+'%');
+        card.style.setProperty('--glow-y',(((e.clientY-r.top)/r.height)*100)+'%');
+        card.style.setProperty('--glow-intensity',String(gi));
+        card.style.setProperty('--glow-radius',radius+'px');
+      });
+      if(G){
+        G.to(_bentoSpotlight,{left:e.clientX,top:e.clientY,duration:0.1,ease:'power2.out'});
+        var op=minD<=proximity?0.8:(minD<=fade?((fade-minD)/(fade-proximity))*0.8:0);
+        G.to(_bentoSpotlight,{opacity:op,duration:op>0?0.2:0.5,ease:'power2.out'});
+      }
+    });
+    document.addEventListener('mouseleave',function(){
+      if(_bentoSpotlight&&G)G.to(_bentoSpotlight,{opacity:0,duration:0.3});
+      section.querySelectorAll('.nhc').forEach(function(c){c.style.setProperty('--glow-intensity','0');});
+    });
+  }
+  // 카드별: 파티클(호버) + 마그네티즘 + 클릭 리플 (렌더 후 새 카드에만 부착)
+  section.querySelectorAll('.nhc').forEach(function(card){
+    if(card._bentoInit)return;card._bentoInit=true;
+    var particles=[],timeouts=[],hovered=false;
+    card.addEventListener('mouseenter',function(){
+      hovered=true;if(!G)return;
+      for(var i=0;i<8;i++){(function(k){var t=setTimeout(function(){
+        if(!hovered)return;var r=card.getBoundingClientRect();
+        var p=document.createElement('div');p.className='particle';
+        p.style.left=(Math.random()*r.width)+'px';p.style.top=(Math.random()*r.height)+'px';
+        card.appendChild(p);particles.push(p);
+        G.fromTo(p,{scale:0,opacity:0},{scale:1,opacity:1,duration:0.3,ease:'back.out(1.7)'});
+        G.to(p,{x:(Math.random()-0.5)*60,y:(Math.random()-0.5)*60,rotation:Math.random()*360,duration:2+Math.random()*2,ease:'none',repeat:-1,yoyo:true});
+      },k*90);timeouts.push(t);})(i);}
+    });
+    card.addEventListener('mousemove',function(e){
+      if(!G)return;var r=card.getBoundingClientRect();
+      var mx=(e.clientX-r.left-r.width/2)*0.05,my=(e.clientY-r.top-r.height/2)*0.05;
+      G.to(card,{x:mx,y:my-4,duration:0.3,ease:'power2.out'}); // -4: 호버 리프트 유지
+    });
+    card.addEventListener('mouseleave',function(){
+      hovered=false;timeouts.forEach(clearTimeout);timeouts=[];
+      if(G){G.to(card,{x:0,y:0,duration:0.3,ease:'power2.out'});particles.forEach(function(p){G.to(p,{scale:0,opacity:0,duration:0.3,onComplete:function(){p.remove();}});});}
+      else particles.forEach(function(p){p.remove();});
+      particles=[];
+    });
+    card.addEventListener('click',function(e){
+      if(!G)return;var r=card.getBoundingClientRect();var x=e.clientX-r.left,y=e.clientY-r.top;
+      var maxD=Math.max(Math.hypot(x,y),Math.hypot(x-r.width,y),Math.hypot(x,y-r.height),Math.hypot(x-r.width,y-r.height));
+      var rip=document.createElement('div');
+      rip.style.cssText='position:absolute;width:'+(maxD*2)+'px;height:'+(maxD*2)+'px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,0.4) 0%,rgba(96,165,250,0.2) 30%,transparent 70%);left:'+(x-maxD)+'px;top:'+(y-maxD)+'px;pointer-events:none;z-index:8;';
+      card.appendChild(rip);
+      G.fromTo(rip,{scale:0,opacity:1},{scale:1,opacity:0,duration:0.8,ease:'power2.out',onComplete:function(){rip.remove();}});
+    });
+  });
 }
 
 /* ===== 번역 ===== */
