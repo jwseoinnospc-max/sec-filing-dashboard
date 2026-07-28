@@ -168,7 +168,7 @@ const loadMarketData = unstable_cache(
     ]);
     return { nasdaqResults, domesticData, nasdaqNews, domesticNews };
   },
-  ["space-market-data-v1"],
+  ["space-market-data-v2"],
   { revalidate: 900 }
 );
 
