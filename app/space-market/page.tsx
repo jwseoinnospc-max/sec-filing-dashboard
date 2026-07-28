@@ -152,7 +152,18 @@ const loadMarketData = unstable_cache(
         250
       ),
       Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
-      Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
+      // 국내: 회사명 + 우주/방산 컨텍스트로 검색해 무관 기사(예: '컨텍' → 'AI 컨텍스터') 배제.
+      // 제목에 회사명이 포함된 기사만 유지.
+      Promise.all(
+        DOMESTIC_COMPANIES.map((c) =>
+          getCompanyNews(
+            `${c.name} (우주 OR 위성 OR 발사체 OR 항공우주 OR 우주항공 OR 방산 OR 지상국 OR 로켓)`,
+            "ko",
+            3,
+            [c.name]
+          )
+        )
+      ),
     ]);
     return { nasdaqResults, domesticData, nasdaqNews, domesticNews };
   },

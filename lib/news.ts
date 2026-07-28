@@ -128,9 +128,17 @@ export async function getCompanyNews(query: string, locale: "ko" | "en" = "ko", 
       }
     }
 
-    // Sort newest first, then take requested count
+    // Sort newest first
     candidates.sort((a, b) => b.ts - a.ts);
-    items.push(...candidates.slice(0, count).map((c) => c.item));
+    // Dedupe by normalized title (같은 기사가 여러 매체로 신디케이션되는 경우 제거)
+    const seen = new Set<string>();
+    const deduped = candidates.filter((c) => {
+      const key = c.item.title.replace(/\s+/g, "").slice(0, 40);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    items.push(...deduped.slice(0, count).map((c) => c.item));
 
     if (locale === "en") {
       for (const item of items) {
