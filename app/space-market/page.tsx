@@ -120,12 +120,13 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
-// KIS 조회가 null이면 잠시 후 1회 재시도 (초당 제한 등 일시적 실패 대비)
-async function withRetry<R>(fn: () => Promise<R | null>, delayMs = 400): Promise<R | null> {
-  const first = await fn();
+// KIS 조회가 null이면 잠시 후 재시도 (초당 제한 등 일시적 실패 대비).
+// 재시도는 bust=true로 호출해 캐시된 에러 응답을 우회하고 새 데이터를 받는다.
+async function withRetry<R>(fn: (bust: boolean) => Promise<R | null>, delayMs = 400): Promise<R | null> {
+  const first = await fn(false);
   if (first != null) return first;
   await sleep(delayMs);
-  return fn();
+  return fn(true);
 }
 
 // 시장 데이터 로딩 전체를 900초 캐시.
@@ -137,19 +138,19 @@ const loadMarketData = unstable_cache(
     const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
       // 해외 4개사: 전부 병렬
       Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
-      // 국내 12개사: KIS 초당 제한(EGW00201) 방지 위해 2개사씩 배치 + 배치 간 250ms 지연.
-      // null 실패 시 1회 재시도. (페이지는 캐시되므로 재생성 속도보다 안정성 우선)
+      // 국내 12개사: KIS 초당 제한(EGW00201) 방지 위해 1개사씩 순차 처리(현재가+일봉만 동시).
+      // 배치 간 120ms 지연 + null 실패 시 재시도. (페이지는 캐시되므로 재생성 속도보다 안정성 우선)
       mapWithConcurrency(
         DOMESTIC_COMPANIES,
-        2,
+        1,
         async (c) => {
           const [price, history] = await Promise.all([
-            withRetry(() => getDomesticPrice(c.code)),
-            withRetry(() => getDomesticDailyHistory(c.code)),
+            withRetry((bust) => getDomesticPrice(c.code, bust)),
+            withRetry((bust) => getDomesticDailyHistory(c.code, bust)),
           ]);
           return { price, history };
         },
-        250
+        120
       ),
       Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
       // 국내: 회사명 + 우주/방산 컨텍스트로 검색해 무관 기사(예: '컨텍' → 'AI 컨텍스터') 배제.

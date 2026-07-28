@@ -201,7 +201,7 @@ export type KisDomesticPrice = {
   bps: number | null;
 };
 
-async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAttempt = 0): Promise<KisDomesticPrice | null> {
+async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false): Promise<KisDomesticPrice | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -209,8 +209,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAt
 
   try {
     const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
-    // 토큰 갱신·rate-limit 재시도 시엔 캐시 버스트로 새 응답을 받도록 함
-    if (forceRefresh || rateAttempt > 0) query.set("_cb", String(Date.now()));
+    // 토큰 갱신·rate-limit·명시적 재시도(bust) 시엔 캐시 버스트로 새 응답을 받도록 함
+    if (forceRefresh || rateAttempt > 0 || bust) query.set("_cb", String(Date.now()));
     const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-price?${query.toString()}`, {
       headers: {
         authorization: `Bearer ${token}`,
@@ -265,8 +265,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAt
 }
 
 // FID_INPUT_ISCD: 6-digit KRX stock code (e.g. "012450" for Hanwha Aerospace)
-export async function getDomesticPrice(code: string): Promise<KisDomesticPrice | null> {
-  return fetchDomesticPriceOnce(code);
+export async function getDomesticPrice(code: string, bust = false): Promise<KisDomesticPrice | null> {
+  return fetchDomesticPriceOnce(code, false, 0, bust);
 }
 
 export type KisDailyBar = { date: string; close: number };
@@ -275,7 +275,7 @@ function formatDate(d: Date) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0): Promise<KisDailyBar[] | null> {
+async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false): Promise<KisDailyBar[] | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -294,7 +294,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false,
       FID_PERIOD_DIV_CODE: "D",
       FID_ORG_ADJ_PRC: "0"
     });
-    if (forceRefresh || rateAttempt > 0) query.set("_cb", String(Date.now()));
+    if (forceRefresh || rateAttempt > 0 || bust) query.set("_cb", String(Date.now()));
     const res = await fetch(
       `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?${query.toString()}`,
       {
@@ -339,8 +339,8 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false,
 }
 
 // Daily close-price history (~last 100 trading days, KIS's per-call cap) for charting.
-export async function getDomesticDailyHistory(code: string): Promise<KisDailyBar[] | null> {
-  return fetchDomesticDailyHistoryOnce(code);
+export async function getDomesticDailyHistory(code: string, bust = false): Promise<KisDailyBar[] | null> {
+  return fetchDomesticDailyHistoryOnce(code, false, 0, bust);
 }
 
 export type KisMinuteBar = { time: string; close: number }; // time: "HHMM"
