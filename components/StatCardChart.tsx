@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const PREV_COLOR = "#94a3b8"; // 전년(2025) 막대·툴팁 색 — 어두운 배경에서도 읽히는 밝은 회색
 
 /* 카드에 마우스를 올리거나 클릭하면 작은 팝오버 카드가 떠서
    전년 동기 대비를 막대로 비교한다 (Rocket Lab RevenueCard 방식).
@@ -80,15 +82,14 @@ export default function StatCardChart({
               <YAxis hide />
               <Tooltip
                 formatter={(v, name) => [fmt(Number(v)), name]}
-                contentStyle={{ background: "#111827", border: "1px solid #334155", fontSize: 11, borderRadius: 8 }}
-                labelStyle={{ color: "#e5e7eb" }}
+                contentStyle={{ background: "#0b1220", border: "1px solid #334155", fontSize: 11, borderRadius: 8 }}
+                labelStyle={{ color: "#e5e7eb", fontWeight: 700 }}
+                itemStyle={{ fontWeight: 600 }}
                 cursor={{ fill: "rgba(255,255,255,0.04)" }}
               />
               <Legend wrapperStyle={{ fontSize: 10 }} iconType="circle" iconSize={8} />
-              <Bar dataKey={prevLabel} fill="#475569" radius={[3, 3, 0, 0]} />
-              <Bar dataKey={currLabel} radius={[3, 3, 0, 0]}>
-                {data.map((_, i) => <Cell key={i} fill={color} />)}
-              </Bar>
+              <Bar dataKey={prevLabel} fill={PREV_COLOR} radius={[3, 3, 0, 0]} />
+              <Bar dataKey={currLabel} fill={color} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
           {pinned && <div className="revenue-popover-hint">클릭하면 닫힙니다</div>}
