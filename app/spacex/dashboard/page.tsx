@@ -1,16 +1,19 @@
+import Link from "next/link";
 import NavMenu from "@/components/NavMenu";
 
 /* ─── SpaceX Dashboard ────────────────────────────────────────
-   SpaceX는 비상장사라 공시 재무제표가 없으므로 공개 보도·투자
-   라운드·발사 기록을 바탕으로 작성. 재무 수치는 추정치.
+   Space Exploration Technologies Corp. (SPCX) — 2026년 6월 상장.
+   재무 수치는 2026 Q2 Form 10-Q(미감사) 기준. 그 외 운영 지표는
+   공개 보도 기반.
 ──────────────────────────────────────────────────────────────── */
 
-/* ─── Helpers ───────────────────────────────────────────────── */
+const TENQ_URL =
+  "https://s21.q4cdn.com/184289198/files/doc_financials/2026/q2/dc41a8f3-2234-40ec-95e3-3867336ae181.pdf";
+
 function StatCard({
   emoji, title, main, sub, delta, deltaColor = "#22c55e",
 }: {
-  emoji: string; title: string; main: string; sub?: string;
-  delta?: string; deltaColor?: string;
+  emoji: string; title: string; main: string; sub?: string; delta?: string; deltaColor?: string;
 }) {
   return (
     <div className="card firefly-stat-card">
@@ -34,57 +37,54 @@ function Notice({ children }: { children: React.ReactNode }) {
   return <p className="notice">{children}</p>;
 }
 
-/* ─── Revenue Donut (추정 매출 구성) ─────────────────────────── */
+/* ─── 부문별 매출 도넛 (2026 Q2, 10-Q) ─────────────────────────
+   Space $962M (12.3%) · Connectivity $4,291M (54.9%) · AI $2,561M (32.8%) */
 function RevenueDonut() {
-  // 2024E 추정: Starlink ~$7.8B, 발사 서비스 ~$4.2B, 기타 ~$1B (총 ~$13B)
-  const starlinkPct = 60;
-  const launchPct = 32;
+  const spacePct = 12.3;
+  const connPct = 54.9;
   return (
     <div className="card" style={{ display: "flex", gap: 20, alignItems: "center" }}>
       <div className="backlog-text" style={{ flex: 1 }}>
-        <h3>💵 추정 매출 구성 (2024E)</h3>
-        <div className="metric">~$13B+</div>
-        <div className="delta">Starlink 비중 최초로 발사 매출 추월</div>
+        <h3>💵 부문별 매출 (2026 Q2)</h3>
+        <div className="metric">$7.81B</div>
+        <div className="delta">+92% YoY (전년 $4.07B)</div>
         <div className="metric-sub backlog-metric-sub">
           <span className="metric-sub-rule" />
-          Starlink <strong>~$7.8B</strong> · 발사 <strong>~$4.2B</strong>
+          Starlink <strong>$4.29B</strong> · AI <strong>$2.56B</strong> · Space <strong>$0.96B</strong>
         </div>
       </div>
       <div className="backlog-donut-wrap">
         <div
           className="backlog-donut"
-          style={{ background: `conic-gradient(from 0deg, #3b82f6 0 ${starlinkPct}%, #22c55e 0 ${starlinkPct + launchPct}%, #64748b 0 100%)` }}
+          style={{ background: `conic-gradient(from 0deg, #3b82f6 0 ${spacePct}%, #22c55e 0 ${spacePct + connPct}%, #a855f7 0 100%)` }}
         >
           <div className="backlog-donut-hole" />
         </div>
         <div className="backlog-legend">
-          <span><i className="backlog-dot" style={{ background: "#3b82f6" }} />Starlink</span>
-          <span><i className="backlog-dot" style={{ background: "#22c55e" }} />Launch</span>
-          <span><i className="backlog-dot" style={{ background: "#64748b" }} />기타</span>
+          <span><i className="backlog-dot" style={{ background: "#3b82f6" }} />Space</span>
+          <span><i className="backlog-dot" style={{ background: "#22c55e" }} />Starlink</span>
+          <span><i className="backlog-dot" style={{ background: "#a855f7" }} />AI</span>
         </div>
       </div>
     </div>
   );
 }
 
-/* ─── Launch history / vehicle status ───────────────────────── */
+/* ─── 발사체·우주선 현황 ────────────────────────────────────── */
 const VEHICLES = [
-  { name: "Falcon 9", role: "주력 재사용 발사체", status: "운용 중", detail: "누적 400회+ 발사 · 부스터 재사용 20회+ · 세계 최고 발사 빈도", color: "#22c55e" },
-  { name: "Falcon Heavy", role: "대형 발사체", status: "운용 중", detail: "현존 최강 운용 로켓급 · 정지궤도·심우주 미션", color: "#22c55e" },
-  { name: "Dragon", role: "유인·화물 우주선", status: "운용 중", detail: "NASA 상업 유인(Crew) · 화물(Cargo) · 민간 우주비행", color: "#38bdf8" },
-  { name: "Starship", role: "완전 재사용 초대형 발사체", status: "시험 중", detail: "IFT 반복 시험 · 부스터 '젓가락' 회수 성공 · 화성/달 목표", color: "#f59e0b" },
+  { name: "Falcon 9", role: "주력 재사용 발사체", status: "운용 중", detail: "세계 최고 발사 빈도 · 부스터 다회 재사용", color: "#22c55e" },
+  { name: "Falcon Heavy", role: "대형 발사체", status: "운용 중", detail: "정지궤도·심우주 대형 페이로드", color: "#22c55e" },
+  { name: "Dragon", role: "유인·화물 우주선", status: "운용 중", detail: "NASA 상업 유인(Crew)·화물(Cargo)·민간 우주비행", color: "#38bdf8" },
+  { name: "Starship", role: "완전 재사용 초대형 발사체", status: "시험 중", detail: "부스터 회수 실증 · 화성/달(Artemis HLS) 목표", color: "#f59e0b" },
 ];
 
-/* ─── Key programs / contracts ──────────────────────────────── */
-const CONTRACTS = [
-  { customer: "NASA (Commercial Crew)", value: "~$3.1B", description: "Crew Dragon ISS 유인 왕복 (Crew-1 이후 정례 운용)", status: "진행 중" },
-  { customer: "NASA (Artemis HLS)", value: "~$4.0B", description: "Starship 기반 유인 달 착륙선 (Artemis III·IV)", status: "진행 중" },
-  { customer: "U.S. Space Force (NSSL)", value: "다수 수주", description: "NSSL Phase 2·3 국가안보 발사 서비스", status: "진행 중" },
-  { customer: "글로벌 위성 사업자", value: "비공개", description: "상업 위성·정부 위성 발사 서비스 (세계 점유율 최상위)", status: "진행 중" },
-  { customer: "Starshield (정부)", value: "비공개", description: "정부·국방용 위성 네트워크 (Starlink 파생)", status: "진행 중" },
+/* ─── 3개 사업 부문 ─────────────────────────────────────────── */
+const SEGMENTS = [
+  { name: "Space", desc: "재사용 로켓 발사·개발 (Falcon·Starship·Dragon)", rev: "$962M", yoy: "+29%", color: "#3b82f6" },
+  { name: "Connectivity", desc: "Starlink 광대역 (Consumer·Enterprise·Government)", rev: "$4,291M", yoy: "+66%", color: "#22c55e" },
+  { name: "AI", desc: "Grok LLM · X 플랫폼 · AI 인프라 (xAI 합병)", rev: "$2,561M", yoy: "+248%", color: "#a855f7" },
 ];
 
-/* ─── Page ──────────────────────────────────────────────────── */
 export default function SpaceXDashboardPage() {
   return (
     <main className="page spacex-page">
@@ -95,30 +95,35 @@ export default function SpaceXDashboardPage() {
           <NavMenu />
           <h1>
             SpaceX Dashboard{" "}
-            <span className="h1-accent">(공개 데이터 기준)</span>
+            <span className="h1-accent">2026 Q2 · SPCX</span>
           </h1>
           <p>
-            SpaceX의 발사 실적, 주요 프로그램, 재무·기업가치 추정치를 한 화면에서 확인합니다.
+            Space Exploration Technologies Corp. — 2026년 6월 나스닥 상장(SPCX).
             <br />
-            (비상장사 — 재무 수치는 공개 보도·투자 라운드 기반 추정치)
+            2026년 2월 xAI(X 포함) 합병으로 Space · Connectivity · AI 3개 부문 운영.
           </p>
           <p className="last-updated" style={{ fontSize: 11, color: "#64748b" }}>
-            ※ SpaceX는 SEC 공시 의무가 없는 비상장사 / 수치는 추정치이며 공식 재무제표가 아닙니다
+            ※ 재무 수치는 2026 Q2 Form 10-Q(미감사) 기준 · 운영 지표는 공개 보도 기반
           </p>
         </div>
 
         <div className="header-side">
           <div className="header-side-top">
-            <p className="data-source">Data source: 공개 보도자료 · NASA · U.S. Space Force · 투자 라운드 공시</p>
+            <p className="data-source">
+              Data source:{" "}
+              <a href={TENQ_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#60a5fa" }}>
+                SpaceX 2026 Q2 10-Q ↗
+              </a>
+            </p>
             <p className="made-by">Made by 이노스페이스 투자전략본부</p>
           </div>
 
           <div className="pill-group">
             <div className="highlight-pill">
-              기업가치 ~$350B (2024.12 텐더오퍼) — 세계 최고가 비상장 스타트업
+              2026.06 IPO — 638.9M주 × $135, 순수익 $85.7B 유입
             </div>
             <div className="highlight-pill">
-              Starship 부스터 &apos;젓가락&apos; 공중 회수 성공 — 완전 재사용 시대 개막
+              2026 Q2 매출 $7.81B (+92% YoY) — Starlink가 매출의 55%
             </div>
           </div>
         </div>
@@ -127,49 +132,79 @@ export default function SpaceXDashboardPage() {
       {/* ── KPI Grid ── */}
       <section className="grid">
         <StatCard
-          emoji="🏢" title="기업가치 (추정)"
-          main="~$350B"
-          delta="2024.12 텐더오퍼 기준"
+          emoji="💵" title="분기 매출 (2026 Q2)"
+          main="$7.81B"
+          delta="+92% YoY"
           deltaColor="#3b82f6"
-          sub="비상장 세계 1위 · 2023 $180B → 2024 $350B"
+          sub="상반기 누적 $12.51B (전년 $8.14B)"
         />
 
         <StatCard
-          emoji="💵" title="추정 연매출 (2024E)"
-          main="~$13B+"
-          delta="Starlink 성장 견인"
-          sub="Starlink ~$7.8B · 발사 ~$4.2B (추정)"
+          emoji="🛰️" title="Connectivity (Starlink)"
+          main="$4.29B"
+          delta="+66% YoY · 매출의 55%"
+          deltaColor="#22c55e"
+          sub="Consumer $2.49B · Enterprise&Gov $1.81B"
         />
 
         <StatCard
-          emoji="🚀" title="Falcon 누적 발사"
-          main="400회+"
-          delta="성공률 99%+ · 세계 최고 빈도"
-          sub="연 130회+ · 부스터 재사용 20회+"
+          emoji="🤖" title="AI (Grok·X)"
+          main="$2.56B"
+          delta="+248% YoY · 매출의 33%"
+          deltaColor="#a855f7"
+          sub="2026.02 xAI 합병으로 편입"
         />
 
         <StatCard
-          emoji="🛰️" title="Starlink"
-          main="7,000기+"
-          delta="가입자 500만+ (글로벌)"
-          deltaColor="#38bdf8"
-          sub="세계 최대 위성 콘스텔레이션"
+          emoji="🚀" title="Space (발사)"
+          main="$0.96B"
+          delta="+29% YoY"
+          deltaColor="#3b82f6"
+          sub="Launch Services $648M · 개발 $314M"
         />
 
         <RevenueDonut />
 
         <StatCard
-          emoji="🌌" title="Starship"
-          main="완전 재사용 개발"
-          delta="부스터 회수 성공 · 궤도 시험 반복"
-          deltaColor="#f59e0b"
-          sub="화성·달(Artemis HLS) · 차세대 초대형 발사체"
+          emoji="🏦" title="현금·재무"
+          main="$93.5B"
+          delta="IPO 순수익 $85.7B 유입"
+          deltaColor="#38bdf8"
+          sub="총자산 $192.8B · 자기자본 $127.2B · 순손실 $(541)M"
         />
       </section>
 
-      {/* ── Vehicle status ── */}
+      {/* ── Segments ── */}
       <section className="main" style={{ marginTop: 24 }}>
         <div className="card" style={{ maxWidth: "100%" }}>
+          <SectionTitle>3개 사업 부문</SectionTitle>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #1e293b" }}>
+                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>부문</th>
+                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>내용</th>
+                <th style={{ textAlign: "right", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>Q2 매출</th>
+                <th style={{ textAlign: "right", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>YoY</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SEGMENTS.map((s) => (
+                <tr key={s.name} style={{ borderBottom: "1px solid #0f172a" }}>
+                  <td style={{ padding: "8px 8px", fontWeight: 700, color: s.color }}>{s.name}</td>
+                  <td style={{ padding: "8px 8px", color: "#94a3b8", fontSize: 12 }}>{s.desc}</td>
+                  <td style={{ padding: "8px 8px", textAlign: "right", fontWeight: 700, color: "#e5e7eb", fontVariantNumeric: "tabular-nums" }}>{s.rev}</td>
+                  <td style={{ padding: "8px 8px", textAlign: "right", color: "#22c55e", fontWeight: 600 }}>{s.yoy}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p style={{ marginTop: 10, fontSize: 12, color: "#64748b" }}>
+            상세 재무는 <Link href="/spacex/financial-statement" style={{ color: "#60a5fa" }}>Finance 페이지</Link>에서 확인하세요.
+          </p>
+        </div>
+
+        {/* ── Vehicle status ── */}
+        <div className="card" style={{ marginTop: 16 }}>
           <SectionTitle>발사체·우주선 현황</SectionTitle>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
@@ -188,40 +223,9 @@ export default function SpaceXDashboardPage() {
                   <td style={{ padding: "8px 8px", color: "#94a3b8", fontSize: 12 }}>{v.detail}</td>
                   <td style={{ padding: "8px 8px", textAlign: "center" }}>
                     <span style={{
-                      background: v.color + "22", color: v.color,
-                      border: `1px solid ${v.color}44`,
+                      background: v.color + "22", color: v.color, border: `1px solid ${v.color}44`,
                       borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
                     }}>{v.status}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ── Programs / contracts ── */}
-        <div className="card" style={{ marginTop: 16 }}>
-          <SectionTitle>주요 프로그램·계약</SectionTitle>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #1e293b" }}>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>고객·프로그램</th>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>규모</th>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>내용</th>
-                <th style={{ textAlign: "center", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CONTRACTS.map((c) => (
-                <tr key={c.customer} style={{ borderBottom: "1px solid #0f172a" }}>
-                  <td style={{ padding: "8px 8px", fontWeight: 600, color: "#3b82f6" }}>{c.customer}</td>
-                  <td style={{ padding: "8px 8px", fontWeight: 700, color: "#e5e7eb" }}>{c.value}</td>
-                  <td style={{ padding: "8px 8px", color: "#94a3b8", fontSize: 12 }}>{c.description}</td>
-                  <td style={{ padding: "8px 8px", textAlign: "center" }}>
-                    <span style={{
-                      background: "#f59e0b22", color: "#f59e0b", border: "1px solid #f59e0b44",
-                      borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
-                    }}>{c.status}</span>
                   </td>
                 </tr>
               ))}
@@ -234,40 +238,40 @@ export default function SpaceXDashboardPage() {
           <SectionTitle>SpaceX 분석 코멘트</SectionTitle>
 
           <Notice>
-            🛰️ <strong>Starlink가 매출 성장의 핵심</strong> — 2024년 Starlink 매출이 발사 서비스를 처음으로 추월.
-            글로벌 가입자 500만+ 돌파, 정부·항공·해양·군용(Starshield)으로 시장 확장 중.
+            📈 <strong>IPO로 실탄 확보 (2026.06)</strong> — 주당 $135에 638.9M주 발행, 순수익 $85.7B.
+            현금성자산 $93.5B로 대규모 설비투자(상반기 CapEx $28.5B)와 Starship·Starlink 확장을 뒷받침.
           </Notice>
 
           <Notice>
-            🚀 <strong>발사 시장 사실상 독점</strong> — Falcon 9의 압도적 재사용성·발사 빈도로 세계 궤도 발사의 다수를
-            점유. 저비용·고신뢰 구조로 상업·정부 수요를 동시에 흡수.
+            🛰️ <strong>Starlink가 매출 엔진</strong> — Connectivity 부문 $4.29B(+66%)로 전체 매출의 55%.
+            Consumer·Enterprise·Government 전반에서 성장, Starlink Mobile 포함.
           </Notice>
 
           <Notice>
-            🌌 <strong>Starship — 판을 바꾸는 게임체인저</strong> — 완전 재사용 초대형 발사체.
-            부스터 &apos;젓가락&apos; 회수 성공으로 재사용 실증. 성공 시 발사 단가를 수십 배 낮춰 위성·심우주 경제 재편.
+            🤖 <strong>AI 부문 급부상 (xAI 합병)</strong> — 2026.02 xAI(X 포함) 합병으로 Grok LLM·X 플랫폼·AI
+            인프라가 편입, AI 매출 $2.56B(+248%). 발사(Space) 매출을 크게 상회하는 2위 부문으로.
           </Notice>
 
           <Notice>
-            🌕 <strong>NASA Artemis 핵심 파트너</strong> — Starship HLS로 유인 달 착륙선 공급(~$4B).
-            Commercial Crew(Dragon)로 ISS 유인 왕복도 정례 운용 중.
+            🚀 <strong>발사(Space)는 캐시카우 겸 인프라</strong> — Launch Services $648M 등 Space $0.96B(+29%).
+            내부 Starlink 배치 물량은 매출로 인식하지 않아, 실제 발사 처리량은 매출 증가율을 상회.
           </Notice>
 
           <Notice>
-            🏢 <strong>기업가치 급등</strong> — 2023년 $180B → 2024년 12월 텐더오퍼 ~$350B로 비상장 세계 1위.
-            Starlink 분사 IPO 가능성이 지속 거론됨.
+            📉 <strong>적자 축소·영업활동 흑자 전환</strong> — 순손실 $(541)M로 전년 $(1,008)M 대비 개선,
+            영업활동 현금흐름은 $3.47B 흑자. 단, R&D·설비투자 확대로 순이익은 아직 적자.
           </Notice>
 
           <Notice>
-            ⚡ <strong>경쟁 포지션</strong> — 발사(Falcon)·위성통신(Starlink)·유인우주(Dragon)·심우주(Starship)를
-            수직계열화한 유일 기업. Rocket Lab·Blue Origin 등과 경쟁하나 규모·재사용성에서 압도적 우위.
+            ⚡ <strong>수직계열화 경쟁우위</strong> — 발사(Falcon·Starship)·위성통신(Starlink)·AI(Grok·X)를
+            한 회사에 결합한 유일 기업. Rocket Lab·Firefly 등과 발사 시장에서 경쟁하나 규모·재사용성에서 압도적.
           </Notice>
         </div>
       </section>
 
       <div className="footer" style={{ marginTop: 32, fontSize: 11, color: "#475569" }}>
-        Data source: 공개 보도자료 (Bloomberg, Reuters, SpaceNews, NASASpaceflight) · NASA · U.S. Space Force
-        · SpaceX는 비상장사로 재무 수치는 추정치이며 공식 재무제표가 아닙니다.
+        재무 출처: <a href={TENQ_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#475569", textDecoration: "underline" }}>SpaceX 2026 Q2 Form 10-Q (미감사)</a>
+        {" "}· 운영 지표는 공개 보도(Reuters, SpaceNews, NASASpaceflight) 기반 · 투자 판단의 근거가 아닙니다.
       </div>
     </main>
   );

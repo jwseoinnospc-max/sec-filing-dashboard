@@ -33,6 +33,7 @@ const NAV_ITEMS: NavItem[] = [
     type: "group", label: "SpaceX",              basePath: "/spacex",
     children: [
       { label: "Dashboard",           href: "/spacex/dashboard" },
+      { label: "Finance",             href: "/spacex/financial-statement" },
       { label: "Funding & Valuation", href: "/spacex/funding" },
     ],
   },

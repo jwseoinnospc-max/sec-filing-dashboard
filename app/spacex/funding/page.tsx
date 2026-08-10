@@ -52,9 +52,9 @@ export default function SpaceXFundingPage() {
             <span className="h1-accent">(공개 데이터 기준)</span>
           </h1>
           <p>
-            SpaceX의 기업가치 추이와 주요 투자 라운드를 확인합니다.
+            SpaceX의 상장(2026.06) 이전 기업가치 추이와 주요 투자 라운드를 확인합니다.
             <br />
-            (비상장사 — 공개 보도된 텐더오퍼·펀딩 라운드 기반 추정치)
+            (상장 전 비상장 시기 — 공개 보도된 텐더오퍼·펀딩 라운드 기반 추정치)
           </p>
           <p style={{ fontSize: 11, marginTop: 4, color: "#64748b" }}>
             ※ SpaceX는 SEC 공시 의무가 없어 정확한 라운드 규모는 비공개 / 수치는 보도 기반 추정치
@@ -95,8 +95,9 @@ export default function SpaceXFundingPage() {
           })}
         </div>
         <p className="notice" style={{ marginTop: 14 }}>
-          📈 <strong>6년 만에 12배</strong> — 2018년 ~$28B에서 2024년 12월 ~$350B로. Starlink 매출 성장과
-          Starship 진척이 기업가치 재평가를 견인.
+          📈 <strong>6년 만에 12배 → IPO</strong> — 2018년 ~$28B에서 2024년 12월 ~$350B로 성장 후,
+          <strong> 2026년 6월 나스닥 상장(SPCX)</strong>. 이제 실제 재무는{" "}
+          <Link href="/spacex/financial-statement" style={{ color: "#60a5fa" }}>Finance 페이지</Link>에서 확인 가능합니다.
         </p>
       </div>
 
