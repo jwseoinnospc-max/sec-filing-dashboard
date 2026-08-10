@@ -29,6 +29,12 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Presentation", href: "/firefly/presentation" },
     ],
   },
+  {
+    type: "group", label: "SpaceX",              basePath: "/spacex",
+    children: [
+      { label: "Dashboard",    href: "/spacex/dashboard" },
+    ],
+  },
 ];
 
 // smooth falloff curve
