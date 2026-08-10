@@ -56,14 +56,6 @@ function RevenueDonut() {
   );
 }
 
-/* ─── 발사체·우주선 현황 ────────────────────────────────────── */
-const VEHICLES = [
-  { name: "Falcon 9", role: "주력 재사용 발사체", status: "운용 중", detail: "세계 최고 발사 빈도 · 부스터 다회 재사용", color: "#22c55e" },
-  { name: "Falcon Heavy", role: "대형 발사체", status: "운용 중", detail: "정지궤도·심우주 대형 페이로드", color: "#22c55e" },
-  { name: "Dragon", role: "유인·화물 우주선", status: "운용 중", detail: "NASA 상업 유인(Crew)·화물(Cargo)·민간 우주비행", color: "#38bdf8" },
-  { name: "Starship", role: "완전 재사용 초대형 발사체", status: "시험 중", detail: "부스터 회수 실증 · 화성/달(Artemis HLS) 목표", color: "#f59e0b" },
-];
-
 /* ─── 3개 사업 부문 ─────────────────────────────────────────── */
 const SEGMENTS = [
   { name: "Space", desc: "재사용 로켓 발사·개발 (Falcon·Starship·Dragon)", rev: "$962M", yoy: "+29%", color: "#3b82f6" },
@@ -199,36 +191,6 @@ export default function SpaceXDashboardPage() {
           <p style={{ marginTop: 10, fontSize: 12, color: "#64748b" }}>
             상세 재무는 <Link href="/spacex/financial-statement" style={{ color: "#60a5fa" }}>Finance 페이지</Link>에서 확인하세요.
           </p>
-        </div>
-
-        {/* ── Vehicle status ── */}
-        <div className="card" style={{ marginTop: 16 }}>
-          <SectionTitle>발사체·우주선 현황</SectionTitle>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #1e293b" }}>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>기체</th>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>역할</th>
-                <th style={{ textAlign: "left", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>세부</th>
-                <th style={{ textAlign: "center", padding: "6px 8px", color: "#64748b", fontWeight: 500 }}>상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {VEHICLES.map((v) => (
-                <tr key={v.name} style={{ borderBottom: "1px solid #0f172a" }}>
-                  <td style={{ padding: "8px 8px", fontWeight: 700, color: "#3b82f6" }}>{v.name}</td>
-                  <td style={{ padding: "8px 8px", color: "#e5e7eb" }}>{v.role}</td>
-                  <td style={{ padding: "8px 8px", color: "#94a3b8", fontSize: 12 }}>{v.detail}</td>
-                  <td style={{ padding: "8px 8px", textAlign: "center" }}>
-                    <span style={{
-                      background: v.color + "22", color: v.color, border: `1px solid ${v.color}44`,
-                      borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap",
-                    }}>{v.status}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
         {/* ── Analysis ── */}
