@@ -113,11 +113,12 @@ export default function SpaceXDashboardPage() {
           emoji="💵" title="분기 매출 (2026 Q2)"
           main="$7.81B" delta="+92% YoY" deltaColor="#3b82f6"
           sub="상반기 누적 $12.51B (전년 $8.14B)"
-          color="#3b82f6" prev={4071} curr={7814}
-          breakdown={[
-            { label: "Space (발사)", prev: 746, curr: 962 },
-            { label: "Connectivity (Starlink)", prev: 2588, curr: 4291 },
-            { label: "AI (Grok·X)", prev: 737, curr: 2561 },
+          color="#3b82f6"
+          series={[
+            { name: "합계", prev: 4071, curr: 7814 },
+            { name: "Space", prev: 746, curr: 962 },
+            { name: "Starlink", prev: 2588, curr: 4291 },
+            { name: "AI", prev: 737, curr: 2561 },
           ]}
         />
 
@@ -125,10 +126,11 @@ export default function SpaceXDashboardPage() {
           emoji="🛰️" title="Connectivity (Starlink)"
           main="$4.29B" delta="+66% YoY · 매출의 55%" deltaColor="#22c55e"
           sub="Consumer $2.49B · Enterprise&Gov $1.81B"
-          color="#22c55e" prev={2588} curr={4291}
-          breakdown={[
-            { label: "Consumer", prev: 1721, curr: 2485 },
-            { label: "Enterprise & Government", prev: 867, curr: 1806 },
+          color="#22c55e"
+          series={[
+            { name: "Starlink", prev: 2588, curr: 4291 },
+            { name: "Consumer", prev: 1721, curr: 2485 },
+            { name: "E&Gov", prev: 867, curr: 1806 },
           ]}
         />
 
@@ -136,10 +138,11 @@ export default function SpaceXDashboardPage() {
           emoji="🤖" title="AI (Grok·X)"
           main="$2.56B" delta="+248% YoY · 매출의 33%" deltaColor="#a855f7"
           sub="2026.02 xAI 합병으로 편입"
-          color="#a855f7" prev={737} curr={2561}
-          breakdown={[
-            { label: "Advertising", prev: 426, curr: 367 },
-            { label: "AI Solutions & Infrastructure", prev: 311, curr: 2194 },
+          color="#a855f7"
+          series={[
+            { name: "AI합계", prev: 737, curr: 2561 },
+            { name: "광고", prev: 426, curr: 367 },
+            { name: "AI인프라", prev: 311, curr: 2194 },
           ]}
         />
 
@@ -147,10 +150,11 @@ export default function SpaceXDashboardPage() {
           emoji="🚀" title="Space (발사)"
           main="$0.96B" delta="+29% YoY" deltaColor="#3b82f6"
           sub="Launch Services $648M · 개발 $314M"
-          color="#3b82f6" prev={746} curr={962}
-          breakdown={[
-            { label: "Launch Services", prev: 490, curr: 648 },
-            { label: "Launch & Development", prev: 256, curr: 314 },
+          color="#3b82f6"
+          series={[
+            { name: "Space", prev: 746, curr: 962 },
+            { name: "발사", prev: 490, curr: 648 },
+            { name: "개발", prev: 256, curr: 314 },
           ]}
         />
 
@@ -160,7 +164,8 @@ export default function SpaceXDashboardPage() {
           emoji="📉" title="순손실 (Net loss)"
           main="$(541)M" delta="적자 축소 (전년 $(1,008)M)" deltaColor="#f59e0b"
           sub="영업활동 현금흐름 $3.47B 흑자 전환"
-          color="#f59e0b" prev={1008} curr={541} lowerIsBetter
+          color="#f59e0b" lowerIsBetter
+          series={[{ name: "순손실", prev: 1008, curr: 541 }]}
         />
       </section>
 
