@@ -87,7 +87,7 @@ const CONTRACTS = [
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function SpaceXDashboardPage() {
   return (
-    <main className="page firefly-page">
+    <main className="page spacex-page">
 
       {/* ── Header ── */}
       <section className="header">

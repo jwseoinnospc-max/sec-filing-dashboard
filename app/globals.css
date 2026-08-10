@@ -393,6 +393,21 @@ body:has(.space-market-page)::before { opacity: 0; }
     url('/firefly-bg.png') center / cover no-repeat;
   pointer-events: none;
 }
+/* SpaceX 톤: 이미지 없이 딥 다크-블루 그라디언트 + 은은한 스타필드 글로우 */
+.spacex-page { position: relative; }
+.spacex-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(1100px 600px at 78% -8%, rgba(59, 130, 246, 0.14), transparent 60%),
+    radial-gradient(900px 500px at 12% 108%, rgba(37, 99, 235, 0.10), transparent 60%),
+    linear-gradient(160deg, #05070d 0%, #070b16 45%, #04060c 100%);
+  pointer-events: none;
+}
+/* SpaceX 강조색(블루) — h1 accent와 stat delta 기본 톤 */
+.spacex-page .h1-accent { color: #60a5fa; }
 .space-group-title { margin: 28px 0 12px; font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.04em; }
 .sector-index-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
 .sector-index-card { display: flex; flex-direction: column; background: rgba(17, 24, 39, .78); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
