@@ -18,11 +18,15 @@ const ANNUAL_LAUNCHES = [
 export default function LaunchCountCard({
   filingUrl,
   cumulativeUrl,
-  cumulative
+  cumulative,
+  period = "26Y1Q",
+  quarterly = 6
 }: {
   filingUrl: string;
   cumulativeUrl: string;
   cumulative: number;
+  period?: string;
+  quarterly?: number;
 }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -35,10 +39,10 @@ export default function LaunchCountCard({
       onMouseLeave={() => setHovered(false)}
       onClick={() => setPinned((v) => !v)}
     >
-      <h3>🚀 발사 횟수(26Y1Q)</h3>
+      <h3>🚀 발사 횟수({period})</h3>
       <div className="metric">
         <a href={filingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-          6회
+          {quarterly}회
         </a>
       </div>
       <div className="delta">분기 발사 횟수</div>

@@ -13,7 +13,7 @@ const ANNUAL_RND = [
   { year: "2025", rnd: 270.7 }
 ];
 
-export default function RndExpenseCard({ filingUrl, rndText, growthText }: { filingUrl: string; rndText: ReactNode; growthText: string }) {
+export default function RndExpenseCard({ filingUrl, rndText, growthText, period = "26Y 1Q" }: { filingUrl: string; rndText: ReactNode; growthText: string; period?: string }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const open = pinned || hovered;
@@ -25,7 +25,7 @@ export default function RndExpenseCard({ filingUrl, rndText, growthText }: { fil
       onMouseLeave={() => setHovered(false)}
       onClick={() => setPinned((v) => !v)}
     >
-      <h3>🔬 개발비 (26Y 1Q)</h3>
+      <h3>🔬 개발비 ({period})</h3>
       <div className="metric">
         <a href={filingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
           {rndText}

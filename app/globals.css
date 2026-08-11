@@ -1071,5 +1071,11 @@ body { padding-left: 216px; }
   color: #38bdf8;
 }
 
+/* 중첩(2단계) 그룹 — 예: Dashboard > 26Y1Q / 26Y2Q */
+.uni-sub-item--group { flex-wrap: wrap; align-items: center; }
+.uni-sub-group-label { color: #7089a8; font-weight: 700; cursor: default; }
+.uni-sub-group-label:hover { transform: none; color: #7089a8; }
+.uni-sub-list--nested { width: 100%; margin: 2px 0 0 6px; padding-left: 10px; border-left-color: #16222f; }
+
 .presentation-type-badge { font-size: 10px; font-weight: 700; border-radius: 4px; padding: 2px 6px; margin-right: 2px; }
 
