@@ -73,14 +73,12 @@ const SERVICE_COST_Q2_2026 = 32051;
 const Q2_2025_RND = 66134;
 const Q2_2026_RND = 82429;
 
-// 수주잔고 (총계, 2026-06-30 기준). Rocket Lab이 Q2부터 세그먼트별 수주잔고를 미공시하여,
-// 손익계산서의 GAAP Product/Service 매출 비중으로 근사 분할(추정).
-const TOTAL_BACKLOG_Q2_2026 = 2355949;
-const PRODUCT_REVENUE_Q2 = 181347; // Space Systems 성격
-const SERVICE_REVENUE_Q2 = 52719;  // Launch 성격
-const PRODUCT_SHARE = PRODUCT_REVENUE_Q2 / (PRODUCT_REVENUE_Q2 + SERVICE_REVENUE_Q2);
-const PRODUCT_BACKLOG_EST = Math.round(TOTAL_BACKLOG_Q2_2026 * PRODUCT_SHARE);
-const SERVICE_BACKLOG_EST = TOTAL_BACKLOG_Q2_2026 - PRODUCT_BACKLOG_EST;
+// 수주잔고 (총계, 2026-06-30 기준). Rocket Lab 공식 발표 구성:
+// Launch Services 약 40% / Space Systems 약 60%.
+const TOTAL_BACKLOG_Q2_2026 = 2355949; // ≈ $2,356M
+const LAUNCH_BACKLOG_SHARE = 0.40;
+const LAUNCH_BACKLOG_Q2 = Math.round(TOTAL_BACKLOG_Q2_2026 * LAUNCH_BACKLOG_SHARE); // ≈ $942M
+const SPACE_BACKLOG_Q2 = TOTAL_BACKLOG_Q2_2026 - LAUNCH_BACKLOG_Q2;                 // ≈ $1,414M
 
 // 누적 Electron 발사 (현재 시점 총계, rocketlabcorp.com/launch/electron 기준 92회).
 // 참고: 10-Q는 2026-06-30 기준 87회로 기재. 분기(2026 2Q) 발사는 6회.
@@ -162,14 +160,14 @@ export default async function RocketLabDashboardQ2() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {money(SERVICE_BACKLOG_EST / 1000)}
+                {money(LAUNCH_BACKLOG_Q2 / 1000)}
               </a>
             </div>
-            <div className="delta">Service(발사) 수주잔고 · 추정</div>
+            <div className="delta">발사 서비스(Launch) 수주잔고</div>
             <div className="metric-sub backlog-metric-sub">
               <span className="metric-sub-rule" />
               총 수주잔고 <strong>{money(TOTAL_BACKLOG_Q2_2026 / 1000)}</strong>
-              <span style={{ display: 'block', fontSize: 10, color: '#64748b', marginTop: 2 }}>※ 세그먼트 미공시 → 매출 Product/Service 비중 기준 추정</span>
+              <span style={{ display: 'block', fontSize: 10, color: '#64748b', marginTop: 2 }}>Launch 약 40% · Space Systems 약 60%</span>
             </div>
           </div>
 
@@ -177,14 +175,14 @@ export default async function RocketLabDashboardQ2() {
             <div
               className="backlog-donut"
               style={{
-                background: `conic-gradient(from 0deg, #244A9B 0 ${((SERVICE_BACKLOG_EST / TOTAL_BACKLOG_Q2_2026) * 100).toFixed(1)}%, #CFCFCF 0 100%)`
+                background: `conic-gradient(from 0deg, #244A9B 0 ${(LAUNCH_BACKLOG_SHARE * 100).toFixed(0)}%, #CFCFCF 0 100%)`
               }}
             >
               <div className="backlog-donut-hole" />
             </div>
             <div className="backlog-legend">
-              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Service</span>
-              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Product</span>
+              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Launch</span>
+              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Space Systems</span>
             </div>
           </div>
         </BacklogCard>
