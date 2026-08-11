@@ -226,11 +226,6 @@ export default function SpaceXDashboardPage() {
             📉 <strong>적자 축소·영업활동 흑자 전환</strong> — 순손실 $(541)M로 전년 $(1,008)M 대비 개선,
             영업활동 현금흐름은 $3.47B 흑자. 단, R&D·설비투자 확대로 순이익은 아직 적자.
           </Notice>
-
-          <Notice>
-            ⚡ <strong>수직계열화 경쟁우위</strong> — 발사(Falcon·Starship)·위성통신(Starlink)·AI(Grok·X)를
-            한 회사에 결합한 유일 기업. Rocket Lab·Firefly 등과 발사 시장에서 경쟁하나 규모·재사용성에서 압도적.
-          </Notice>
         </div>
       </section>
 
