@@ -9,6 +9,7 @@ import RndExpenseCard from '@/components/RndExpenseCard';
 import LaunchEconomicsChartCard from '@/components/LaunchEconomicsChartCard';
 import { getCompanySnapshot } from '@/lib/sec';
 import { annualPoints, quarterlyPointsQ2 } from '@/lib/quarterData';
+import { rklbQuarterDataQ2 } from '@/lib/rklbData';
 
 // 근사 원/달러 환율 (달러 옆 대략적인 원화 병기용)
 const USD_KRW_RATE = 1400;
@@ -136,7 +137,7 @@ export default async function RocketLabDashboardQ2() {
           costText={money(SERVICE_COST_Q2_2026 / 1000)}
         />
 
-        <LaunchEconomicsChartCard />
+        <LaunchEconomicsChartCard includeQ2 />
 
         <LaunchCountCard
           period="26Y2Q"
@@ -189,7 +190,7 @@ export default async function RocketLabDashboardQ2() {
         />
       </section>
 
-      <SegmentDashboard />
+      <SegmentDashboard data={rklbQuarterDataQ2} filingUrl={Q2_2026_FILING_URL} />
 
       <section className="main">
         <div className="trend-charts">
