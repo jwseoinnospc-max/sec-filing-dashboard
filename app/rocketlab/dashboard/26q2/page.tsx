@@ -162,13 +162,13 @@ export default async function RocketLabDashboardQ2() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {money(TOTAL_BACKLOG_Q2_2026 / 1000)}
+                {money(SERVICE_BACKLOG_EST / 1000)}
               </a>
             </div>
-            <div className="delta">총 수주잔고 (2026-06-30)</div>
+            <div className="delta">Service(발사) 수주잔고 · 추정</div>
             <div className="metric-sub backlog-metric-sub">
               <span className="metric-sub-rule" />
-              Product 약 <strong>{money(PRODUCT_BACKLOG_EST / 1000)}</strong> · Service 약 <strong>{money(SERVICE_BACKLOG_EST / 1000)}</strong>
+              총 수주잔고 <strong>{money(TOTAL_BACKLOG_Q2_2026 / 1000)}</strong>
               <span style={{ display: 'block', fontSize: 10, color: '#64748b', marginTop: 2 }}>※ 세그먼트 미공시 → 매출 Product/Service 비중 기준 추정</span>
             </div>
           </div>
@@ -177,14 +177,14 @@ export default async function RocketLabDashboardQ2() {
             <div
               className="backlog-donut"
               style={{
-                background: `conic-gradient(from 0deg, #244A9B 0 ${(PRODUCT_SHARE * 100).toFixed(1)}%, #CFCFCF 0 100%)`
+                background: `conic-gradient(from 0deg, #244A9B 0 ${((SERVICE_BACKLOG_EST / TOTAL_BACKLOG_Q2_2026) * 100).toFixed(1)}%, #CFCFCF 0 100%)`
               }}
             >
               <div className="backlog-donut-hole" />
             </div>
             <div className="backlog-legend">
-              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Product</span>
-              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Service</span>
+              <span><i className="backlog-dot" style={{ background: '#244A9B' }} />Service</span>
+              <span><i className="backlog-dot" style={{ background: '#CFCFCF' }} />Product</span>
             </div>
           </div>
         </BacklogCard>
