@@ -77,8 +77,9 @@ const Q2_2026_RND = 82429;
 const TOTAL_BACKLOG_Q2_2026 = 2355949;
 const BACKLOG_WITHIN_12M_PCT = 45;
 
-// 누적 Electron 발사 (2026-06-30 기준 87회), 분기 발사 6회
-const LAUNCHES_CUMULATIVE = 87;
+// 누적 Electron 발사 (현재 시점 총계, rocketlabcorp.com/launch/electron 기준 92회).
+// 참고: 10-Q는 2026-06-30 기준 87회로 기재. 분기(2026 2Q) 발사는 6회.
+const LAUNCHES_CUMULATIVE = 92;
 const Q2_LAUNCHES = 6;
 const ELECTRON_PAGE_URL = 'https://rocketlabcorp.com/launch/electron/';
 
