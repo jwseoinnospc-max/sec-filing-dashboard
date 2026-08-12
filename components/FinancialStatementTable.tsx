@@ -25,6 +25,7 @@ export type Row = {
   q4y25: Cell;
   fy2025: Cell;
   q1y26: Cell;
+  q2y26: Cell;
   growth?: string;
   hist?: Partial<Record<HistQuarterKey, Cell>>;
 };
@@ -110,8 +111,9 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 25Y 1Q–4Q {showQuarters ? "▲ 접기" : "▼ 펼치기"}
               </button>
             </th>
+            <th className="fin-col-sep fin-fy-col">26Y 1Q</th>
             <th className="fin-highlight-col">
-              26Y 1Q <span className="fin-new-badge">New</span>
+              26Y 2Q <span className="fin-new-badge">New</span>
             </th>
             <th className="fin-col-sep">전년 동기 대비</th>
           </tr>
@@ -175,7 +177,8 @@ export default function FinancialStatementTable({ rows }: { rows: Row[] }) {
                 negative={row.negative}
                 className={`fin-col-sep fin-fy-col ${showQuarters ? "fin-hist-group fin-hist-group-end" : ""}`}
               />
-              <ValueCell data={row.q1y26} negative={row.negative} className="fin-highlight-col" />
+              <ValueCell data={row.q1y26} negative={row.negative} className="fin-col-sep fin-fy-col" />
+              <ValueCell data={row.q2y26} negative={row.negative} className="fin-highlight-col" />
               <td
                 className={`fin-col-sep fin-growth ${
                   row.growth?.startsWith("▼") ? "fin-growth-down" : "fin-growth-up"
