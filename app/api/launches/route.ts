@@ -7,17 +7,19 @@ export const revalidate = 1200;
 const LL2 = "https://ll.thespacedevs.com/2.3.0/launches";
 
 /**
- * Curated list of small-lift launch vehicles (payload to LEO roughly < ~2,000 kg).
- * Launch Library 2 exposes no size class, so we match the rocket configuration
- * name / family against this list. Matched case-insensitively as substrings.
+ * Small-lift launch vehicles: payload capacity to LEO under 2 t (2,000 kg).
+ * Launch Library 2 exposes no payload-class field, so we approximate by matching
+ * the rocket configuration name / family against this curated list (case-insensitive
+ * substring). Vehicles clearly above 2 t to LEO (e.g. Angara 1.2, Long March 6A)
+ * are intentionally excluded.
  */
 const SMALL_LIFT = [
   "electron", "alpha", "launcherone", "astra rocket", "ceres", "hyperbola",
   "kuaizhou", "jielong", "smart dragon", "sslv", "vega", "qased", "zuljanah",
   "simorgh", "safir", "hanbit", "한빛", "miura", "rfa one", "spectrum",
-  "terran 1", "long march 11", "long march 6", "epsilon", "angara 1.2",
-  "pegasus", "minotaur", "shavit", "unha", "kinetica", "lijian", "nuri",
-  "kslv", "daytona", "eris", "prime", "vikram", "agnibaan", "orbital ascent",
+  "terran 1", "long march 11", "epsilon", "pegasus", "minotaur", "shavit",
+  "unha", "kinetica", "lijian", "nuri", "kslv", "daytona", "eris", "prime",
+  "vikram", "agnibaan", "orbital ascent",
 ];
 
 const INNOSPACE = ["innospace", "이노스페이스", "hanbit", "한빛"];
