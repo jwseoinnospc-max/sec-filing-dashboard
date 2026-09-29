@@ -10,6 +10,7 @@ type Launch = {
   windowStart: string | null;
   windowEnd: string | null;
   precision: string | null;
+  precisionName: string | null;
   status: { name: string; abbrev: string; id: number };
   rocket: { name: string; fullName: string; family: string };
   provider: { name: string; abbrev: string; type: string };
@@ -59,6 +60,67 @@ function countdown(iso: string): string {
   return `${diff < 0 ? "T+" : "T-"} ${d}d ${p(h)}:${p(m)}:${p(sec)}`;
 }
 
+/* ── 발사 시각 정밀도(net_precision) 처리 ──
+   LL2는 발사마다 정밀도를 제공한다: 초/분/시(정확) · 일(시간 미정) · 주/월/분기/연(임시).
+   분기·연 단위는 날짜가 임시값이라 카운트다운이 무의미하므로 기간 표기로 대체한다. */
+function precKind(l: Launch): "exact" | "day" | "coarse" {
+  const p = (l.precisionName || "").toLowerCase();
+  if (/second|minute|hour/.test(p)) return "exact";
+  if (/day|morning|afternoon|evening|night/.test(p)) return "day";
+  return "coarse"; // week/month/quarter/half/year/flexible/미상
+}
+function kstYM(iso: string): { y: number; m: number } {
+  try {
+    const s = new Intl.DateTimeFormat("en-CA", { timeZone: KST, year: "numeric", month: "2-digit" }).format(new Date(iso));
+    const [y, m] = s.split("-").map(Number);
+    return { y, m };
+  } catch { return { y: 0, m: 0 }; }
+}
+function approxLabel(l: Launch): string {
+  const p = (l.precisionName || "").toLowerCase();
+  const { y, m } = kstYM(l.net);
+  if (!y) return "일정 미정";
+  if (/quarter/.test(p)) return `${y}년 ${Math.floor((m - 1) / 3) + 1}분기 예정`;
+  if (/half/.test(p)) return `${y}년 ${m <= 6 ? "상" : "하"}반기 예정`;
+  if (/month/.test(p)) return `${y}년 ${m}월 예정`;
+  if (/week/.test(p)) return `${y}년 ${m}월 중 예정`;
+  if (/year|decade/.test(p)) return `${y}년 예정`;
+  return "일정 미정";
+}
+function precKo(name: string | null): string {
+  const p = (name || "").toLowerCase();
+  if (/second/.test(p)) return "초 단위";
+  if (/minute/.test(p)) return "분 단위";
+  if (/hour/.test(p)) return "시간 단위";
+  if (/day/.test(p)) return "일 단위";
+  if (/morning|afternoon|evening|night/.test(p)) return "시간대";
+  if (/week/.test(p)) return "주 단위";
+  if (/month/.test(p)) return "월 단위";
+  if (/quarter/.test(p)) return "분기 단위";
+  if (/half/.test(p)) return "반기 단위";
+  if (/year|decade/.test(p)) return "연 단위";
+  if (/flexible/.test(p)) return "미정";
+  return name || "—";
+}
+// 배지(D-day 영역): 정확/일 → D-day, 그 외 → '예정'
+function whenBadge(l: Launch): string {
+  return precKind(l) === "coarse" ? "예정" : dDay(l.net);
+}
+// 큰 카운트다운 자리: 정확 → 실시간 T-, 일 → D-day·시간미정, 그 외 → 기간
+function bigWhen(l: Launch): string {
+  const k = precKind(l);
+  if (k === "exact") return countdown(l.net);
+  if (k === "day") return `${dDay(l.net)} · 시간 미정`;
+  return approxLabel(l);
+}
+// 일시 필드: 정확 → 날짜+시각, 일 → 날짜(시간 미정), 그 외 → 기간
+function whenDate(l: Launch): string {
+  const k = precKind(l);
+  if (k === "exact") return fmtKST(l.net);
+  if (k === "day") return `${fmtKST(l.net, false)} (시간 미정)`;
+  return approxLabel(l);
+}
+
 export default function SchedulePage() {
   const [data, setData] = useState<Payload | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,6 +128,11 @@ export default function SchedulePage() {
   const [smallOnly, setSmallOnly] = useState(true);
   const [query, setQuery] = useState("");
   const [, setNow] = useState(Date.now());
+  // 지난 미션 검색 (최근 발사 결과 섹션)
+  const [pastQuery, setPastQuery] = useState("");
+  const [pastResults, setPastResults] = useState<Launch[] | null>(null);
+  const [pastLoading, setPastLoading] = useState(false);
+  const [pastError, setPastError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true); setError(null);
@@ -83,6 +150,28 @@ export default function SchedulePage() {
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
   useEffect(() => { const id = setInterval(load, 600_000); return () => clearInterval(id); }, [load]);
 
+  // 지난 미션 검색: 입력 디바운스 후 과거 발사 조회
+  useEffect(() => {
+    const q = pastQuery.trim();
+    if (q.length < 2) { setPastResults(null); setPastError(null); setPastLoading(false); return; }
+    let cancelled = false;
+    setPastLoading(true); setPastError(null);
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/launches/search?q=${encodeURIComponent(q)}`);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+        if (!cancelled) setPastResults(json.results || []);
+      } catch (e: any) {
+        if (!cancelled) { setPastError(e?.message || "검색 실패"); setPastResults([]); }
+      } finally {
+        if (!cancelled) setPastLoading(false);
+      }
+    }, 550);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [pastQuery]);
+
+  // 상단 검색(query)은 '예정 발사'에만 적용
   const filterFn = useCallback((l: Launch) => {
     if (smallOnly && !l.smallLift) return false;
     if (query.trim()) {
@@ -97,12 +186,28 @@ export default function SchedulePage() {
     () => (data?.upcoming || []).filter(filterFn).sort((a, b) => +new Date(a.net) - +new Date(b.net)),
     [data, filterFn],
   );
-  const recent = useMemo(() => (data?.recent || []).filter(filterFn), [data, filterFn]);
+  // 기본 최근 목록은 소형 토글만 적용 (상단 검색과 독립)
+  const recent = useMemo(() => (data?.recent || []).filter((l) => !smallOnly || l.smallLift), [data, smallOnly]);
+  // 지난 미션 검색 결과 (검색어 있을 때만) — 소형 토글 적용
+  const pastActive = pastQuery.trim().length >= 2;
+  const pastList = useMemo(
+    () => (pastResults || []).filter((l) => !smallOnly || l.smallLift),
+    [pastResults, smallOnly],
+  );
   const next = upcoming[0];
   const smallCount = (data?.upcoming || []).filter((l) => l.smallLift).length;
-  const weekCount = upcoming.filter((l) => new Date(l.net).getTime() - Date.now() < 7 * 86400000).length;
+  const weekCount = upcoming.filter((l) => precKind(l) !== "coarse" && new Date(l.net).getTime() - Date.now() < 7 * 86400000 && new Date(l.net).getTime() > Date.now() - 3600_000).length;
   const lastResult = (data?.recent || []).filter((l) => !smallOnly || l.smallLift)[0];
   const updatedAt = data ? fmtKST(data.fetchedAt) : "—";
+
+  const renderRow = (l: Launch) => (
+    <div key={l.id} className={`sched-recent-row ${l.innospace ? "innospace" : ""}`}>
+      <span className="sched-badge sm" style={{ background: statusColor(l.status.abbrev) }}>{l.status.abbrev}</span>
+      <span className="sched-recent-name">{l.name}</span>
+      <span className="sched-recent-meta">{[l.provider.name, l.mission.orbit].filter(Boolean).join(" · ")}</span>
+      <span className="sched-recent-date">{fmtKST(l.net, false)}</span>
+    </div>
+  );
 
   return (
     <main className="page space-market-page schedule-page">
@@ -133,7 +238,7 @@ export default function SchedulePage() {
       <div className="sector-index-row">
         <div className="sector-index-card">
           <div className="sector-index-label">다음 소형발사체</div>
-          <div className="sector-index-value sched-accent">{next ? countdown(next.net) : "—"}</div>
+          <div className="sector-index-value sched-accent">{next ? bigWhen(next) : "—"}</div>
           <div className="sched-sub">{next ? next.name : "예정 없음"}</div>
         </div>
         <div className="sector-index-card">
@@ -184,17 +289,17 @@ export default function SchedulePage() {
               <span className="sched-badge" style={{ background: statusColor(next.status.abbrev) }}>{next.status.name}</span>
               {next.smallLift && <span className="sched-tag">소형발사체</span>}
               {next.innospace && <span className="sched-tag innospace">INNOSPACE</span>}
-              <span className="sched-dday">{dDay(next.net)}</span>
+              <span className="sched-dday">{whenBadge(next)}</span>
             </div>
             <h2 className="sched-hero-name">{next.name}</h2>
-            <div className="sched-count">{countdown(next.net)}</div>
+            <div className="sched-count">{bigWhen(next)}</div>
             <div className="sched-hero-grid">
               <div><span>발사체</span>{next.rocket.fullName}</div>
               <div><span>운용사</span>{next.provider.name || "—"}</div>
               <div><span>발사장</span>{next.pad.location || "—"}</div>
               <div><span>궤도</span>{next.mission.orbit || "—"}</div>
-              <div><span>일시(KST)</span>{fmtKST(next.net)}</div>
-              <div><span>정밀도</span>{next.precision || "—"}</div>
+              <div><span>일시(KST)</span>{whenDate(next)}</div>
+              <div><span>정밀도</span>{precKo(next.precisionName)}</div>
             </div>
           </div>
         </div>
@@ -212,7 +317,7 @@ export default function SchedulePage() {
           {upcoming.slice(next ? 1 : 0).map((l) => (
             <article key={l.id} className={`card sched-card ${l.innospace ? "innospace" : ""}`}>
               <div className="sched-card-head">
-                <span className="sched-dday sm">{dDay(l.net)}</span>
+                <span className="sched-dday sm">{whenBadge(l)}</span>
                 <span className="sched-badge sm" style={{ background: statusColor(l.status.abbrev) }}>{l.status.abbrev}</span>
               </div>
               <div className="sched-card-name">{l.name}</div>
@@ -220,7 +325,7 @@ export default function SchedulePage() {
                 <div><span>운용사</span>{l.provider.name || "—"}</div>
                 <div><span>발사장</span>{l.pad.location || "—"}</div>
                 <div><span>궤도</span>{l.mission.orbit || "—"}</div>
-                <div><span>일시</span>{fmtKST(l.net)} KST</div>
+                <div><span>일시</span>{whenDate(l)}</div>
               </div>
               <div className="sched-card-tags">
                 {l.smallLift && <span className="sched-tag">소형</span>}
@@ -231,24 +336,40 @@ export default function SchedulePage() {
         </div>
       )}
 
-      {recent.length > 0 && (
-        <>
-          <h3 className="sched-section">최근 발사 결과</h3>
-          <div className="card sched-recent">
-            {recent.map((l) => (
-              <div key={l.id} className="sched-recent-row">
-                <span className="sched-badge sm" style={{ background: statusColor(l.status.abbrev) }}>{l.status.abbrev}</span>
-                <span className="sched-recent-name">{l.name}</span>
-                <span className="sched-recent-meta">{l.provider.name}</span>
-                <span className="sched-recent-date">{fmtKST(l.net, false)}</span>
-              </div>
-            ))}
+      <div className="sched-section-row">
+        <h3 className="sched-section" style={{ margin: 0 }}>{pastActive ? "지난 미션 검색 결과" : "최근 발사 결과"}</h3>
+        <input
+          className="sched-search sched-search-sm"
+          placeholder="지난 미션 검색 (발사체 · 발사장 · 미션)"
+          value={pastQuery}
+          onChange={(e) => setPastQuery(e.target.value)}
+        />
+      </div>
+      {pastActive ? (
+        pastLoading ? (
+          <div className="sched-empty">검색 중…</div>
+        ) : pastError ? (
+          <div className="sched-error">
+            검색 실패: {pastError}
+            {pastError.includes("429") && " — Launch Library 2 사용량(시간당 15회)을 초과했을 수 있습니다. 잠시 후 다시 시도하세요."}
           </div>
-        </>
+        ) : pastList.length === 0 ? (
+          <div className="sched-empty">
+            ‘{pastQuery.trim()}’에 대한 지난 미션을 찾지 못했습니다.
+            {smallOnly && " (소형발사체만 ON — OFF로 전체를 검색할 수 있습니다.)"}
+          </div>
+        ) : (
+          <div className="card sched-recent">{pastList.map(renderRow)}</div>
+        )
+      ) : recent.length > 0 ? (
+        <div className="card sched-recent">{recent.map(renderRow)}</div>
+      ) : (
+        <div className="sched-empty">최근 발사 결과가 없습니다.</div>
       )}
 
       <p className="sched-note">
         ※ ‘소형발사체’는 지구 저궤도(LEO) 탑재 능력 <b>2톤(2,000kg) 미만</b> 발사체 기준입니다(Electron · Firefly Alpha · Vega · SSLV · 누리호 · 한빛 등). Launch Library 2는 발사체 탑재중량 필드를 제공하지 않아 발사체 명칭 기준으로 분류하며, 2톤을 명확히 초과하는 발사체(예: Angara 1.2, Long March 6A)는 제외했습니다.
+        <br />※ 카운트다운은 <b>발사 시각 정밀도</b>에 따라 표시됩니다 — 시·분·초까지 확정된 건만 실시간 T- 카운트다운, 날짜만 확정된 건은 D-일수(시간 미정), 월·분기·연 단위 임시 일정은 “2026년 4분기 예정”처럼 기간으로 표기합니다.
       </p>
 
       <style>{CSS}</style>
@@ -293,6 +414,9 @@ const CSS = `
 .sched-dday{margin-left:auto;font-size:15px;font-weight:800;color:var(--warn)}
 .sched-dday.sm{margin-left:0;font-size:13px}
 .sched-section{margin:24px 0 12px;font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.sched-section-row{display:flex;align-items:center;gap:14px;margin:24px 0 12px;flex-wrap:wrap}
+.sched-search-sm{flex:1;min-width:180px;max-width:420px;margin-left:auto;padding:8px 12px;font-size:13px}
+.sched-recent-row.innospace{box-shadow:inset 0 0 0 1px var(--accent)}
 .sched-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
 .sched-card{padding:15px}
 .sched-card.innospace{border-color:var(--accent)}
