@@ -11,6 +11,7 @@ type NavItem   = LinkItem | GroupItem;
 
 const NAV_ITEMS: NavItem[] = [
   { type: "link",  label: "Line-Up",           href: "/line-up" },
+  { type: "link",  label: "Launch Schedule",    href: "/schedule" },
   { type: "link",  label: "Space Trend",        href: "/space-trend" },
   { type: "link",  label: "Space Market",       href: "/space-market" },
   {
