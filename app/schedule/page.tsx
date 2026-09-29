@@ -161,7 +161,7 @@ export default function SchedulePage() {
           title="소형발사체 = 지구 저궤도(LEO) 탑재체 2톤(2,000kg) 미만 발사체 기준">
           <span className="sched-dot" /> 소형발사체만 {smallOnly ? "ON" : "OFF"}
         </button>
-        <input className="sched-search" placeholder="로켓 · 발사체 · 발사장 · 미션 검색"
+        <input className="sched-search" placeholder="발사체 · 발사장 · 미션 검색"
           value={query} onChange={(e) => setQuery(e.target.value)} />
         <button className="sched-refresh" onClick={load} disabled={loading}>
           {loading ? "불러오는 중…" : "↻ 새로고침"}
