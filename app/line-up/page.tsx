@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import dynamic from "next/dynamic";
 import NavMenu from "@/components/NavMenu";
 import SideRays from "@/components/SideRays";
@@ -13,7 +13,7 @@ const VEHICLES = [
     id: "nano", name: "한빛-나노", sub: "HANBIT-NANO",
     status: "개발 중", statusColor: "#4db3ff",
     payload: "~90 kg", altitude: "~500 km", diameter: "1.4 m", length: "21.8 m",
-    prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: null,
+    prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: "",
     engines: "HyPER-25 · LiMER-3",
     highlight: "소형 위성 발사 목표 · 2단 구성",
     accentHex: "#0d6ef5", glowColor: "rgba(13,110,245,0.25)",
@@ -24,8 +24,8 @@ const VEHICLES = [
     status: "개발 중", statusColor: "#c47aff",
     payload: "~170 kg", altitude: "~500 km", diameter: "1.4 m", length: "22.5 m",
     prop1: "Paraffin / LOx", prop2: "Methane / LOx", prop3: "Methane / LOx",
-    engines: "HyPER-25 · LiMER-3 · LiMEK-0.4",
-    highlight: "3단 구성 · 탑재중량 향상",
+    engines: "HyPER · LiMEX × 2 · LiMEK",
+    highlight: "2단 + 킥스테이지 · 탑재중량 향상",
     accentHex: "#8420cc", glowColor: "rgba(132,32,204,0.25)",
     stages: 3, faction: "z",
   },
@@ -34,12 +34,154 @@ const VEHICLES = [
     status: "개발 중", statusColor: "#ffc840",
     payload: "~1,300 kg", altitude: "~500 km", diameter: "3.7 m", length: "39.6 m",
     prop1: "Paraffin / LOx", prop2: "Paraffin / LOx", prop3: "Methane / LOx",
-    engines: "HyPER-25 × 2 · LiMER-3",
+    engines: "HyPER × 9 · LiMEx VAC × 2",
     highlight: "중형급 탑재중량 · 3단 구성",
     accentHex: "#c48600", glowColor: "rgba(196,134,0,0.25)",
     stages: 3, faction: "p",
   },
 ];
+
+/* ─── Detail specs (모달용) ─────────────────────────────────── */
+type SpecItem = { label: string; value: string };
+type StageSpec = { title: string; items: SpecItem[] };
+type VehicleDetail = {
+  overview: SpecItem[];
+  payload: SpecItem[];
+  stages: StageSpec[];
+  components: string[];
+};
+
+const DETAILS: Record<string, VehicleDetail> = {
+  nano: {
+    overview: [
+      { label: "LENGTH", value: "21.8 m" },
+      { label: "DIAMETER", value: "1.4 m" },
+      { label: "LIFT-OFF WEIGHT", value: "18.8 t" },
+      { label: "STAGE", value: "2" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "90 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "1.4 m" },
+      { label: "FAIRING HEIGHT", value: "2.1 m" },
+    ],
+    stages: [
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN" },
+          { label: "BURN TIME", value: "300 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "SECOND STAGE", "LiMER ENGINE",
+      "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
+    ],
+  },
+  micro: {
+    overview: [
+      { label: "LENGTH", value: "22.5 m" },
+      { label: "DIAMETER", value: "1.4 m" },
+      { label: "LIFT-OFF WEIGHT", value: "19.7 t" },
+      { label: "STAGE", value: "2 + Kick stage" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "170 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "1.4 m" },
+      { label: "FAIRING HEIGHT", value: "2.1 m" },
+    ],
+    stages: [
+      {
+        title: "KICK STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMEK" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "4 kN" },
+          { label: "BURN TIME", value: "390 sec" },
+        ],
+      },
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMEX" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN × 2" },
+          { label: "BURN TIME", value: "250 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "130 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "LiMEK", "INTERSTAGE", "SECOND STAGE",
+      "LiMEX ENGINE × 2", "INTERSTAGE", "FIRST STAGE", "HyPER ENGINE",
+    ],
+  },
+  mini: {
+    overview: [
+      { label: "LENGTH", value: "39.6 m" },
+      { label: "DIAMETER", value: "3.7 m" },
+      { label: "LIFT-OFF WEIGHT", value: "146.5 t" },
+      { label: "STAGE", value: "3" },
+    ],
+    payload: [
+      { label: "NOMINAL PAYLOAD", value: "1,300 kg to 500 km SSO" },
+      { label: "FAIRING DIAMETER", value: "3.7 m" },
+      { label: "FAIRING HEIGHT", value: "9.0 m" },
+    ],
+    stages: [
+      {
+        title: "THIRD STAGE",
+        items: [
+          { label: "ENGINE", value: "LiMEx VACUUM" },
+          { label: "PROPELLANTS", value: "LOx & METHANE" },
+          { label: "THRUST", value: "29 kN × 2" },
+          { label: "BURN TIME", value: "350 sec" },
+        ],
+      },
+      {
+        title: "SECOND STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN" },
+          { label: "BURN TIME", value: "150 sec" },
+        ],
+      },
+      {
+        title: "FIRST STAGE",
+        items: [
+          { label: "ENGINE", value: "HyPER (ElecPump Cycle)" },
+          { label: "PROPELLANTS", value: "LOx & PARAFFIN" },
+          { label: "THRUST", value: "245 kN × 9" },
+          { label: "BURN TIME", value: "130 sec" },
+        ],
+      },
+    ],
+    components: [
+      "FAIRING", "PAYLOAD ADAPTER", "THIRD STAGE", "LiMEx VACUUM ENGINE × 2",
+      "SECOND STAGE", "HyPER ENGINE", "FIRST STAGE", "HyPER ENGINE × 9",
+    ],
+  },
+};
 
 /* ─── Canvas helpers ────────────────────────────────────────── */
 function hexPath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
@@ -100,9 +242,7 @@ function drawTOverlay(ctx: CanvasRenderingContext2D, W: number, H: number, t: nu
 }
 
 function drawZ(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
-  const bg = ctx.createRadialGradient(W / 2, H * 0.55, 0, W / 2, H * 0.55, H);
-  bg.addColorStop(0, "#18082e"); bg.addColorStop(0.5, "#0c0420"); bg.addColorStop(1, "#060010");
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H * 0.41, p = 0.7 + 0.3 * Math.sin(t * 0.032);
   const halo = ctx.createRadialGradient(cx, cy, 28, cx, cy, 68);
   halo.addColorStop(0, "transparent");
@@ -132,9 +272,7 @@ function drawZ(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
 }
 
 function drawP(ctx: CanvasRenderingContext2D, W: number, H: number, t: number) {
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, "#070410"); bg.addColorStop(0.5, "#110900"); bg.addColorStop(1, "#190f00");
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H * 0.4, p = 0.7 + 0.3 * Math.sin(t * 0.028);
   [54, 34].forEach((r, i) => {
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -199,11 +337,13 @@ function SCPortrait({ drawFn, blendMode = "normal" }: {
   );
 }
 
-/* ─── 나노 포트레이트: 3D 모델 + 캔버스 오버레이 ────────────── */
-function NanoPortrait() {
+/* ─── 3D 모델 + 캔버스 오버레이 포트레이트 (나노/마이크로/미니 공용) ─ */
+function ModelPortrait({ overlayFn }: {
+  overlayFn: (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
+}) {
   return (
     <>
-      {/* Layer 1: 3D OBJ 모델 */}
+      {/* Layer 1: 3D OBJ 모델 (세 카드 동일 각도/위치) */}
       <div style={{ position: "absolute", inset: 0, background: "#050c22" }}>
         <ModelViewer
           url="/models/rocket_nano.obj"
@@ -213,7 +353,6 @@ function NanoPortrait() {
           defaultRotationX={-90}
           defaultRotationY={0}
           defaultRotationZ={90}
-          
           enableManualRotation={true}
           enableManualZoom={true}
           minZoomDistance={1.0}
@@ -225,8 +364,8 @@ function NanoPortrait() {
           rimLightIntensity={0.8}
         />
       </div>
-      {/* Layer 2: SC 헥사 그리드 + 글로우 오버레이 (screen 블렌드) */}
-      <SCPortrait drawFn={drawTOverlay} blendMode="screen" />
+      {/* Layer 2: 팩션별 글로우 오버레이 (screen 블렌드) */}
+      <SCPortrait drawFn={overlayFn} blendMode="screen" />
     </>
   );
 }
@@ -234,21 +373,30 @@ function NanoPortrait() {
 /* ─── Vehicle card ──────────────────────────────────────────── */
 type DrawFn = (ctx: CanvasRenderingContext2D, W: number, H: number, t: number) => void;
 
-function VehicleCard({ v, portrait }: {
+function VehicleCard({ v, portrait, onOpen, active }: {
   v: typeof VEHICLES[0];
   portrait: React.ReactNode;
+  onOpen: () => void;
+  active?: boolean;
 }) {
+  const downRef = useRef<{ x: number; y: number } | null>(null);
   return (
     <div
-      className={`lineup-card sc-card sc-${v.faction}`}
-      style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor } as React.CSSProperties}
+      className={`lineup-card sc-card sc-${v.faction}${active ? " lineup-card-active" : ""}`}
+      style={{ "--lineup-accent": v.accentHex, "--lineup-glow": v.glowColor, cursor: "pointer" } as React.CSSProperties}
+      onPointerDown={(e) => { downRef.current = { x: e.clientX, y: e.clientY }; }}
+      onPointerUp={(e) => {
+        const d = downRef.current; downRef.current = null;
+        if (!d) return;
+        // 드래그(회전)와 클릭 구분: 6px 미만 이동만 클릭으로 처리
+        if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) onOpen();
+      }}
     >
       <div className="lineup-portrait">
         {portrait}
         <div className="lineup-scanlines" />
         <div className="lineup-fade" />
         <span className="sc-corner sc-tl" /><span className="sc-corner sc-tr" />
-        <span className="sc-corner sc-bl" /><span className="sc-corner sc-br" />
         <div className="sc-badge">{v.status}</div>
       </div>
       <div className="lineup-info">
@@ -274,17 +422,85 @@ function VehicleCard({ v, portrait }: {
   );
 }
 
+/* ─── Vehicle detail panel (카드 사이에 인라인 삽입) ───────────── */
+function VehiclePanel({ v, onClose }: { v: typeof VEHICLES[0]; onClose: () => void }) {
+  const d = DETAILS[v.id];
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); };
+  }, [onClose]);
+
+  if (!d) return null;
+
+  return (
+    <div
+      className="lineup-modal lineup-panel"
+      style={{ "--lineup-accent": v.accentHex } as React.CSSProperties}
+    >
+      <button className="lineup-modal-close" onClick={onClose} aria-label="닫기">✕</button>
+
+        <div className="lineup-modal-head">
+          <div>
+            <div className="lineup-modal-name">{v.name}</div>
+            <div className="lineup-modal-sub">{v.sub}</div>
+          </div>
+          <span className="lineup-modal-badge">{v.status}</span>
+        </div>
+
+        <div className="lineup-modal-body">
+          <div className="lineup-modal-specs">
+            <section className="lspec-block">
+              <h4>OVERVIEW</h4>
+              {d.overview.map((s) => (
+                <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+              ))}
+            </section>
+
+            <section className="lspec-block">
+              <h4>PAYLOAD</h4>
+              {d.payload.map((s) => (
+                <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+              ))}
+            </section>
+
+            {d.stages.map((st) => (
+              <section key={st.title} className="lspec-block">
+                <h4>{st.title}</h4>
+                {st.items.map((s) => (
+                  <div key={s.label} className="lspec-row"><span>{s.label}</span><b>{s.value}</b></div>
+                ))}
+              </section>
+            ))}
+          </div>
+
+          <div className="lineup-modal-components">
+            <h4>COMPONENTS</h4>
+            <ol>
+              {d.components.map((c, i) => (
+                <li key={c + i}><span className="lcomp-num">{String(i + 1).padStart(2, "0")}</span>{c}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+  );
+}
+
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function LineUpPage() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   useEffect(() => {
     document.body.classList.add("line-up-page");
     return () => document.body.classList.remove("line-up-page");
   }, []);
 
   const portraits: React.ReactNode[] = [
-    <NanoPortrait key="nano" />,
-    <SCPortrait key="micro" drawFn={drawZ} />,
-    <SCPortrait key="mini"  drawFn={drawP} />,
+    <ModelPortrait key="nano"  overlayFn={drawTOverlay} />,
+    <ModelPortrait key="micro" overlayFn={drawZ} />,
+    <ModelPortrait key="mini"  overlayFn={drawP} />,
   ];
 
   return (
@@ -315,9 +531,25 @@ export default function LineUpPage() {
       </section>
 
       <div className="lineup-grid">
-        {VEHICLES.map((v, i) => (
-          <VehicleCard key={v.id} v={v} portrait={portraits[i]} />
-        ))}
+        {VEHICLES.map((v, i) => {
+          const card = (
+            <VehicleCard
+              v={v}
+              portrait={portraits[i]}
+              active={selectedId === v.id}
+              onOpen={() => setSelectedId((cur) => (cur === v.id ? null : v.id))}
+            />
+          );
+          // 선택 시 카드+패널을 한 쌍으로 묶어 항상 함께 줄바꿈되게 함
+          return selectedId === v.id ? (
+            <div key={v.id} className="lineup-pair">
+              {card}
+              <VehiclePanel v={v} onClose={() => setSelectedId(null)} />
+            </div>
+          ) : (
+            <Fragment key={v.id}>{card}</Fragment>
+          );
+        })}
       </div>
     </main>
   );

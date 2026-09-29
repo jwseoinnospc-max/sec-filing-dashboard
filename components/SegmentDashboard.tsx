@@ -7,10 +7,10 @@ const BLUE = "#CFCFCF";
 const GRAY = "#244A9B";
 const LIGHT_BLUE = "#EAF4FF";
 
-const IR_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
+const DEFAULT_IR_FILING_URL = "https://investors.rocketlabcorp.com/node/12471/html";
 
-function filingLink(value: number) {
-  return `${IR_FILING_URL}#:~:text=${encodeURIComponent(formatNumber(value))}`;
+function makeFilingLink(filingUrl: string) {
+  return (value: number) => `${filingUrl}#:~:text=${encodeURIComponent(formatNumber(value))}`;
 }
 
 type Segment = {
@@ -22,7 +22,7 @@ function pct(value: number) {
   return `${Math.round(value)}%`;
 }
 
-function Donut({ total, data, size }: { total: number; data: Segment; size: number }) {
+function Donut({ total, data, size, filingLink }: { total: number; data: Segment; size: number; filingLink: (v: number) => string }) {
   const launchPct = (data.launch / total) * 100;
   const holeInset = size * 0.25;
   const startDeg = 90 - (launchPct / 100) * 360 / 2;
@@ -88,7 +88,10 @@ function CompareCard({
   previousTotal,
   currentTotal,
   previous,
-  current
+  current,
+  filingLink,
+  leftLabel,
+  rightLabel
 }: {
   title: string;
   metric: string;
@@ -98,6 +101,9 @@ function CompareCard({
   currentTotal: number;
   previous: Segment;
   current: Segment;
+  filingLink: (v: number) => string;
+  leftLabel: string;
+  rightLabel: string;
 }) {
   const totalGrowth = growth(currentTotal, previousTotal);
   const launchGrowth = growth(current.launch, previous.launch);
@@ -120,7 +126,7 @@ function CompareCard({
           <div className="chart-row">
             <div className="side-block">
               <div className="side-label left">
-                <span>Space Systems</span>
+                <span>{leftLabel}</span>
                 <a href={filingLink(previous.spaceSystems)} target="_blank" rel="noopener noreferrer">
                   {formatNumber(previous.spaceSystems)}
                 </a>
@@ -130,14 +136,14 @@ function CompareCard({
                 <span className="dot" />
               </div>
             </div>
-            <Donut total={previousTotal} data={previous} size={previousSize} />
+            <Donut total={previousTotal} data={previous} size={previousSize} filingLink={filingLink} />
             <div className="side-block">
               <div className="connector blue">
                 <span className="dot" />
                 <span className="line" />
               </div>
               <div className="side-label right">
-                <span>Launch</span>
+                <span>{rightLabel}</span>
                 <a href={filingLink(previous.launch)} target="_blank" rel="noopener noreferrer">
                   {formatNumber(previous.launch)}
                 </a>
@@ -179,7 +185,7 @@ function CompareCard({
           <div className="chart-row">
             <div className="side-block">
               <div className="side-label left">
-                <span>Space Systems</span>
+                <span>{leftLabel}</span>
                 <a href={filingLink(current.spaceSystems)} target="_blank" rel="noopener noreferrer">
                   {formatNumber(current.spaceSystems)}
                 </a>
@@ -189,14 +195,14 @@ function CompareCard({
                 <span className="dot" />
               </div>
             </div>
-            <Donut total={currentTotal} data={current} size={currentSize} />
+            <Donut total={currentTotal} data={current} size={currentSize} filingLink={filingLink} />
             <div className="side-block">
               <div className="connector blue">
                 <span className="dot" />
                 <span className="line" />
               </div>
               <div className="side-label right">
-                <span>Launch</span>
+                <span>{rightLabel}</span>
                 <a href={filingLink(current.launch)} target="_blank" rel="noopener noreferrer">
                   {formatNumber(current.launch)}
                 </a>
@@ -399,8 +405,19 @@ function CompareCard({
   );
 }
 
-export default function SegmentDashboard() {
-  const { revenue, grossProfit } = rklbQuarterData;
+export default function SegmentDashboard({
+  data = rklbQuarterData,
+  filingUrl = DEFAULT_IR_FILING_URL,
+  leftLabel = "Space Systems",
+  rightLabel = "Launch"
+}: {
+  data?: typeof rklbQuarterData;
+  filingUrl?: string;
+  leftLabel?: string;
+  rightLabel?: string;
+} = {}) {
+  const { revenue, grossProfit } = data;
+  const filingLink = makeFilingLink(filingUrl);
 
   return (
     <section className="segment-dashboard">
@@ -415,6 +432,9 @@ export default function SegmentDashboard() {
         currentTotal={revenue.currentTotal}
         previous={revenue.previous}
         current={revenue.current}
+        filingLink={filingLink}
+        leftLabel={leftLabel}
+        rightLabel={rightLabel}
       />
 
       <CompareCard
@@ -426,6 +446,9 @@ export default function SegmentDashboard() {
         currentTotal={grossProfit.currentTotal}
         previous={grossProfit.previous}
         current={grossProfit.current}
+        filingLink={filingLink}
+        leftLabel={leftLabel}
+        rightLabel={rightLabel}
       />
 
       <style jsx>{`

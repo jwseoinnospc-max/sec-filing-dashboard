@@ -5,19 +5,32 @@ import Image from "next/image";
 import Link from "next/link";
 
 // ── nav structure ─────────────────────────────────────────────
+type SubLink   = { label: string; href: string };
+type SubGroup  = { label: string; children: SubLink[] };       // 중첩(2단계) 그룹
+type GroupChild = SubLink | SubGroup;
 type LinkItem  = { type: "link";  label: string; href: string };
-type GroupItem = { type: "group"; label: string; basePath: string; children: { label: string; href: string }[] };
+type GroupItem = { type: "group"; label: string; basePath: string; children: GroupChild[] };
 type NavItem   = LinkItem | GroupItem;
 
+function isSubGroup(c: GroupChild): c is SubGroup {
+  return (c as SubGroup).children !== undefined;
+}
+
 const NAV_ITEMS: NavItem[] = [
-  { type: "link",  label: "Line-Up",           href: "/line-up" },
+  { type: "link",  label: "Line-Up (Test)",     href: "/line-up" },
   { type: "link",  label: "Launch Schedule",    href: "/schedule" },
-  { type: "link",  label: "Space Trend",        href: "/space-trend" },
+  { type: "link",  label: "Space Trend (Test)", href: "/space-trend" },
   { type: "link",  label: "Space Market",       href: "/space-market" },
   {
     type: "group", label: "Rocket Lab",          basePath: "/rocketlab",
     children: [
-      { label: "Dashboard",    href: "/rocketlab/dashboard" },
+      {
+        label: "Dashboard",
+        children: [
+          { label: "26Y1Q", href: "/rocketlab/dashboard" },
+          { label: "26Y2Q", href: "/rocketlab/dashboard/26q2" },
+        ],
+      },
       { label: "Finance",      href: "/rocketlab/financial-statement" },
       { label: "Presentation", href: "/rocketlab/presentation" },
     ],
@@ -28,6 +41,14 @@ const NAV_ITEMS: NavItem[] = [
       { label: "Dashboard",    href: "/firefly/dashboard" },
       { label: "Finance",      href: "/firefly/financial-statement" },
       { label: "Presentation", href: "/firefly/presentation" },
+    ],
+  },
+  {
+    type: "group", label: "SpaceX",              basePath: "/spacex",
+    children: [
+      { label: "Dashboard",           href: "/spacex/dashboard" },
+      { label: "Finance",             href: "/spacex/financial-statement" },
+      { label: "Funding & Valuation", href: "/spacex/funding" },
     ],
   },
 ];
@@ -152,6 +173,25 @@ function NavList({ pathname }: { pathname: string }) {
                 {open && (
                   <ul className="uni-sub-list">
                     {item.children.map((child) => {
+                      if (isSubGroup(child)) {
+                        return (
+                          <li key={child.label} className="uni-sub-item uni-sub-item--group">
+                            <span className="uni-sub-tick" />
+                            <span className="uni-sub-label uni-sub-group-label">{child.label}</span>
+                            <ul className="uni-sub-list uni-sub-list--nested">
+                              {child.children.map((leaf) => {
+                                const leafActive = pathname === leaf.href;
+                                return (
+                                  <li key={leaf.href} className={`uni-sub-item${leafActive ? " uni-sub-item--active" : ""}`}>
+                                    <span className="uni-sub-tick" />
+                                    <Link href={leaf.href} className="uni-sub-label">{leaf.label}</Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </li>
+                        );
+                      }
                       const childActive = pathname === child.href;
                       return (
                         <li key={child.href} className={`uni-sub-item${childActive ? " uni-sub-item--active" : ""}`}>

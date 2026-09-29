@@ -2,6 +2,14 @@
 // Docs: https://apiportal.koreainvestment.com
 const KIS_BASE = "https://openapi.koreainvestment.com:9443";
 
+const kisSleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// KIS "초당 거래건수를 초과하였습니다" 응답 (rt_cd:"1", msg_cd:"EGW00201")
+function isRateLimited(data: unknown): boolean {
+  const msg = (data as { msg_cd?: string; msg1?: string })?.msg_cd ?? "";
+  const txt = (data as { msg1?: string })?.msg1 ?? "";
+  return /EGW00201/.test(msg) || /초당\s*거래건수/.test(txt);
+}
+
 type TokenCache = { accessToken: string; expiresAt: number };
 let tokenCache: TokenCache | null = null;
 // Dedupe concurrent token requests within this instance: KIS rate-limits token issuance to
@@ -53,9 +61,8 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
   lastAttemptAt = Date.now();
 
   try {
-    
-    // an error response (e.g. KIS's "1 token/minute" rate-limit reply) for the full revalidate
-    // window, locking in a failure.
+    // POST 요청은 Next가 캐시하지 않음. no-store를 명시하면 라우트가 강제로 동적이 되어
+    // 페이지 ISR 캐싱이 꺼지므로 캐시 옵션을 두지 않음(토큰은 KV/메모리로 별도 캐시됨).
     const res = await fetch(`${KIS_BASE}/oauth2/tokenP`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -63,8 +70,7 @@ async function fetchNewToken(appKey: string, appSecret: string): Promise<string 
         grant_type: "client_credentials",
         appkey: appKey,
         appsecret: appSecret
-      }),
-      cache: "no-store"
+      })
     });
 
     const data = await res.json();
@@ -195,7 +201,7 @@ export type KisDomesticPrice = {
   bps: number | null;
 };
 
-async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promise<KisDomesticPrice | null> {
+async function fetchDomesticPriceOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false): Promise<KisDomesticPrice | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -203,6 +209,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
 
   try {
     const query = new URLSearchParams({ FID_COND_MRKT_DIV_CODE: "J", FID_INPUT_ISCD: code });
+    // 토큰 갱신·rate-limit·명시적 재시도(bust) 시엔 캐시 버스트로 새 응답을 받도록 함
+    if (forceRefresh || rateAttempt > 0 || bust) query.set("_cb", String(Date.now()));
     const res = await fetch(`${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-price?${query.toString()}`, {
       headers: {
         authorization: `Bearer ${token}`,
@@ -211,7 +219,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
         tr_id: "FHKST01010100",
         custtype: "P"
       },
-      cache: "no-store"
+      // KIS는 15분 지연 시세 → 900초 캐시로 라우트를 정적(ISR) 캐싱 가능하게 함
+      next: { revalidate: 900 }
     });
 
     // KIS sometimes returns 200 with rt_cd:"1" for auth errors instead of HTTP 401.
@@ -221,9 +230,14 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
     }
 
     const data = await res.json();
-    // EGW001xx / EGW002xx = token invalid/expired — retry with a fresh token.
-    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
-      return fetchDomesticPriceOnce(code, true);
+    // 초당 거래건수 초과 → 토큰은 그대로 두고 잠시 후 재시도 (토큰 재발급은 1분당 1회라 낭비 금지)
+    if (data?.rt_cd !== "0" && isRateLimited(data) && rateAttempt < 3) {
+      await kisSleep(400 * (rateAttempt + 1));
+      return fetchDomesticPriceOnce(code, forceRefresh, rateAttempt + 1);
+    }
+    // EGW001xx = token invalid/expired — retry with a fresh token.
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW001/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticPriceOnce(code, true, rateAttempt);
     }
 
     const output = data?.output;
@@ -251,8 +265,8 @@ async function fetchDomesticPriceOnce(code: string, forceRefresh = false): Promi
 }
 
 // FID_INPUT_ISCD: 6-digit KRX stock code (e.g. "012450" for Hanwha Aerospace)
-export async function getDomesticPrice(code: string): Promise<KisDomesticPrice | null> {
-  return fetchDomesticPriceOnce(code);
+export async function getDomesticPrice(code: string, bust = false): Promise<KisDomesticPrice | null> {
+  return fetchDomesticPriceOnce(code, false, 0, bust);
 }
 
 export type KisDailyBar = { date: string; close: number };
@@ -261,7 +275,7 @@ function formatDate(d: Date) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false): Promise<KisDailyBar[] | null> {
+async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false): Promise<KisDailyBar[] | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -280,6 +294,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
       FID_PERIOD_DIV_CODE: "D",
       FID_ORG_ADJ_PRC: "0"
     });
+    if (forceRefresh || rateAttempt > 0 || bust) query.set("_cb", String(Date.now()));
     const res = await fetch(
       `${KIS_BASE}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?${query.toString()}`,
       {
@@ -290,7 +305,8 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
           tr_id: "FHKST03010100",
           custtype: "P"
         },
-        cache: "no-store"
+        // 일봉도 900초 캐시 (당일 데이터는 15분 지연)
+        next: { revalidate: 900 }
       }
     );
 
@@ -300,8 +316,14 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
     }
 
     const data = await res.json();
-    if (!forceRefresh && data?.rt_cd !== "0" && /EGW00[12]/.test(data?.msg_cd ?? "")) {
-      return fetchDomesticDailyHistoryOnce(code, true);
+    // 초당 거래건수 초과 → 토큰 유지, 잠시 후 재시도
+    if (data?.rt_cd !== "0" && isRateLimited(data) && rateAttempt < 3) {
+      await kisSleep(400 * (rateAttempt + 1));
+      return fetchDomesticDailyHistoryOnce(code, forceRefresh, rateAttempt + 1);
+    }
+    // EGW001xx = token invalid/expired — retry with a fresh token.
+    if (!forceRefresh && data?.rt_cd !== "0" && /EGW001/.test(data?.msg_cd ?? "")) {
+      return fetchDomesticDailyHistoryOnce(code, true, rateAttempt);
     }
 
     const rows = data?.output2;
@@ -317,8 +339,8 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false)
 }
 
 // Daily close-price history (~last 100 trading days, KIS's per-call cap) for charting.
-export async function getDomesticDailyHistory(code: string): Promise<KisDailyBar[] | null> {
-  return fetchDomesticDailyHistoryOnce(code);
+export async function getDomesticDailyHistory(code: string, bust = false): Promise<KisDailyBar[] | null> {
+  return fetchDomesticDailyHistoryOnce(code, false, 0, bust);
 }
 
 export type KisMinuteBar = { time: string; close: number }; // time: "HHMM"

@@ -16,12 +16,14 @@ export default function RevenueCard({
   filingUrl,
   revenueText,
   growthText,
-  ttmText
+  ttmText,
+  period = "26Y 1Q"
 }: {
   filingUrl: string;
   revenueText: ReactNode;
   growthText: string;
   ttmText: ReactNode;
+  period?: string;
 }) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -34,7 +36,7 @@ export default function RevenueCard({
       onMouseLeave={() => setHovered(false)}
       onClick={() => setPinned((v) => !v)}
     >
-      <h3>💵 매출 (26Y 1Q)</h3>
+      <h3>💵 매출 ({period})</h3>
       <div className="metric">
         <a href={filingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
           {revenueText}

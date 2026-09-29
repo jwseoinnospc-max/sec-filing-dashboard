@@ -26,3 +26,10 @@ export const quarterlyPoints: QuarterPoint[] = [
   { quarter: '2025 4Q', revenue: 179652, grossProfit: 68232, netIncome: -52922, operatingCashFlow: -64531, backlog: 1847322 },
   { quarter: '2026 1Q', revenue: 200348, grossProfit: 76493, netIncome: -45022, operatingCashFlow: -50332, backlog: 2219756 }
 ];
+
+// 2026 2Q 포함 버전 (26Y2Q 대시보드용). 2026 2Q는 node/13041 10-Q 기준:
+// operatingCashFlow는 상반기 누계(-134,407)에서 Q1(-50,332)을 뺀 분기값(-84,075).
+export const quarterlyPointsQ2: QuarterPoint[] = [
+  ...quarterlyPoints,
+  { quarter: '2026 2Q', revenue: 234066, grossProfit: 84576, netIncome: -49258, operatingCashFlow: -84075, backlog: 2355949 }
+];

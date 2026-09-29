@@ -44,11 +44,12 @@ export function SpaceStockCard({
 }) {
   const hasPrice = price !== undefined && price !== null;
   const isUp = (change ?? 0) >= 0;
+  const isDomestic = currency === "KRW";
 
   return (
-    <div className="space-stock-card">
+    <div className="space-stock-card" data-region={isDomestic ? "domestic" : "global"}>
       <div className="space-stock-head">
-        <span className="space-stock-name">
+        <span className="space-stock-name space-stock-logo-bg">
           {logo && <img src={logo} alt="" className="space-stock-logo" />}
           {name}
           {(changePercent ?? 0) >= 5 && <span className="surge-badge surge" style={{ marginLeft: 6 }}>급등</span>}

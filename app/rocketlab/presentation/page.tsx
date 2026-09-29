@@ -6,6 +6,7 @@ import NavMenu from "@/components/NavMenu";
 // `url: null` means the direct PDF link hasn't been collected yet (the IR site blocks
 // automated fetching, so these need to be copied by hand from a browser).
 const QUARTERS: { label: string; url: string | null }[] = [
+  { label: "2026 2Q", url: "https://investors.rocketlabcorp.com/static-files/3dde8e68-7ce6-4685-8c0b-17afc94dbb86" },
   { label: "2026 1Q", url: "https://investors.rocketlabcorp.com/static-files/c0bd4327-c3ff-4843-8eae-8b0d8a4d4b82" },
   { label: "2025 4Q", url: "https://investors.rocketlabcorp.com/static-files/be9441ad-c07f-49c2-ad50-531fd77180ee" },
   { label: "2025 3Q", url: "https://investors.rocketlabcorp.com/static-files/f2e2847c-5660-4b81-8bf7-709f61289898" },

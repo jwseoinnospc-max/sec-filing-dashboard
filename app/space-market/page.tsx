@@ -1,9 +1,11 @@
 export const revalidate = 900; // KIS 15분 지연 기준 — 15분마다 1회만 재생성
 
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { readFileSync } from "fs";
 import { join } from "path";
 import NavMenu from "@/components/NavMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 import OtherSpaceRow from "@/components/OtherSpaceRow";
 import SectorIndexRow from "@/components/SectorIndexRow";
 import TopMoverRow, { type MoverItem } from "@/components/TopMoverRow";
@@ -80,7 +82,7 @@ const DOMESTIC_COMPANIES = [
   { name: "LIG D&A", code: "079550", exchange: "KOSPI", logo: favicon("lignex1.com") },                               // 15.9조
   { name: "한국항공우주", code: "047810", exchange: "KOSPI", logo: "/kai-logo.jpg" },                                 // 14.6조
   { name: "한화시스템", code: "272210", exchange: "KOSPI", logo: "https://static.toss.im/png-icons/securities/icn-sec-fill-272210.png" }, // 14조
-  { name: "컨텍", code: "139480", exchange: "KOSDAQ", logo: favicon("contec.kr") },                                   // 2.3조
+  { name: "컨텍", code: "451760", exchange: "KOSDAQ", logo: favicon("contec.kr") },                                   // 코스닥 (2024 상장)
   { name: "쎄트렉아이", code: "099320", exchange: "KOSDAQ", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Satrec_Initiative_CI_Logo.svg" }, // 9977억
   { name: "인텔리안테크", code: "189300", exchange: "KOSDAQ", logo: favicon("intelliantech.com") },                   // 8472억
   { name: "켄코아에어로스페이스", code: "274090", exchange: "KOSDAQ", logo: favicon("kencoa.com") },                  // 1691억
@@ -89,29 +91,92 @@ const DOMESTIC_COMPANIES = [
 ];
 
 async function loadOverseasStock(symbol: string) {
-  const price = await fetchYahooPrice(symbol);
-  const profile = await getProfile(symbol);
-  const valuation = await getValuation(symbol);
+  // 3개 호출을 병렬로 — 서로 의존성이 없음
+  const [price, profile, valuation] = await Promise.all([
+    fetchYahooPrice(symbol),
+    getProfile(symbol),
+    getValuation(symbol),
+  ]);
   return { price, profile, valuation };
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// 배열을 concurrency 크기 배치로 나눠 병렬 실행 (KIS 초당 요청 제한 완화용).
+// batchDelayMs: 배치 사이 지연 — KIS 초당 거래건수 초과(EGW00201) 방지.
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<R>,
+  batchDelayMs = 0
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const settled = await Promise.all(batch.map((it, j) => fn(it, i + j)));
+    settled.forEach((r, j) => { results[i + j] = r; });
+    if (batchDelayMs && i + concurrency < items.length) await sleep(batchDelayMs);
+  }
+  return results;
+}
+
+// KIS 조회가 null이면 잠시 후 재시도 (초당 제한 등 일시적 실패 대비).
+// 재시도는 bust=true로 호출해 캐시된 에러 응답을 우회하고 새 데이터를 받는다.
+async function withRetry<R>(fn: (bust: boolean) => Promise<R | null>, delayMs = 400): Promise<R | null> {
+  const first = await fn(false);
+  if (first != null) return first;
+  await sleep(delayMs);
+  return fn(true);
+}
+
+// 시장 데이터 로딩 전체를 900초 캐시.
+// KIS의 no-store fetch(401 재시도용)는 그대로 두되 결과만 캐시해, 15분에 한 번만
+// 실제 API를 호출하고 나머지 요청은 캐시 데이터를 즉시 반환 → 로딩 대폭 단축.
+const loadMarketData = unstable_cache(
+  async () => {
+    // 해외/국내 주식·뉴스를 모두 병렬로 로드
+    const [nasdaqResults, domesticData, nasdaqNews, domesticNews] = await Promise.all([
+      // 해외 4개사: 전부 병렬
+      Promise.all(NASDAQ_COMPANIES.map((c) => loadOverseasStock(c.symbol))),
+      // 국내 12개사: KIS 초당 제한(EGW00201) 방지 위해 1개사씩 순차 처리(현재가+일봉만 동시).
+      // 배치 간 120ms 지연 + null 실패 시 재시도. (페이지는 캐시되므로 재생성 속도보다 안정성 우선)
+      mapWithConcurrency(
+        DOMESTIC_COMPANIES,
+        1,
+        async (c) => {
+          const [price, history] = await Promise.all([
+            withRetry((bust) => getDomesticPrice(c.code, bust)),
+            withRetry((bust) => getDomesticDailyHistory(c.code, bust)),
+          ]);
+          return { price, history };
+        },
+        120
+      ),
+      Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
+      // 국내: 회사명 + 우주/방산 컨텍스트로 검색해 무관 기사(예: '컨텍' → 'AI 컨텍스터') 배제.
+      // 제목에 회사명이 포함된 기사만 유지.
+      Promise.all(
+        DOMESTIC_COMPANIES.map((c) =>
+          getCompanyNews(
+            `${c.name} (우주 OR 위성 OR 발사체 OR 항공우주 OR 우주항공 OR 방산 OR 지상국 OR 로켓)`,
+            "ko",
+            3,
+            [c.name]
+          )
+        )
+      ),
+    ]);
+    return { nasdaqResults, domesticData, nasdaqNews, domesticNews };
+  },
+  ["space-market-data-v2"],
+  { revalidate: 900 }
+);
+
 export default async function SpaceMarketPage() {
-  const nasdaqResults: Awaited<ReturnType<typeof loadOverseasStock>>[] = [];
-  for (const company of NASDAQ_COMPANIES) {
-    nasdaqResults.push(await loadOverseasStock(company.symbol));
-  }
+  const { nasdaqResults, domesticData, nasdaqNews, domesticNews } = await loadMarketData();
 
-  const domesticPrices: (KisDomesticPrice | null)[] = [];
-  const domesticHistory: (KisDailyBar[] | null)[] = [];
-  for (const company of DOMESTIC_COMPANIES) {
-    domesticPrices.push(await getDomesticPrice(company.code));
-    domesticHistory.push(await getDomesticDailyHistory(company.code));
-  }
-
-  const [nasdaqNews, domesticNews] = await Promise.all([
-    Promise.all(NASDAQ_COMPANIES.map((c) => getCompanyNews(c.name, "en", 3, c.titleFilter))),
-    Promise.all(DOMESTIC_COMPANIES.map((c) => getCompanyNews(c.name, "ko"))),
-  ]);
+  const domesticPrices: (KisDomesticPrice | null)[] = domesticData.map((d) => d.price);
+  const domesticHistory: (KisDailyBar[] | null)[] = domesticData.map((d) => d.history);
 
   const anyKisMissing = nasdaqResults.every((r) => !r.price) && domesticPrices.every((p) => !p);
 
@@ -190,7 +255,10 @@ export default async function SpaceMarketPage() {
       <section className="header">
         <div>
           <NavMenu />
-          <h1>Space Market</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "8px" }}>
+            <h1 style={{ margin: 0 }}>Space Market</h1>
+            <ThemeToggle />
+          </div>
           <p>우주 산업 대표 기업의 주가를 한 화면에서 확인합니다.</p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>
         </div>

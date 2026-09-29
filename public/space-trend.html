@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -34,9 +34,34 @@ a{color:inherit;text-decoration:none;}
 .row{display:grid;gap:10px;}
 .row-portrait{grid-template-columns:repeat(3,1fr);}
 .portrait-card{aspect-ratio:1/1;display:flex;flex-direction:column;}
+
+/* News hero — 글로벌/국내 2줄, 각 줄 5개 정사각형 카드 */
+.news-hero{display:flex;flex-direction:column;gap:16px;}
+.nh-row-label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.nh-row-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.nh-row-label .nh-flag{font-size:15px;}
+.news-hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.nhc{--glow-x:50%;--glow-y:50%;--glow-intensity:0;--glow-radius:220px;--bento-rgb:96,165,250;position:relative;aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;transform-style:preserve-3d;}
+.nhc:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+/* MagicBento: 커서 근접 시 빛나는 테두리 글로우 */
+.nhc::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:2px;background:radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),rgba(var(--bento-rgb),calc(var(--glow-intensity)*0.9)) 0%,rgba(var(--bento-rgb),calc(var(--glow-intensity)*0.35)) 35%,transparent 65%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none;opacity:var(--glow-intensity);transition:opacity .25s ease;z-index:6;}
+.nhc .particle{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(var(--bento-rgb),1);box-shadow:0 0 6px rgba(var(--bento-rgb),0.7);pointer-events:none;z-index:7;}
+/* 커서를 따라다니는 글로벌 스포트라이트 */
+.bento-spotlight{position:fixed;width:700px;height:700px;border-radius:50%;pointer-events:none;z-index:3;opacity:0;transform:translate(-50%,-50%);mix-blend-mode:screen;background:radial-gradient(circle,rgba(96,165,250,0.12) 0%,rgba(96,165,250,0.06) 18%,rgba(96,165,250,0.03) 34%,transparent 62%);}
+.nhc-img{position:relative;width:100%;height:50%;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,#1e3a5f,#0f172a);}
+.nhc-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.nhc-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;opacity:0.9;}
+.nhc-cat{position:absolute;top:8px;left:8px;z-index:2;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(4,8,15,0.6);backdrop-filter:blur(4px);}
+.nhc-body{flex:1;min-width:0;padding:11px 13px 12px;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+.nhc-title{font-size:14px;font-weight:700;line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.nhc-desc{font-size:12px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.nhc-meta{margin-top:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;}
+.nhc-meta .nhc-src{color:var(--accent2);overflow:hidden;text-overflow:ellipsis;}
+.nhc-sk{aspect-ratio:1/1;border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
 .row-1{grid-template-columns:3fr 1fr 1.2fr;}
-.row-2{grid-template-columns:3fr 2fr 2fr 2fr;}
+.row-2{grid-template-columns:repeat(3,minmax(0,1fr));}
 .row-3{grid-template-columns:2fr 2.5fr 3fr 1.8fr;}
+.row-main{grid-template-columns:repeat(3,minmax(0,1fr));}
 
 /* Cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
@@ -201,15 +226,14 @@ a{color:inherit;text-decoration:none;}
 
 <div class="dashboard">
 
-  <!-- ROW PORTRAIT: 2:3 비율 카드 3개 -->
-  <div class="row row-portrait">
-    <div class="card portrait-card"></div>
-    <div class="card portrait-card"></div>
-    <div class="card portrait-card"></div>
+  <!-- 최신 우주뉴스: 글로벌/국내 2줄, 각 줄 5개 정사각형 카드 -->
+  <div id="newsHero" class="news-hero">
+    <div class="nh-row-label"><span class="nh-flag">🌐</span> 글로벌</div>
+    <div class="news-hero-grid"><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div><div class="nhc-sk"></div></div>
   </div>
 
-  <!-- ROW 1 -->
-  <div class="row row-1">
+  <!-- 메인: 시장 보고서 · 발사 캘린더 · 주간 리포트 -->
+  <div class="row row-main">
 
     <!-- 시장 보고서 -->
     <div class="card">
@@ -218,36 +242,6 @@ a{color:inherit;text-decoration:none;}
         <span class="more-link">더보기 &gt;</span>
       </div>
       <div id="reportList"></div>
-    </div>
-
-  </div><!-- /row-1 -->
-
-  <!-- ROW 2 -->
-  <div class="row row-2">
-
-    <!-- 키워드 트렌드 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">키워드 트렌드 <small>(기사 수 기준)</small></span>
-      </div>
-      <div class="chart-box"><canvas id="trendChart"></canvas></div>
-    </div>
-
-    <!-- 산업별 뉴스 분포 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">산업별 뉴스 분포</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="position:relative;width:100px;height:100px;flex-shrink:0;">
-          <canvas id="distChart" width="100" height="100"></canvas>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-            <div style="font-size:12px;color:var(--muted)">Total</div>
-            <div style="font-size:18px;font-weight:800;" id="distTotal">-</div>
-          </div>
-        </div>
-        <div id="distLegend" style="flex:1;"></div>
-      </div>
     </div>
 
     <!-- 발사 캘린더 -->
@@ -269,38 +263,6 @@ a{color:inherit;text-decoration:none;}
       </div>
     </div>
 
-  </div><!-- /row-2 -->
-
-  <!-- ROW 3 -->
-  <div class="row row-3">
-
-    <!-- 주요 기업 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">주요 기업</span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <div class="co-grid" id="coGrid"></div>
-    </div>
-
-    <!-- 계약 현황 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">계약 현황 <small>(주요 기관)</small></span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <table class="ct" id="ctTable"></table>
-    </div>
-
-    <!-- 투자 트래커 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">투자 트래커 <small>(최근 6개월)</small></span>
-        <span class="more-link">전체 보기 &gt;</span>
-      </div>
-      <table class="tt" id="ttTable"></table>
-    </div>
-
     <!-- 주간 리포트 -->
     <div class="card">
       <div class="card-header">
@@ -309,29 +271,8 @@ a{color:inherit;text-decoration:none;}
       <div id="wrContent"></div>
     </div>
 
-  </div><!-- /row-3 -->
+  </div><!-- /row-main -->
 
-  <!-- ROW 4: 최근 뉴스 -->
-  <div class="row" style="grid-template-columns:1fr;">
-    <div class="card">
-      <div class="card-header" style="flex-direction:column;align-items:flex-start;">
-        <span class="card-title" style="margin-bottom:8px;">최근 뉴스</span>
-        <div class="nf" id="nFilters">
-          <span class="ft active" data-c="전체">전체</span>
-          <span class="ft" data-c="Launch">Launch</span>
-          <span class="ft" data-c="Satellite">Satellite</span>
-          <span class="ft" data-c="Defense">Defense</span>
-          <span class="ft" data-c="Investment">Investment</span>
-          <span class="ft" data-c="Policy">Policy</span>
-          <span class="ft" data-c="Manufacturing">Manufacturing</span>
-          <span class="ft" data-c="AI">AI</span>
-          <span class="ft" data-c="M&A">M&amp;A</span>
-          <span class="sort-lbl">☰ 필터 &nbsp; 정렬: 최신순 ∨</span>
-        </div>
-      </div>
-      <div id="ntWrap"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
-    </div>
-  </div>
 
 </div><!-- /dashboard -->
 
@@ -368,6 +309,32 @@ function classify(t){
   var tl=t.toLowerCase();
   for(var r of CATS)for(var k of r.k)if(tl.includes(k))return r.c;
   return 'Other';
+}
+
+/* ===== 우주산업 관련성 필터 =====
+   'rocket launch' 등이 K-pop 투어명·게임 등에 걸려 들어오는 오탐을 제거 */
+// 확실한 우주 도메인 용어 (있으면 노이즈가 섞여도 통과)
+var HARD_SPACE=['nasa','spacex','스페이스x','starship','스타십','falcon','팰컨','starlink','스타링크',
+  'blue origin','블루오리진','rocket lab','로켓랩','firefly','isro','jaxa','esa','arianespace','ula',
+  '위성','satellite','인공위성','발사체','launch vehicle','spacecraft','우주선','우주정거장','iss',
+  '궤도','orbit','누리호','나로','한화에어로','한화시스템','kari','항우연','우주항공청','우주청',
+  'artemis','아르테미스','constellation','군집위성','정지궤도','저궤도','deep space','nuri','soyuz','소유스',
+  'stratolaunch','스트라토런치','blue ghost','virgin galactic','sierra space','relativity space',
+  '우주산업','우주항공','항공우주','우주개발','우주탐사','달 탐사','화성 탐사','재사용 로켓','액체엔진'];
+// 넓은 우주 관련 용어 (최소 하나는 있어야 통과)
+var SPACE_TERMS=HARD_SPACE.concat(['rocket','로켓','launch','발사','우주','space','mission','liftoff',
+  'lift-off','lift off','payload','탑재체','추진','engine','엔진','moon','달','mars','화성','astronaut','우주비행사']);
+// 비-우주 노이즈 (엔터·게임·스포츠 등)
+var NOISE_TERMS=['qwer','콘서트','투어','앨범','뮤직비디오','뮤비',' mv','아이돌','팬미팅','데뷔','컴백',
+  '걸그룹','보이그룹','신곡','음원','무대','뮤지컬','concert','tour','band','album','k-pop','kpop',
+  '게임','드라마','예능','굿즈','티켓','예매','웹툰','축구','야구','농구','골프','배구','e스포츠'];
+function isSpaceRelated(title){
+  var t=(title||'').toLowerCase();
+  var hard=HARD_SPACE.some(function(k){return t.includes(k);});
+  // 노이즈가 있는데 확실한 우주 용어가 없으면 제외
+  if(!hard&&NOISE_TERMS.some(function(k){return t.includes(k);}))return false;
+  // 최소 하나의 우주 관련 용어 필요
+  return SPACE_TERMS.some(function(k){return t.includes(k);});
 }
 function catBadge(c){
   var m={Launch:'bl',Satellite:'bs',Defense:'bd',Investment:'bi','M&A':'bm',Policy:'bp',Manufacturing:'bp',AI:'ba',Other:'bo'};
@@ -417,6 +384,7 @@ var COS=[
   {n:'Impulse',bg:'rgba(20,184,166,0.15)',c:'#2dd4bf'},
 ];
 function renderCompanies(){
+  if(!document.getElementById('coGrid'))return;
   document.getElementById('coGrid').innerHTML=COS.map(function(c){
     var ab=c.n.split(' ').map(function(w){return w[0];}).join('').slice(0,4).toUpperCase();
     return '<div class="co-card"><div class="co-logo" style="background:'+c.bg+';color:'+c.c+'">'+ab+'</div><div class="co-name">'+c.n+'</div></div>';
@@ -433,6 +401,7 @@ var CT_DATA=[
   {ag:'NRO',ic:'🛡️',l:2,s:1,d:8,o:6,t:17},
 ];
 function renderContract(){
+  if(!document.getElementById('ctTable'))return;
   document.getElementById('ctTable').innerHTML='<thead><tr><th>기관</th><th>🚀</th><th>🛰️</th><th>📋</th><th>📄</th><th>Total</th></tr></thead><tbody>'+
     CT_DATA.map(function(r){
       return '<tr><td><div class="ct-ag"><span>'+r.ic+'</span>'+r.ag+'</div></td><td>'+r.l+'</td><td>'+r.s+'</td><td>'+r.d+'</td><td>'+r.o+'</td><td class="ct-total">'+r.t+'</td></tr>';
@@ -451,6 +420,7 @@ var TT_DATA=[
   {co:'Quantum Space',ab:'QS',amt:'$1.2B',rnd:'SPAC',dt:'2026.06.08',u:'https://www.morningstar.com/news/pr-newswire/20260608da77885/quantum-space-a-leading-space-defense-and-orbital-mobility-company-to-go-public-via-merger-with-inflection-point-acquisition-corp-vi'},
 ];
 function renderTracker(){
+  if(!document.getElementById('ttTable'))return;
   document.getElementById('ttTable').innerHTML='<thead><tr><th>회사</th><th>금액</th><th>라운드</th><th>날짜</th></tr></thead><tbody>'+
     TT_DATA.map(function(r){
       var link=r.u?' onclick="window.open(\''+r.u+'\')" style="cursor:pointer"':'';
@@ -547,6 +517,7 @@ function switchNewsTab(tab, btn){
 
 function renderTopNews(){
   var el=document.getElementById('topNews');
+  if(!el)return;
   var now=new Date();
 
   if(activeNewsTab==='kr'){
@@ -578,6 +549,7 @@ function renderTopNews(){
 function renderHotKW(){
   var kws=extractKW(allNews);
   var el=document.getElementById('hotKw');
+  if(!el)return;
   if(!kws.length){el.innerHTML='<div class="empty">데이터 없음</div>';return;}
   var fIcons=['🔥','🔥','🔥','','','','',''];
   el.innerHTML=kws.map(function(k,i){
@@ -589,6 +561,7 @@ function renderHotKW(){
 /* ===== INVEST (real 2026 data, deduped) ===== */
 function renderInvest(){
   var el=document.getElementById('investList');
+  if(!el)return;
   var seen={};
   var items=TT_DATA.filter(function(r){
     if(seen[r.co])return false;seen[r.co]=true;return true;
@@ -619,6 +592,7 @@ async function loadLaunches(){
 }
 function renderLaunchSched(){
   var el=document.getElementById('launchSched');
+  if(!el)return;
   if(!launches.length){el.innerHTML='<div class="empty">발사 일정 없음 (15회/시 제한)</div>';return;}
   var MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   el.innerHTML=launches.slice(0,4).map(function(l){
@@ -669,6 +643,7 @@ var TKW=['Launch','Satellite','Defense','Investment','Manufacturing'];
 var TCOL=['#3b82f6','#14b8a6','#ef4444','#22c55e','#f59e0b'];
 var TBASE={Launch:320,Satellite:210,Defense:180,Investment:150,Manufacturing:90};
 function renderTrend(){
+  if(!document.getElementById('trendChart'))return;
   var months=[];
   for(var i=5;i>=0;i--){var d=new Date(today.getFullYear(),today.getMonth()-i,1);months.push((d.getMonth()+1)+'월');}
   var catC={};allNews.forEach(function(n){catC[n.cat]=(catC[n.cat]||0)+1;});
@@ -693,6 +668,7 @@ function renderTrend(){
 
 /* ===== DIST CHART ===== */
 function renderDist(){
+  if(!document.getElementById('distChart'))return;
   var counts={};allNews.forEach(function(n){counts[n.cat]=(counts[n.cat]||0)+1;});
   var labels=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
   var vals=labels.map(function(l){return counts[l];});
@@ -716,6 +692,7 @@ function renderDist(){
 
 /* ===== NEWS TABLE ===== */
 function renderNewsTable(){
+  if(!document.getElementById('ntWrap'))return;
   var filt=activeFilter==='전체'?allNews:allNews.filter(function(n){return n.cat===activeFilter;});
   var seen={};
   filt=filt.filter(function(n){var k=n.title.trim().slice(0,40);if(seen[k])return false;seen[k]=true;return true;});
@@ -728,7 +705,8 @@ function renderNewsTable(){
         '<td class="nt-src">'+n.source+'</td></tr>';
     }).join('')+'</tbody></table>';
 }
-document.getElementById('nFilters').addEventListener('click',function(e){
+var _nf=document.getElementById('nFilters');
+if(_nf)_nf.addEventListener('click',function(e){
   if(e.target.classList.contains('ft')){
     document.querySelectorAll('.ft').forEach(function(t){t.classList.remove('active');});
     e.target.classList.add('active');
@@ -737,6 +715,176 @@ document.getElementById('nFilters').addEventListener('click',function(e){
   }
 });
 
+/* ===== 최신 뉴스 히어로 카드 (5열 정사각형: 대표사진+제목+요약) ===== */
+var HERO_N=5;
+function heroSplit(title){
+  var t=(title||'').trim(),i=t.indexOf('—');
+  if(i<0)i=t.indexOf(' - ');
+  if(i>0)return{h:t.slice(0,i).trim(),d:t.slice(i+1).replace(/^[-—\s]+/,'').trim()};
+  return{h:t,d:''};
+}
+// 국내(한국) 우주 뉴스 판별 키워드
+var DOMESTIC_KEYS=['이노스페이스','innospace','누리호','나로','한화에어로','한화시스템','한국항공우주','kai',
+  '쎄트렉','컨텍','contec','인텔리안','intellian','우주항공청','kasa','kari','항우연','nglv','차세대발사체',
+  '페리지','perigee','한빛','kompsat','다목적실용위성','천리안','도요샛','우주청','ap위성','나라스페이스',
+  'naraspace','켄코아','kencoa','lig넥스원','현대로템','대한민국','국내','한국항공','스페이스파이오니어',
+  '중형위성','코오롱','kolon spaceworks','korea.net','한국형','국산 발사체','제주'];
+function newsRegion(n){
+  if(n._region)return n._region;
+  var t=((n.title||'')+' '+(n.source||'')).toLowerCase();
+  return DOMESTIC_KEYS.some(function(k){return t.indexOf(k)>=0;})?'domestic':'global';
+}
+function heroDedupTop(pool,limit){
+  var seen={},list=[];
+  pool.forEach(function(n){var k=(n.title||'').trim().slice(0,40);if(!k||seen[k])return;seen[k]=true;list.push(n);});
+  list.sort(function(a,b){return new Date(b.pubDate||0)-new Date(a.pubDate||0);});
+  return list.slice(0,limit);
+}
+function heroCardHtml(n,id){
+  var s=heroSplit(n.title);
+  var src=n.source||'';if(!src){try{src=new URL(n.link).hostname.replace('www.','');}catch(e){}}
+  var emoji=EMOJIS[n.cat]||'🛰️';
+  return '<div class="nhc" onclick="window.open(\''+(n.link||'#').replace(/\'/g,'\\\'')+'\')">'+
+    '<div class="nhc-img" id="nhcImg'+id+'">'+
+      '<div class="nhc-fallback">'+emoji+'</div>'+
+    '</div>'+
+    '<div class="nhc-body">'+
+      '<div class="nhc-title" id="nhcTitle'+id+'">'+s.h+'</div>'+
+      '<div class="nhc-desc" id="nhcDesc'+id+'">'+(s.d||'')+'</div>'+
+      '<div class="nhc-meta">'+fmtD(n.pubDate)+' · <span class="nhc-src" id="nhcSrc'+id+'">'+src+'</span></div>'+
+    '</div>'+
+  '</div>';
+}
+// 원문이 아닌 포털·집계 사이트 (여기 해당하면 og로 해석된 원문 출처로 교체)
+var PORTAL_SRC=['네이트','nate','다음','daum','줌','zum','google news','news.google','msn','네이버','naver'];
+function isPortalSrc(s){var t=(s||'').toLowerCase();return !s||PORTAL_SRC.some(function(p){return t.indexOf(p)>=0;});}
+function heroHydrate(n,id){
+  var s0=heroSplit(n.title);
+  translateEl(document.getElementById('nhcTitle'+id),s0.h);
+  if(!n.link)return;
+  fetch('/api/og?url='+encodeURIComponent(n.link)).then(function(r){return r.json();}).then(function(o){
+    if(o&&o.image){
+      var box=document.getElementById('nhcImg'+id);
+      if(box){var img=new Image();img.onload=function(){var f=box.querySelector('.nhc-fallback');if(f)f.style.display='none';box.insertBefore(img,box.firstChild);};img.onerror=function(){};img.src=o.image;}
+    }
+    var d=document.getElementById('nhcDesc'+id),s=heroSplit(n.title);
+    var descText=(o&&o.description&&o.description.indexOf('�')<0&&(!s.d||s.d.length<12))?o.description:s.d;
+    if(d&&descText)translateEl(d,descText);
+    // 포털·집계 사이트면 og로 해석된 원문 출처로 교체
+    if(o&&o.source&&isPortalSrc(n.source)){
+      var srcEl=document.getElementById('nhcSrc'+id);
+      if(srcEl)srcEl.textContent=o.source;
+    }
+  }).catch(function(){});
+}
+function renderNewsHero(){
+  var el=document.getElementById('newsHero');if(!el)return;
+  // 글로벌/국내 풀 구성 (CURATED=글로벌, KR_NEWS=국내로 고정, RSS는 키워드로 분류)
+  var globalPool=CURATED_NEWS.map(function(n){return Object.assign({_region:'global'},n);});
+  var domesticPool=KR_NEWS.map(function(n){return Object.assign({_region:'domestic'},n);});
+  (allNews||[]).forEach(function(n){(newsRegion(n)==='domestic'?domesticPool:globalPool).push(n);});
+  var globalList=heroDedupTop(globalPool,HERO_N);
+  var domesticList=heroDedupTop(domesticPool,HERO_N);
+  function rowHtml(label,flag,items,prefix){
+    return '<div class="nh-row-label"><span class="nh-flag">'+flag+'</span> '+label+'</div>'+
+      '<div class="news-hero-grid">'+items.map(function(n,i){return heroCardHtml(n,prefix+i);}).join('')+'</div>';
+  }
+  el.innerHTML=rowHtml('글로벌','🌐',globalList,'g')+rowHtml('국내','🇰🇷',domesticList,'d');
+  globalList.forEach(function(n,i){heroHydrate(n,'g'+i);});
+  domesticList.forEach(function(n,i){heroHydrate(n,'d'+i);});
+  initBentoCards();
+}
+
+/* ===== MagicBento 카드 효과 (스포트라이트·글로우·파티클·마그네티즘·클릭 리플) ===== */
+var _bentoSpotlight=null,_bentoMoveBound=false;
+function initBentoCards(){
+  if(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)return; // 모바일 제외
+  var section=document.getElementById('newsHero');if(!section)return;
+  var G=window.gsap;
+  if(!_bentoSpotlight){var s=document.createElement('div');s.className='bento-spotlight';document.body.appendChild(s);_bentoSpotlight=s;}
+  // 글로벌 mousemove: 카드 근접 글로우 + 스포트라이트 (1회만 바인딩)
+  if(!_bentoMoveBound){
+    _bentoMoveBound=true;
+    var radius=260,proximity=radius*0.5,fade=radius*0.75;
+    document.addEventListener('mousemove',function(e){
+      var cards=section.querySelectorAll('.nhc');if(!cards.length)return;
+      var rect=section.getBoundingClientRect();
+      var inside=e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom;
+      if(!inside){if(G)G.to(_bentoSpotlight,{opacity:0,duration:0.3});cards.forEach(function(c){c.style.setProperty('--glow-intensity','0');});return;}
+      var minD=Infinity;
+      cards.forEach(function(card){
+        var r=card.getBoundingClientRect();
+        var cx=r.left+r.width/2,cy=r.top+r.height/2;
+        var d=Math.max(0,Math.hypot(e.clientX-cx,e.clientY-cy)-Math.max(r.width,r.height)/2);
+        minD=Math.min(minD,d);
+        var gi=d<=proximity?1:(d<=fade?(fade-d)/(fade-proximity):0);
+        card.style.setProperty('--glow-x',(((e.clientX-r.left)/r.width)*100)+'%');
+        card.style.setProperty('--glow-y',(((e.clientY-r.top)/r.height)*100)+'%');
+        card.style.setProperty('--glow-intensity',String(gi));
+        card.style.setProperty('--glow-radius',radius+'px');
+      });
+      if(G){
+        G.to(_bentoSpotlight,{left:e.clientX,top:e.clientY,duration:0.1,ease:'power2.out'});
+        var op=minD<=proximity?0.8:(minD<=fade?((fade-minD)/(fade-proximity))*0.8:0);
+        G.to(_bentoSpotlight,{opacity:op,duration:op>0?0.2:0.5,ease:'power2.out'});
+      }
+    });
+    document.addEventListener('mouseleave',function(){
+      if(_bentoSpotlight&&G)G.to(_bentoSpotlight,{opacity:0,duration:0.3});
+      section.querySelectorAll('.nhc').forEach(function(c){c.style.setProperty('--glow-intensity','0');});
+    });
+  }
+  // 카드별: 파티클(호버) + 마그네티즘 + 클릭 리플 (렌더 후 새 카드에만 부착)
+  section.querySelectorAll('.nhc').forEach(function(card){
+    if(card._bentoInit)return;card._bentoInit=true;
+    var particles=[],timeouts=[],hovered=false;
+    card.addEventListener('mouseenter',function(){
+      hovered=true;if(!G)return;
+      for(var i=0;i<8;i++){(function(k){var t=setTimeout(function(){
+        if(!hovered)return;var r=card.getBoundingClientRect();
+        var p=document.createElement('div');p.className='particle';
+        p.style.left=(Math.random()*r.width)+'px';p.style.top=(Math.random()*r.height)+'px';
+        card.appendChild(p);particles.push(p);
+        G.fromTo(p,{scale:0,opacity:0},{scale:1,opacity:1,duration:0.3,ease:'back.out(1.7)'});
+        G.to(p,{x:(Math.random()-0.5)*60,y:(Math.random()-0.5)*60,rotation:Math.random()*360,duration:2+Math.random()*2,ease:'none',repeat:-1,yoyo:true});
+      },k*90);timeouts.push(t);})(i);}
+    });
+    card.addEventListener('mousemove',function(e){
+      if(!G)return;var r=card.getBoundingClientRect();
+      var mx=(e.clientX-r.left-r.width/2)*0.05,my=(e.clientY-r.top-r.height/2)*0.05;
+      G.to(card,{x:mx,y:my-4,duration:0.3,ease:'power2.out'}); // -4: 호버 리프트 유지
+    });
+    card.addEventListener('mouseleave',function(){
+      hovered=false;timeouts.forEach(clearTimeout);timeouts=[];
+      if(G){G.to(card,{x:0,y:0,duration:0.3,ease:'power2.out'});particles.forEach(function(p){G.to(p,{scale:0,opacity:0,duration:0.3,onComplete:function(){p.remove();}});});}
+      else particles.forEach(function(p){p.remove();});
+      particles=[];
+    });
+    card.addEventListener('click',function(e){
+      if(!G)return;var r=card.getBoundingClientRect();var x=e.clientX-r.left,y=e.clientY-r.top;
+      var maxD=Math.max(Math.hypot(x,y),Math.hypot(x-r.width,y),Math.hypot(x,y-r.height),Math.hypot(x-r.width,y-r.height));
+      var rip=document.createElement('div');
+      rip.style.cssText='position:absolute;width:'+(maxD*2)+'px;height:'+(maxD*2)+'px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,0.4) 0%,rgba(96,165,250,0.2) 30%,transparent 70%);left:'+(x-maxD)+'px;top:'+(y-maxD)+'px;pointer-events:none;z-index:8;';
+      card.appendChild(rip);
+      G.fromTo(rip,{scale:0,opacity:1},{scale:1,opacity:0,duration:0.8,ease:'power2.out',onComplete:function(){rip.remove();}});
+    });
+  });
+}
+
+/* ===== 번역 ===== */
+// 한글이 없고 알파벳이 있으면 영어(외국어)로 간주
+function isForeign(t){return t&&!/[가-힣]/.test(t)&&/[a-zA-Z]/.test(t);}
+var _trCache={};
+function translateEl(el,text){
+  if(!el||!text)return;
+  if(!isForeign(text)){el.textContent=text;return;}
+  if(_trCache[text]){el.textContent=_trCache[text];return;}
+  fetch('/api/translate?q='+encodeURIComponent(text)).then(function(r){return r.json();}).then(function(o){
+    var out=(o&&o.text)?o.text:text;
+    _trCache[text]=out;el.textContent=out;
+  }).catch(function(){});
+}
+
 /* ===== LOAD ALL ===== */
 async function loadAll(){
   setStatus('데이터를 불러오는 중입니다...');
@@ -744,14 +892,16 @@ async function loadAll(){
   var res=await Promise.allSettled([loadLaunches(),fetchRSS('우주산업 OR SpaceX OR 로켓발사 OR 인공위성 OR 우주항공 OR 발사체 OR 위성통신 OR rocket OR satellite OR space launch')]);
   var lR=res[0],nR=res[1];
   if(lR.status==='fulfilled'){renderLaunchSched();renderCal();}
-  else document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
+  else if(document.getElementById('launchSched'))document.getElementById('launchSched').innerHTML='<div class="empty">발사 일정 불러오기 실패 (시간당 15회 제한)</div>';
   if(nR.status==='fulfilled'){
-    allNews=nR.value.map(function(it){
-      var src='Google News';try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}
+    allNews=nR.value.filter(function(it){return isSpaceRelated(it.title);}).map(function(it){
+      var src=it.source||'';
+      if(!src){try{src=new URL(it.link).hostname.replace('www.','');}catch(e){}}
       return{title:it.title,link:it.link,pubDate:it.pubDate,source:src,cat:classify(it.title)};
     });
     renderTopNews();renderHotKW();renderTrend();renderDist();renderNewsTable();
   }
+  renderNewsHero();
   var ok=lR.status==='fulfilled'&&nR.status==='fulfilled';
   setStatus(ok?'최근 업데이트: '+new Date().toLocaleString('ko-KR')+' KST':'일부 데이터를 불러오지 못했습니다.',!ok);
 }

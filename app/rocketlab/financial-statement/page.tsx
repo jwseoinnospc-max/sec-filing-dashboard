@@ -43,7 +43,8 @@ const SOURCE_URL = {
   q1: Q1_FILING_URL,
   q2: Q2_FILING_URL,
   q3: Q3_FILING_URL,
-  q4: Q4_FILING_URL
+  q4: Q4_FILING_URL,
+  q2y26: "https://investors.rocketlabcorp.com/node/13041/html"
 } as const;
 
 function cell(text: string, source?: keyof typeof SOURCE_URL) {
@@ -65,7 +66,8 @@ const rows: Row[] = [
     q4y25: cell("179,652", "q4"),
     fy2025: cell("601,799", "fy"),
     q1y26: cell("200,348", "q1"),
-    growth: "▲ 63%",
+    q2y26: cell("234,066", "q2y26"),
+    growth: "▲ 62%",
     hist: {
       "22Q1": histCell("22Q1", "40,703"),
       "22Q2": histCell("22Q2", "55,474"),
@@ -95,7 +97,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("199,042", "fy"),
     q1y26: cell("63,663", "q1"),
-    growth: "▲ 79%"
+    q2y26: cell("44,600", "q2y26"),
+    growth: "▼ 4%"
   },
   {
     label: "Space Systems",
@@ -111,7 +114,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("402,757", "fy"),
     q1y26: cell("136,685", "q1"),
-    growth: "▲ 57%"
+    q2y26: cell("189,500", "q2y26"),
+    growth: "▲ 94%"
   },
   {
     label: "매출총이익 (Gross Profit)",
@@ -127,7 +131,8 @@ const rows: Row[] = [
     q4y25: cell("68,232", "q4"),
     fy2025: cell("207,181", "fy"),
     q1y26: cell("76,493", "q1"),
-    growth: "▲ 117%",
+    q2y26: cell("84,576", "q2y26"),
+    growth: "▲ 82%",
     hist: {
       "22Q1": histCell("22Q1", "3,735"),
       "22Q2": histCell("22Q2", "4,958"),
@@ -158,7 +163,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("81,270", "fy"),
     q1y26: cell("28,223", "q1"),
-    growth: "▲ 291%"
+    q2y26: cell("-"),
+    growth: "-"
   },
   {
     label: "Space Systems",
@@ -174,7 +180,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("125,911", "fy"),
     q1y26: cell("48,270", "q1"),
-    growth: "▲ 72%"
+    q2y26: cell("-"),
+    growth: "-"
   },
   {
     label: "매출총이익률 (Gross Margin)",
@@ -189,7 +196,8 @@ const rows: Row[] = [
     q4y25: cell("38.0%", "q4"),
     fy2025: cell("34.4%", "fy"),
     q1y26: cell("38.2%", "q1"),
-    growth: "▲ 9.4%p",
+    q2y26: cell("36.1%", "q2y26"),
+    growth: "▲ 4.0%p",
     hist: {
       "22Q1": histCell("22Q1", "9.2%"),
       "22Q2": histCell("22Q2", "8.9%"),
@@ -219,7 +227,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("40.8%", "fy"),
     q1y26: cell("44.3%", "q1"),
-    growth: "▲ 24.0%p"
+    q2y26: cell("-"),
+    growth: "-"
   },
   {
     label: "Space Systems",
@@ -235,7 +244,8 @@ const rows: Row[] = [
     q4y25: cell("-"),
     fy2025: cell("31.3%", "fy"),
     q1y26: cell("35.3%", "q1"),
-    growth: "▲ 3.1%p"
+    q2y26: cell("-"),
+    growth: "-"
   },
   {
     label: "영업손실 (Operating Loss)",
@@ -251,7 +261,8 @@ const rows: Row[] = [
     q4y25: cell("(51,042)", "q4"),
     fy2025: cell("(228,838)", "fy"),
     q1y26: cell("(55,969)", "q1"),
-    growth: "▼ 5%",
+    q2y26: cell("(57,514)", "q2y26"),
+    growth: "▼ 4%",
     hist: {
       "22Q1": histCell("22Q1", "(32,820)"),
       "22Q2": histCell("22Q2", "(33,159)"),
@@ -280,7 +291,8 @@ const rows: Row[] = [
     q4y25: cell("(28.4)%", "q4"),
     fy2025: cell("38.1%", "fy"),
     q1y26: cell("27.9%", "q1"),
-    growth: "▼ 20.4%p",
+    q2y26: cell("24.6%", "q2y26"),
+    growth: "▼ 16.7%p",
     hist: {
       "22Q1": histCell("22Q1", "(80.6)%"),
       "22Q2": histCell("22Q2", "(59.8)%"),
@@ -310,6 +322,7 @@ const rows: Row[] = [
     q4y25: cell("(52,922)", "q4"),
     fy2025: cell("(198,209)", "fy"),
     q1y26: cell("(45,022)", "q1"),
+    q2y26: cell("(49,258)", "q2y26"),
     growth: "▼ 26%",
     hist: {
       "22Q1": histCell("22Q1", "(26,709)"),
@@ -339,7 +352,8 @@ const rows: Row[] = [
     q4y25: cell("1,098,824", "fy"),
     fy2025: cell("1,098,824", "fy"),
     q1y26: cell("1,476,845", "q1"),
-    growth: "▲ 379%"
+    q2y26: cell("2,387,590", "q2y26"),
+    growth: "▲ 219%"
   },
   {
     label: "수주잔고 (Backlog)",
@@ -354,7 +368,8 @@ const rows: Row[] = [
     q4y25: cell("1,847,322", "fy"),
     fy2025: cell("1,847,322", "fy"),
     q1y26: cell("2,219,756", "q1"),
-    growth: "▲ 108%"
+    q2y26: cell("2,355,949", "q2y26"),
+    growth: "▲ 137%"
   },
   {
     label: "Launch",
@@ -370,7 +385,8 @@ const rows: Row[] = [
     q4y25: cell("475,600", "fy"),
     fy2025: cell("475,600", "fy"),
     q1y26: cell("921,412", "q1"),
-    growth: "▲ 118%"
+    q2y26: cell("942,380", "q2y26"),
+    growth: "▲ 130%"
   },
   {
     label: "Space Systems",
@@ -386,7 +402,8 @@ const rows: Row[] = [
     q4y25: cell("1,371,722", "fy"),
     fy2025: cell("1,371,722", "fy"),
     q1y26: cell("1,298,344", "q1"),
-    growth: "▲ 101%"
+    q2y26: cell("1,413,569", "q2y26"),
+    growth: "▲ 141%"
   },
   {
     label: "발사 횟수",
@@ -401,6 +418,7 @@ const rows: Row[] = [
     q4y25: cell("7회", "q4"),
     fy2025: cell("21회", "fy"),
     q1y26: cell("6회", "q1"),
+    q2y26: cell("6회", "q2y26"),
     growth: "▲ 1회"
   },
   {
@@ -415,7 +433,8 @@ const rows: Row[] = [
     q3y25: cell("-"),
     q4y25: cell("-"),
     fy2025: cell("약 24대", "fy"),
-    q1y26: cell("약 5대", "q1")
+    q1y26: cell("약 5대", "q1"),
+    q2y26: cell("-")
   },
   {
     label: "인원수 (Headcount)",
@@ -429,7 +448,8 @@ const rows: Row[] = [
     q3y25: cell("-"),
     q4y25: cell("2,600명 이상", "fy"),
     fy2025: cell("2,600명 이상", "fy"),
-    q1y26: cell("-")
+    q1y26: cell("-"),
+    q2y26: cell("-")
   }
 ];
 
@@ -440,7 +460,7 @@ export default function FinancialStatementPage() {
         <div>
           <NavMenu />
           <h1>Rocket Lab Financial Statement</h1>
-          <p>FY2020 ~ FY2024, 분기별(25Y 1Q → 4Q), FY2025, 26Y 1Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
+          <p>FY2020 ~ FY2024, 분기별(25Y 1Q → 4Q), FY2025, 26Y 1Q, 26Y 2Q 주요 재무 항목을 비교합니다. 단위: 천 달러</p>
         </div>
 
         <div className="header-side">

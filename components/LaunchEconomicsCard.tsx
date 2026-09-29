@@ -3,15 +3,17 @@ import type { ReactNode } from "react";
 export default function LaunchEconomicsCard({
   filingUrl,
   revenueText,
-  costText
+  costText,
+  period = "26Y 1Q"
 }: {
   filingUrl: string;
   revenueText: ReactNode;
   costText: ReactNode;
+  period?: string;
 }) {
   return (
     <div className="card">
-      <h3>💹 발사 서비스 수익성 (26Y 1Q)</h3>
+      <h3>💹 발사 서비스 수익성 ({period})</h3>
       <div className="metric">
         <a href={filingUrl} target="_blank" rel="noopener noreferrer">
           {revenueText}
