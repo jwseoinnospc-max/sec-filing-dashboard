@@ -115,6 +115,10 @@ export default function SchedulePage() {
           <NavMenu />
           <h1>Launch Schedule</h1>
           <p>소형발사체 발사 일정을 한 화면에서 확인합니다. (Launch Library 2 · TheSpaceDevs)</p>
+          <p className="sched-criteria">
+            ※ <b>소형발사체 기준</b>: 지구 저궤도(LEO) 탑재체 <b className="sched-accent">2톤(2,000kg) 미만</b> 발사체
+            <span className="sched-criteria-eg"> — Electron · Firefly Alpha · SSLV · 누리호 · 한빛 등</span>
+          </p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>
         </div>
         <div className="header-side">
@@ -154,7 +158,7 @@ export default function SchedulePage() {
       {/* 컨트롤 */}
       <div className="sched-controls">
         <button className={`sched-toggle ${smallOnly ? "on" : ""}`} onClick={() => setSmallOnly((v) => !v)}
-          title="소형발사체(LEO 탑재 ~2t 이하) 큐레이션 목록 기준">
+          title="소형발사체 = 지구 저궤도(LEO) 탑재체 2톤(2,000kg) 미만 발사체 기준">
           <span className="sched-dot" /> 소형발사체만 {smallOnly ? "ON" : "OFF"}
         </button>
         <input className="sched-search" placeholder="로켓 · 발사체 · 발사장 · 미션 검색"
@@ -244,7 +248,7 @@ export default function SchedulePage() {
       )}
 
       <p className="sched-note">
-        ※ ‘소형발사체’는 LEO 투입 능력 약 2t 이하 발사체 큐레이션 목록 기준입니다(Electron · Firefly Alpha · Vega · SSLV · 누리호 · 한빛 등). Launch Library 2는 발사체 체급 필드를 제공하지 않아 발사체 명칭으로 분류합니다.
+        ※ ‘소형발사체’는 지구 저궤도(LEO) 탑재 능력 <b>2톤(2,000kg) 미만</b> 발사체 기준입니다(Electron · Firefly Alpha · Vega · SSLV · 누리호 · 한빛 등). Launch Library 2는 발사체 탑재중량 필드를 제공하지 않아 발사체 명칭 기준으로 분류하며, 2톤을 명확히 초과하는 발사체(예: Angara 1.2, Long March 6A)는 제외했습니다.
       </p>
 
       <style>{CSS}</style>
@@ -255,6 +259,11 @@ export default function SchedulePage() {
 const CSS = `
 .schedule-page .sched-sub{font-size:12px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .schedule-page .sched-accent{color:var(--accent);font-variant-numeric:tabular-nums}
+.schedule-page .sched-criteria{margin:6px 0 2px;font-size:13px;color:var(--muted);line-height:1.5}
+.schedule-page .sched-criteria b{color:var(--text);font-weight:700}
+.schedule-page .sched-criteria b.sched-accent{color:var(--accent)}
+.schedule-page .sched-criteria-eg{color:var(--muted)}
+@media (max-width:640px){.schedule-page .sched-criteria-eg{display:block;margin-top:2px}}
 .sched-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 16px}
 .sched-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--panel-2);color:var(--muted);
   border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;font-weight:600}
