@@ -18,6 +18,7 @@ function isSubGroup(c: GroupChild): c is SubGroup {
 
 const NAV_ITEMS: NavItem[] = [
   { type: "link",  label: "Line-Up (Test)",     href: "/line-up" },
+  { type: "link",  label: "Launch Schedule",    href: "/schedule" },
   { type: "link",  label: "Space Trend (Test)", href: "/space-trend" },
   { type: "link",  label: "Space Market",       href: "/space-market" },
   {
