@@ -222,7 +222,7 @@ export default function SchedulePage() {
           <p>소형발사체 발사 일정을 한 화면에서 확인합니다. (Launch Library 2 · TheSpaceDevs)</p>
           <p className="sched-criteria">
             ※ <b>소형발사체 기준</b>: 지구 저궤도(LEO) 탑재체 <b className="sched-accent">2톤(2,000kg) 미만</b> 발사체
-            <span className="sched-criteria-eg"> — Electron · Firefly Alpha · SSLV · 누리호 · 한빛 등</span>
+            <span className="sched-criteria-eg"> — Electron · Firefly Alpha · SSLV · HyImpulse · 한빛 등</span>
           </p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>
         </div>
@@ -368,7 +368,7 @@ export default function SchedulePage() {
       )}
 
       <p className="sched-note">
-        ※ ‘소형발사체’는 지구 저궤도(LEO) 탑재 능력 <b>2톤(2,000kg) 미만</b> 발사체 기준입니다(Electron · Firefly Alpha · Vega · SSLV · 누리호 · 한빛 등). Launch Library 2는 발사체 탑재중량 필드를 제공하지 않아 발사체 명칭 기준으로 분류하며, 2톤을 명확히 초과하는 발사체(예: Angara 1.2, Long March 6A)는 제외했습니다.
+        ※ ‘소형발사체’는 지구 저궤도(LEO) 탑재 능력 <b>2톤(2,000kg) 미만</b> 발사체 기준입니다(Electron · Firefly Alpha · SSLV · Spectrum · HyImpulse · 한빛 등). Launch Library 2는 발사체 탑재중량 필드를 제공하지 않아 발사체 명칭·운용사 기준으로 분류하며, 2톤을 명확히 초과하는 발사체(예: Angara 1.2, Long March 6A, 누리호)는 제외했습니다.
         <br />※ 카운트다운은 <b>발사 시각 정밀도</b>에 따라 표시됩니다 — 시·분·초까지 확정된 건만 실시간 T- 카운트다운, 날짜만 확정된 건은 D-일수(시간 미정), 월·분기·연 단위 임시 일정은 “2026년 4분기 예정”처럼 기간으로 표기합니다.
       </p>
 
