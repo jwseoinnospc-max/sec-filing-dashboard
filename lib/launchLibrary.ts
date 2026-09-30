@@ -5,16 +5,16 @@ export const LL2 = "https://ll.thespacedevs.com/2.3.0/launches";
 /**
  * Small-lift launch vehicles: payload capacity to LEO under 2 t (2,000 kg).
  * Launch Library 2 exposes no payload-class field, so we approximate by matching
- * the rocket configuration name / family against this curated list (case-insensitive
- * substring). Vehicles clearly above 2 t to LEO (e.g. Angara 1.2, Long March 6A)
- * are intentionally excluded.
+ * the rocket configuration name / family / operator against this curated list
+ * (case-insensitive substring). Vehicles clearly above 2 t to LEO are excluded —
+ * e.g. Angara 1.2 (~3.8 t), Long March 6A (~4 t), Nuri / KSLV-II (~2.6 t to LEO).
  */
 export const SMALL_LIFT = [
   "electron", "alpha", "launcherone", "astra rocket", "ceres", "hyperbola",
   "kuaizhou", "jielong", "smart dragon", "sslv", "vega", "qased", "zuljanah",
   "simorgh", "safir", "hanbit", "한빛", "miura", "rfa one", "spectrum",
   "terran 1", "long march 11", "epsilon", "pegasus", "minotaur", "shavit",
-  "unha", "kinetica", "lijian", "nuri", "kslv", "daytona", "eris", "prime",
+  "unha", "kinetica", "lijian", "hyimpulse", "daytona", "eris", "prime",
   "vikram", "agnibaan", "orbital ascent",
 ];
 
