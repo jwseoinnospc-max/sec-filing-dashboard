@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mapLaunch, fetchLL2 } from "@/lib/launchLibrary";
+import { mapLaunch, fetchLL2, EXCLUDED_IDS } from "@/lib/launchLibrary";
 
 export const runtime = "edge";
 // Past-mission search is cached aggressively per query (results don't change often).
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       `previous/?mode=normal&search=${encodeURIComponent(q)}&ordering=-net&limit=30`,
       revalidate,
     );
-    const results = (data.results || []).map(mapLaunch);
+    const results = (data.results || []).map(mapLaunch).filter((l: any) => !EXCLUDED_IDS.has(l.id));
     return NextResponse.json(
       { results, q, count: data.count ?? results.length },
       { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=1800" } },
