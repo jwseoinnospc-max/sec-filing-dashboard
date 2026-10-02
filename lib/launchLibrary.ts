@@ -20,6 +20,14 @@ export const SMALL_LIFT = [
 
 export const INNOSPACE = ["innospace", "이노스페이스", "hanbit", "한빛"];
 
+/**
+ * Launch ids manually hidden from the dashboard — e.g. entries expected to slip
+ * substantially. Filtered out of upcoming, recent and search results.
+ */
+export const EXCLUDED_IDS = new Set<string>([
+  "7c891a0b-7194-4425-8cfd-2e8c75af2924", // HANBIT-Nano | InnoSat-0 — likely to slip to next year
+]);
+
 type Cfg = { name?: string; full_name?: string; families?: { name?: string }[] };
 
 function textFor(cfg: Cfg | undefined, provider: string): string {
