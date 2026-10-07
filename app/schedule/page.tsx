@@ -237,14 +237,14 @@ export default function SchedulePage() {
       {/* 요약 타일 */}
       <div className="sector-index-row">
         <div className="sector-index-card">
-          <div className="sector-index-label">다음 소형발사체</div>
+          <div className="sector-index-label">{smallOnly ? "다음 소형발사체" : "다음 발사체"}</div>
           <div className="sector-index-value sched-accent">{next ? bigWhen(next) : "—"}</div>
           <div className="sched-sub">{next ? next.name : "예정 없음"}</div>
         </div>
         <div className="sector-index-card">
-          <div className="sector-index-label">예정 소형발사체</div>
-          <div className="sector-index-value">{data ? `${smallCount}건` : "—"}</div>
-          <div className="sched-sub">전체 예정 {data ? data.upcoming.length : 0}건 중</div>
+          <div className="sector-index-label">{smallOnly ? "예정 소형발사체" : "예정 발사체"}</div>
+          <div className="sector-index-value">{data ? `${smallOnly ? smallCount : data.upcoming.length}건` : "—"}</div>
+          <div className="sched-sub">{data ? (smallOnly ? `전체 예정 ${data.upcoming.length}건 중` : `소형발사체 ${smallCount}건 포함`) : ""}</div>
         </div>
         <div className="sector-index-card">
           <div className="sector-index-label">7일 내 발사</div>
