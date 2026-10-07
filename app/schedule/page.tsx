@@ -222,7 +222,6 @@ export default function SchedulePage() {
           <p>소형발사체 발사 일정을 한 화면에서 확인합니다. (Launch Library 2 · TheSpaceDevs)</p>
           <p className="sched-criteria">
             ※ <b>소형발사체 기준</b>: 지구 저궤도(LEO) 탑재체 <b className="sched-accent">2톤(2,000kg) 미만</b> 발사체
-            <span className="sched-criteria-eg"> — Electron · Firefly Alpha · SSLV · HyImpulse · 한빛 등</span>
           </p>
           <p className="data-updated">최근 업데이트: {updatedAt} KST</p>
         </div>
@@ -383,8 +382,6 @@ const CSS = `
 .schedule-page .sched-criteria{margin:6px 0 2px;font-size:13px;color:var(--muted);line-height:1.5}
 .schedule-page .sched-criteria b{color:var(--text);font-weight:700}
 .schedule-page .sched-criteria b.sched-accent{color:var(--accent)}
-.schedule-page .sched-criteria-eg{color:var(--muted)}
-@media (max-width:640px){.schedule-page .sched-criteria-eg{display:block;margin-top:2px}}
 .sched-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 16px}
 .sched-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--panel-2);color:var(--muted);
   border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;font-weight:600}
