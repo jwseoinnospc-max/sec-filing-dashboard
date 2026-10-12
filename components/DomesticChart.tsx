@@ -24,7 +24,9 @@ function formatMinuteLabel(time: string) {
 }
 
 export default function DomesticChart({ code, data }: { code: string; data: KisDailyBar[] }) {
-  const [range, setRange] = useState<(typeof RANGES)[number]["label"]>("1M");
+  const hasDaily = Array.isArray(data) && data.length > 0;
+  // Newly-listed names (e.g. 이노스페이스) may have no daily history yet — fall back to the 1D tab.
+  const [range, setRange] = useState<(typeof RANGES)[number]["label"]>(hasDaily ? "1M" : "1D");
   const [intraday, setIntraday] = useState<KisMinuteBar[] | null>(null);
   const [loadingIntraday, setLoadingIntraday] = useState(false);
 
@@ -54,19 +56,17 @@ export default function DomesticChart({ code, data }: { code: string; data: KisD
     return () => clearInterval(interval);
   }, [range, code]);
 
-  if (!data || data.length === 0) {
-    return <div className="domestic-chart-empty">차트 데이터 없음</div>;
-  }
-
   const isIntraday = range === "1D";
   const formatLabel = isIntraday ? formatMinuteLabel : formatDailyLabel;
 
   let points: Point[];
   if (isIntraday) {
     points = (intraday ?? []).map((b) => ({ key: b.time, close: b.close }));
-  } else {
+  } else if (hasDaily) {
     const days = RANGES.find((r) => r.label === range)?.days ?? 22;
     points = data.slice(-days).map((b) => ({ key: b.date, close: b.close }));
+  } else {
+    points = [];
   }
 
   const isUp = points.length > 1 && points[points.length - 1].close >= points[0].close;
@@ -91,6 +91,8 @@ export default function DomesticChart({ code, data }: { code: string; data: KisD
         <div className="domestic-chart-loading">불러오는 중...</div>
       ) : isIntraday && points.length === 0 ? (
         <div className="domestic-chart-loading">1D 데이터 없음</div>
+      ) : !isIntraday && points.length === 0 ? (
+        <div className="domestic-chart-loading">일봉 데이터 없음</div>
       ) : (
         <ResponsiveContainer width="100%" height={140}>
           <AreaChart data={points} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>

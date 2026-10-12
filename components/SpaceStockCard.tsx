@@ -87,7 +87,7 @@ export function SpaceStockCard({
           </div>
         </>
       ) : (
-        history && <DomesticChart code={symbol} data={history} />
+        <DomesticChart code={symbol} data={history ?? []} />
       )}
 
       {valuation && (valuation.per || valuation.pbr || valuation.eps || valuation.bps) && (

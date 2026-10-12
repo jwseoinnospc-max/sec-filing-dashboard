@@ -275,7 +275,7 @@ function formatDate(d: Date) {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false): Promise<KisDailyBar[] | null> {
+async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false, rateAttempt = 0, bust = false, lookbackDays = 200): Promise<KisDailyBar[] | null> {
   const appKey = process.env.KIS_APP_KEY;
   const appSecret = process.env.KIS_APP_SECRET;
   const token = await getAccessToken(forceRefresh);
@@ -283,7 +283,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false,
 
   const today = new Date();
   const start = new Date(today);
-  start.setDate(start.getDate() - 200); // KIS caps each call at ~100 trading days regardless of range.
+  start.setDate(start.getDate() - lookbackDays); // KIS caps each call at ~100 trading days regardless of range.
 
   try {
     const query = new URLSearchParams({
@@ -327,7 +327,12 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false,
     }
 
     const rows = data?.output2;
-    if (!Array.isArray(rows) || rows.length === 0) return null;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      // Newly-listed stocks can return empty when the start date predates their IPO.
+      // Retry once with a shorter window so recently-listed names (e.g. 이노스페이스) still chart.
+      if (lookbackDays > 60) return fetchDomesticDailyHistoryOnce(code, forceRefresh, rateAttempt, bust, 45);
+      return null;
+    }
 
     return rows
       .filter((r) => r.stck_bsop_date && r.stck_clpr)
@@ -340,7 +345,7 @@ async function fetchDomesticDailyHistoryOnce(code: string, forceRefresh = false,
 
 // Daily close-price history (~last 100 trading days, KIS's per-call cap) for charting.
 export async function getDomesticDailyHistory(code: string, bust = false): Promise<KisDailyBar[] | null> {
-  return fetchDomesticDailyHistoryOnce(code, false, 0, bust);
+  return fetchDomesticDailyHistoryOnce(code, false, 0, bust, 200);
 }
 
 export type KisMinuteBar = { time: string; close: number }; // time: "HHMM"
